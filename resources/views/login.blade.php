@@ -6,10 +6,10 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0,minimal-ui">
-    <meta name="description" content="Mr WiFi - WiFi network management system for administrators and network owners">
-    <meta name="keywords" content="wifi, network, dashboard, admin, mr wifi, captive portal, radius, management">
-    <meta name="author" content="Mr WiFi">
-    <title>Login - Mr WiFi</title>
+    <meta name="description" content="monsieur-wifi - WiFi network management system for administrators and network owners">
+    <meta name="keywords" content="wifi, network, dashboard, admin, monsieur-wifi, captive portal, radius, management">
+    <meta name="author" content="monsieur-wifi">
+    <title>Login - monsieur-wifi</title>
     <link rel="apple-touch-icon" href="app-assets/images/ico/apple-icon-120.png">
     <link rel="shortcut icon" type="image/x-icon" href="app-assets/mrwifi-assets/MrWifi.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600" rel="stylesheet">
@@ -417,11 +417,11 @@
                         <div class="card mb-0">
                             <div class="card-body">
                                 <a href="javascript:void(0);" class="brand-logo">
-                                    <img src="app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="Mr WiFi logo" height="36">
-                                    <h2 class="brand-text text-primary ml-1">Mr WiFi</h2>
+                                    <img src="app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="monsieur-wifi logo" height="36">
+                                    <h2 class="brand-text text-primary ml-1">monsieur-wifi</h2>
                                 </a>
 
-                                <h4 class="card-title mb-1">Welcome to Mr WiFi! 👋</h4>
+                                <h4 class="card-title mb-1">Welcome to monsieur-wifi! 👋</h4>
                                 <p class="card-text mb-2">Please sign-in to access your <span class="typing-text"></span></p>
 
                                 <!-- Alert for showing login messages -->

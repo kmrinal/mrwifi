@@ -4,10 +4,10 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0,minimal-ui">
-    <meta name="description" content="Mr WiFi - Global settings for network administrators">
-    <meta name="keywords" content="wifi, network, settings, captive portal, radius, branding, dashboard, mr wifi">
-    <meta name="author" content="Mr WiFi">
-    <title>Global Settings - Mr WiFi</title>
+    <meta name="description" content="monsieur-wifi - Global settings for network administrators">
+    <meta name="keywords" content="wifi, network, settings, captive portal, radius, branding, dashboard, monsieur-wifi">
+    <meta name="author" content="monsieur-wifi">
+    <title>Global Settings - monsieur-wifi</title>
     <link rel="apple-touch-icon" href="app-assets/images/ico/apple-icon-120.png">
     <link rel="shortcut icon" type="image/x-icon" href="app-assets/mrwifi-assets/MrWifi.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600" rel="stylesheet">
@@ -162,9 +162,9 @@
                 <li class="nav-item mr-auto">
                     <a class="navbar-brand" href="dashboard.html">
                         <span class="brand-logo">
-                            <img src="../../../app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="Mr WiFi logo">
+                            <img src="../../../app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="monsieur-wifi logo">
                         </span>
-                        <h2 class="brand-text">Mr WiFi</h2>
+                        <h2 class="brand-text">monsieur-wifi</h2>
                     </a>
                 </li>
                 <li class="nav-item nav-toggle">
@@ -495,7 +495,7 @@
                                                                                                 <div class="col-md-6 col-12">
                                                                                                     <div class="form-group">
                                                                                                         <label for="company_name">Company Name</label>
-                                                                                                        <input type="text" id="company_name" class="form-control" name="company_name" placeholder="Mr WiFi" value="Mr WiFi" />
+                                                                                                        <input type="text" id="company_name" class="form-control" name="company_name" placeholder="monsieur-wifi" value="monsieur-wifi" />
                                                                                                         <small>Your company name as displayed on the captive portal</small>
                                                                                                     </div>
                                                                                                 </div>
@@ -737,7 +737,7 @@
                                             <!-- BEGIN: Footer-->
                                             <footer class="footer footer-static footer-light">
                                                 <p class="clearfix mb-0">
-                                                    <span class="float-md-left d-block d-md-inline-block mt-25">COPYRIGHT &copy; 2025<a class="ml-25" href="#" target="_blank">Mr WiFi</a><span class="d-none d-sm-inline-block">, All rights Reserved</span></span>
+                                                    <span class="float-md-left d-block d-md-inline-block mt-25">COPYRIGHT &copy; 2025<a class="ml-25" href="#" target="_blank">monsieur-wifi</a><span class="d-none d-sm-inline-block">, All rights Reserved</span></span>
                                                     <span class="float-md-right d-none d-md-block">Hand-crafted & Made with<i data-feather="heart"></i></span>
                                                 </p>
                                             </footer>

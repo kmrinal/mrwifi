@@ -3,10 +3,10 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0,minimal-ui">
-    <meta name="description" content="Mr WiFi cloud controller dashboard for managing and monitoring WiFi networks.">
-    <meta name="keywords" content="wifi, cloud controller, network management, mr wifi">
-    <meta name="author" content="Mr WiFi">
-    <title>Location Details - Mr WiFi Controller</title>
+    <meta name="description" content="monsieur-wifi cloud controller dashboard for managing and monitoring WiFi networks.">
+    <meta name="keywords" content="wifi, cloud controller, network management, monsieur-wifi">
+    <meta name="author" content="monsieur-wifi">
+    <title>Location Details - monsieur-wifi Controller</title>
     <link rel="apple-touch-icon" href="/app-assets/images/ico/apple-icon-120.png">
     <link rel="shortcut icon" type="image/x-icon" href="/app-assets/mrwifi-assets/Mr-Wifi.PNG">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600" rel="stylesheet">
@@ -473,9 +473,9 @@
                 <li class="nav-item mr-auto">
                     <a class="navbar-brand" href="dashboard.html">
                         <span class="brand-logo">
-                            <img src="../../../app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="Mr WiFi logo">
+                            <img src="../../../app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="monsieur-wifi logo">
                         </span>
-                        <h2 class="brand-text">Mr WiFi</h2>
+                        <h2 class="brand-text">monsieur-wifi</h2>
                     </a>
                 </li>
                 <li class="nav-item nav-toggle">
@@ -3009,7 +3009,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // alert("locationName:: " + locationName);
                 if (locationName) {
                     // Update page title
-                    document.title = `${locationName} - Mr WiFi Controller`;
+                    document.title = `${locationName} - monsieur-wifi Controller`;
                     $('.location_name').text(locationName);
                     
                     // Update headings

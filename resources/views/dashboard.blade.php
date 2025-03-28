@@ -244,9 +244,9 @@
                 <li class="nav-item mr-auto">
                     <a class="navbar-brand" href="dashboard.html">
                         <span class="brand-logo">
-                            <img src="../../../app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="Mr WiFi logo">
+                            <img src="../../../app-assets/mrwifi-assets/Mr-Wifi.PNG" alt="monsieur-wifi logo">
                         </span>
-                        <h2 class="brand-text">Mr WiFi</h2>
+                        <h2 class="brand-text">monsieur-wifi</h2>
                     </a>
                 </li>
                 <li class="nav-item nav-toggle">
@@ -376,7 +376,7 @@
                         <div class="col-lg-4 col-md-6 col-12">
                             <div class="card card-congratulation-medal">
                                 <div class="card-body">
-                                    <h5>Welcome to Mr WiFi Dashboard</h5>
+                                    <h5>Welcome to monsieur-wifi Dashboard</h5>
                                     <p class="card-text font-small-3">Network Status Overview</p>
                                     <h3 class="mb-75 mt-2 pt-50">
                                         <span class="text-primary">6 Locations</span>
@@ -936,7 +936,7 @@
                                                 </div>
                                                 <div>
                                                     <h4 class="mb-0">12</h4>
-                                                    <span>Malware Access Blocked</span>
+                                                    <span>Websites Blocked</span>
                                                 </div>
                                             </div>
                                             <div class="progress progress-bar-warning mb-1" style="height: 6px">
@@ -964,7 +964,7 @@
 
     <!-- BEGIN: Footer-->
     <footer class="footer footer-static footer-light">
-        <p class="clearfix mb-0"><span class="float-md-left d-block d-md-inline-block mt-25">COPYRIGHT &copy; 2025<a class="ml-25" href="https://mrwifi.com" target="_blank">Mr WiFi</a><span class="d-none d-sm-inline-block">, All rights Reserved</span></span><span class="float-md-right d-none d-md-block">Hand-crafted & Made with<i data-feather="heart"></i></span></p>
+        <p class="clearfix mb-0"><span class="float-md-left d-block d-md-inline-block mt-25">COPYRIGHT &copy; 2025<a class="ml-25" href="https://mrwifi.com" target="_blank">monsieur-wifi</a><span class="d-none d-sm-inline-block">, All rights Reserved</span></span><span class="float-md-right d-none d-md-block">Hand-crafted & Made with<i data-feather="heart"></i></span></p>
     </footer>
     <button class="btn btn-primary btn-icon scroll-top" type="button"><i data-feather="arrow-up"></i></button>
     <!-- END: Footer-->
@@ -1325,7 +1325,7 @@
             //     };
                 
             //     toastr.success(
-            //         'Welcome back to the Mr WiFi Dashboard',
+            //         'Welcome back to the monsieur-wifi Dashboard',
             //         'Hello, ' + user.name + '!'
             //     );
             // }
