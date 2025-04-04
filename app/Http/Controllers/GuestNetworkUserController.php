@@ -75,6 +75,12 @@ class GuestNetworkUserController extends Controller
             'captive_portal_design',
         ]);
 
+        // Fetch the complete captive portal design if a design ID is set
+        $captivePortalDesign = null;
+        if ($location->settings && $location->settings->captive_portal_design) {
+            $captivePortalDesign = \App\Models\CaptivePortalDesign::find($location->settings->captive_portal_design);
+        }
+
         $brand = [
             'name' => env('APP_BRAND_NAME'),
             'logo_url' => env('APP_BRAND_LOGO'),
@@ -87,7 +93,8 @@ class GuestNetworkUserController extends Controller
             'id' => $location->id,
             'name' => $location->name,
             'description' => $location->description,
-            'settings' => $captivePortalSettings
+            'settings' => $captivePortalSettings,
+            'design' => $captivePortalDesign
         ];
 
         return response()->json([

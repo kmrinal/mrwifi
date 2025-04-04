@@ -2,6 +2,11 @@ $(document).ready(function() {
     // Get the location_id and mac_address from URL path segments
     // URL format: /click-login/{location_id}/{mac_address}
     let locationId, macAddress;
+    let locationData = JSON.parse(localStorage.getItem('location_data'));
+    let designData = JSON.parse(localStorage.getItem('design_data'));
+
+    console.log('locationData', locationData);
+    console.log('designData', designData);
     
     // Parse URL path
     const pathSegments = window.location.pathname.split('/').filter(segment => segment.length > 0);
@@ -20,7 +25,7 @@ $(document).ready(function() {
         if (e) {
             e.preventDefault();
         }
-        
+        alert('handleLogin');
         // Show loading state on button
         const $loginButton = $('.login-button');
         const originalButtonText = $loginButton.text();
@@ -58,32 +63,32 @@ $(document).ready(function() {
                         .addClass('btn-success');
                     
                     // Check if there's a redirect URL in location settings
-                    $.ajax({
-                        url: `/api/guest-network/info/${locationId}`,
-                        type: 'GET',
-                        data: { mac_address: macAddress },
-                        headers: { 
-                            'Accept': 'application/json' 
-                        },
-                        success: function(locationData) {
-                            if (locationData.success && 
-                                locationData.location && 
-                                locationData.location.settings && 
-                                locationData.location.settings.redirect_url) {
+                    // $.ajax({
+                    //     url: `/api/guest-network/info/${locationId}`,
+                    //     type: 'GET',
+                    //     data: { mac_address: macAddress },
+                    //     headers: { 
+                    //         'Accept': 'application/json' 
+                    //     },
+                    //     success: function(locationData) {
+                    //         if (locationData.success && 
+                    //             locationData.location && 
+                    //             locationData.location.settings && 
+                    //             locationData.location.settings.redirect_url) {
                                 
-                                // Redirect after successful login
-                                setTimeout(function() {
-                                    window.location.href = locationData.location.settings.redirect_url;
-                                }, 1500);
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            console.error('Error fetching location info:', error);
-                        }
-                    });
+                    //             // Redirect after successful login
+                    //             setTimeout(function() {
+                    //                 window.location.href = locationData.location.settings.redirect_url;
+                    //             }, 1500);
+                    //         }
+                    //     },
+                    //     error: function(xhr, status, error) {
+                    //         console.error('Error fetching location info:', error);
+                    //     }
+                    // });
                 } else {
                     // If login failed
-                    $loginButton.text('Connection Failed')
+                    $loginButton.text('Login Failed')
                         .removeClass('btn-primary')
                         .addClass('btn-danger');
                     

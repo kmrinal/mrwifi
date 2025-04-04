@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CaptivePortalController;
 
 // Display the login form
 Route::get('/', function () {
@@ -33,7 +34,6 @@ Route::get('/locations', function () {
 Route::get('/locations/{location}', function () {
     return view('location-details');
 })->name('location-details');
-
 
 Route::get('/system-settings', function () {
     return view('system-settings');
@@ -90,3 +90,7 @@ Route::get('/social-login/twitter/{location}/{mac_address}', function () {
 Route::get('/click-login/{location}/{mac_address}', function () {
     return view('click-login');
 })->name('click-login');
+
+// Captive Portal routes
+Route::get('/captive-portal/{location_id}', [CaptivePortalController::class, 'showLoginPage']);
+Route::post('/captive-portal/login', [CaptivePortalController::class, 'login']);

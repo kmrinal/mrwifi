@@ -74,15 +74,19 @@ function processLocationData(location, mac_address) {
     }
     
     const settings = location.settings;
-    console.log(settings);
+    const design = location.design || {};
     
+    console.log('Location data:', location);
+    console.log('Design data:', design);
+    
+    // Save complete location data including design in localStorage
+    localStorage.setItem('location_data', JSON.stringify(location));
+    localStorage.setItem('design_data', JSON.stringify(design));
     // Check if captive portal is enabled
     if (!settings.captive_portal_enabled) {
         showError('Captive portal is not enabled for this location');
         return;
     }
-    // Save settings in localStorage
-    localStorage.setItem('location_settings', JSON.stringify(settings));
 
     // Determine login method from captive_auth_method
     const authMethod = settings.captive_auth_method;
@@ -104,6 +108,7 @@ function processLocationData(location, mac_address) {
             }
             break;
         case 'click-through':
+            // console.log('location_data', localStorage.getItem('location_data'));
             window.location.href = `/click-login/${location.id}/${mac_address}`;
             break;
         default:

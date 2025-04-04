@@ -56,6 +56,7 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'system-settings'], functi
 
 Route::group(['middleware' => 'auth:api', 'prefix' => 'captive-portal-designs'], function () {
     Route::post('/', [CaptivePortalDesignController::class, 'get_all']);
+    Route::get('/', [CaptivePortalDesignController::class, 'get_all']);
     Route::get('/{captivePortalDesign}', [CaptivePortalDesignController::class, 'show']);
     Route::post('/create', [CaptivePortalDesignController::class, 'create']);
     Route::put('/{captivePortalDesign}', [CaptivePortalDesignController::class, 'update']);

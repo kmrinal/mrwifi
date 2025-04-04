@@ -329,6 +329,16 @@ class LocationController extends Controller
                         $locationSettings->download_limit = $settings['bandwidth_limit_down'];
                     }
                     
+                    // Captive Portal Design ID
+                    if (isset($settings['captive_portal_design_id'])) {
+                        if ($settings['captive_portal_design_id'] !== $locationSettings->captive_portal_design) {
+                            Log::info('Captive portal design updated from ' . 
+                                $locationSettings->captive_portal_design . ' to ' . 
+                                $settings['captive_portal_design_id']);
+                        }
+                        $locationSettings->captive_portal_design = $settings['captive_portal_design_id'];
+                    }
+                    
                     Log::info('Updating captive portal settings for location: ' . $location->id);
                 } 
                 elseif ($settingsType === 'wifi') {

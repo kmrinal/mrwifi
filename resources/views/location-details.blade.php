@@ -1219,10 +1219,7 @@
                                                     <div class="form-group">
                                                         <label class="mb-2">Portal Configuration</label>
                                                         <select class="form-control form-control-sm" id="captive-portal-config">
-                                                            <option value="default">WiFi Portal 1</option>
-                                                            <option value="custom">WiFi Portal 2</option>
-                                                            <option value="custom">WiFi Portal 3</option>
-                                                            <option value="custom">WiFi Portal 4</option>
+                                                            <!-- Options will be populated dynamically -->
                                                         </select>
                                                     </div>
                                                 </div>
@@ -3103,6 +3100,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 $('#captive-session-timeout').val(settings.session_timeout || 60);
                 $('#captive-idle-timeout').val(settings.idle_timeout || 15);
                 
+                // Load captive portal designs from API
+                loadCaptivePortalDesigns(settings.captive_portal_design);
+                
                 // MAC Filtering
                 if (settings.access_control_enabled) {
                     // Set the filter mode
@@ -3148,6 +3148,43 @@ document.addEventListener('DOMContentLoaded', function() {
                 $('#captive-upload-limit').val(settings.bandwidth_limit_up || 2);
             }
             
+            // Function to fetch and populate captive portal designs
+            function loadCaptivePortalDesigns(selectedDesignId) {
+                $.ajax({
+                    url: '/api/captive-portal-designs/',
+                    method: 'POST', // Using POST as specified in routes/api.php
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('mrwifi_auth_token'),
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    data: JSON.stringify({}), // Empty object as POST body
+                    success: function(response) {
+                        console.log("captive-portal-designs", response);
+                        if (response.success && response.data) {
+                            const designs = response.data;
+                            const $select = $('#captive-portal-config');
+                            
+                            // Clear previous options
+                            $select.empty();
+                            
+                            // Add designs as options
+                            designs.forEach(function(design) {
+                                $select.append(`<option value="${design.id}">${design.name}</option>`);
+                            });
+                            
+                            // Select the saved design if provided
+                            if (selectedDesignId) {
+                                $select.val(selectedDesignId);
+                            }
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error('Error fetching captive portal designs:', xhr);
+                    }
+                });
+            }
+            
             // Populate Password WiFi Settings
             function populatePasswordWifiSettings(settings) {
                 $('#wifi-ssid').val(settings.wifi_name || 'Home WiFi');
@@ -3189,6 +3226,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     allowedDomains.push($(this).text());
                 });
                 
+                // Get captive portal design ID
+                const captivePortalDesignId = $('#captive-portal-config').val();
+                console.log('Selected captive portal design ID:', captivePortalDesignId);
+                
                 const settings = {
                     // Basic Settings
                     captive_portal_ssid: $('#portal-ssid').val(),
@@ -3212,8 +3253,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     // Bandwidth
                     bandwidth_limit_up: $('#captive-bandwidth-limit').is(':checked') ? parseInt($('#captive-upload-limit').val()) || 2 : 0,
-                    bandwidth_limit_down: $('#captive-bandwidth-limit').is(':checked') ? parseInt($('#captive-download-limit').val()) || 10 : 0
+                    bandwidth_limit_down: $('#captive-bandwidth-limit').is(':checked') ? parseInt($('#captive-download-limit').val()) || 10 : 0,
+                    
+                    // Captive Portal Design
+                    captive_portal_design_id: captivePortalDesignId
                 };
+                
+                console.log('Saving captive portal settings:', settings);
                 
                 saveSettings(locationId, settings, 'captive');
             });
@@ -3256,6 +3302,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...');
                 $button.prop('disabled', true);
 
+                // Log the data being sent to the server
+                console.log('Saving settings data:', {
+                    settings: settings,
+                    settings_type: settingsType
+                });
+
                 // Make AJAX request to save settings
                 $.ajax({
                     url: `/api/locations/${locationId}`,
@@ -3274,6 +3326,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         $button.html(originalHtml);
                         $button.attr('class', originalClasses); // This restores all original classes
                         $button.prop('disabled', false);
+
+                        // Log the response from the server
+                        console.log('Settings saved successfully, response:', response);
 
                         showNotification('success', 'Settings saved successfully');
 
