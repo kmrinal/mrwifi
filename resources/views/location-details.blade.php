@@ -1465,9 +1465,9 @@
                                                     </div>
                                                 </div>
                                             </div> -->
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
 
                                 <!-- Connected Users Tab -->
                                 <div class="tab-pane" id="connected-users" aria-labelledby="connected-users-tab" role="tabpanel">

@@ -11,8 +11,6 @@
     <link rel="apple-touch-icon" href="app-assets/images/ico/apple-icon-120.png">
     <link rel="shortcut icon" type="image/x-icon" href="app-assets/mrwifi-assets/MrWifi.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600" rel="stylesheet">
-    <!-- CSRF Token -->
-    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- BEGIN: Vendor CSS-->
     <link rel="stylesheet" type="text/css" href="app-assets/vendors/css/vendors.min.css">
@@ -55,12 +53,6 @@
         .upload-area:hover {
             border-color: #7367f0;
             background-color: rgba(115, 103, 240, 0.05);
-        }
-        
-        .upload-area.highlight {
-            border-color: #7367f0;
-            background-color: rgba(115, 103, 240, 0.1);
-            transform: scale(1.02);
         }
         
         .upload-icon {
@@ -110,21 +102,6 @@
             box-shadow: 0 4px 24px 0 rgba(34, 41, 47, 0.1);
             max-width: 100%;
             margin: 0 auto;
-            position: relative;
-            z-index: 1;
-        }
-        
-        /* Add a semi-transparent overlay for better text readability when a background image is present */
-        .portal-preview::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 8px;
-            z-index: -1;
         }
         
         .header {
@@ -388,31 +365,6 @@
         .card-fullscreen .portal-preview {
             max-width: 500px; /* Or your desired width */
             margin: 20px auto;
-        }
-
-        /* Loading overlay styles */
-        .loading-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255, 255, 255, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10;
-            border-radius: 0.428rem;
-        }
-
-        /* Empty state styles */
-        .empty-state {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 3rem;
-            color: #6e6b7b;
         }
     </style>
 </head>
@@ -896,8 +848,8 @@
                                                                 <i data-feather="upload-cloud" class="upload-icon"></i>
                                                                 <h5 class="upload-text">Drop your location logo here or click to browse</h5>
                                                                 <p class="text-muted small">Recommended: PNG or SVG, 200x100px</p>
+                                                                <input type="file" id="location-logo-file" class="d-none" accept="image/*">
                                                             </div>
-                                                            <input type="file" id="location-logo-file" name="location_logo" class="d-none" accept="image/*">
                                                             <img src="" id="location-logo-preview" class="image-preview">
                                                             <p class="note">Your location logo will appear at the top of the login page.</p>
                                                         </div>
@@ -909,21 +861,14 @@
                                                                 <i data-feather="image" class="upload-icon"></i>
                                                                 <h5 class="upload-text">Drop your background image here or click to browse</h5>
                                                                 <p class="text-muted small">Recommended: JPG or PNG, 1920x1080px</p>
+                                                                <input type="file" id="background-file" class="d-none" accept="image/*">
                                                             </div>
-                                                            <input type="file" id="background-file" name="background_image" class="d-none" accept="image/*">
                                                             <img src="" id="background-preview" class="image-preview">
                                                             <p class="note">This image will be displayed as the page background.</p>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </form>
-                                        </div>
-                                    </div>
-                                    <div class="row mt-2">
-                                        <div class="col-12 d-flex justify-content-end">
-                                            <button id="save-design" class="btn btn-primary">
-                                                <i data-feather="save" class="mr-50"></i>Save Design
-                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -991,43 +936,15 @@
     <!-- BEGIN: Theme JS -->
     <script src="{{ asset('app-assets/js/core/app-menu.js') }}"></script>
     <script src="{{ asset('app-assets/js/core/app.js') }}"></script>
-    <script src="{{ asset('assets/js/config.js') }}"></script>
     <!-- END: Theme JS -->
 
     <script>
-        // Define token as a global variable
-        let token;
-        
         // Add this to ensure DOM is fully loaded before running scripts
         $(document).ready(function() {
             // Initialize feather icons
             if (typeof feather !== 'undefined') {
                     feather.replace();
             }
-            try {
-                token = UserManager.getToken();
-                console.log("Token from UserManager:", token ? "Present" : "Missing");
-                
-                // Fallback to localStorage if needed
-                if (!token) {
-                    token = localStorage.getItem('jwt_token');
-                    console.log("Token from localStorage:", token ? "Present" : "Missing");
-                }
-                
-                if (!token) {
-                    console.error("No authentication token found");
-                    toastr.error("You appear to be logged out. Please refresh the page and log in again.");
-                }
-            } catch (e) {
-                console.error("Error getting token:", e);
-                // Try to get token from localStorage as fallback
-                token = localStorage.getItem('jwt_token');
-                console.log("Fallback token from localStorage:", token ? "Present" : "Missing");
-            }
-            
-            // Initial page load - fetch all designs
-            console.log("Fetching designs on page load...");
-            fetchDesigns();
 
             // Check if user object exists before trying to access it
             if (typeof user !== 'undefined') {
@@ -1050,8 +967,6 @@
 
             $('#theme-color').on('input', function() {
                 const color = $(this).val();
-                $('.color-preview').css('background-color', color);
-                $('.color-value').text(color);
                 $('#preview-button').css({
                     'background-color': color,
                     'border-color': color
@@ -1064,60 +979,22 @@
 
             // Update preview when uploading images
             function readURL(input, previewId) {
-                console.log('readURL called for', previewId);
                 if (input.files && input.files[0]) {
-                    console.log('File found:', input.files[0].name);
                     const reader = new FileReader();
-                    
                     reader.onload = function(e) {
-                        console.log('File loaded');
                         const preview = $(`#${previewId}`);
-                        preview.attr('src', e.target.result);
-                        preview.css('display', 'block');
-                        
-                        if (previewId === 'location-logo-preview') {
-                            $('#preview-location-logo').html(`<img src="${e.target.result}" alt="Location Logo" style="max-height: 60px; width: auto;">`);
-                        } else if (previewId === 'background-preview') {
-                            // Set the background image of the portal preview container
-                            $('.portal-preview').css({
-                                'background-image': `url(${e.target.result})`,
-                                'background-size': 'cover',
-                                'background-position': 'center',
-                                'background-repeat': 'no-repeat'
-                            });
-                        }
+                        preview.html(`<img src="${e.target.result}" style="max-width: 100%; height: auto;">`);
                     }
-                    
-                    reader.onerror = function(error) {
-                        console.error('Error reading file:', error);
-                    }
-                    
                     reader.readAsDataURL(input.files[0]);
-                } else {
-                    console.log('No file found in input');
                 }
             }
 
-            // Upload area click handlers - update to a more direct approach
-            document.getElementById('location-logo-upload').addEventListener('click', function() {
-                console.log('Location logo upload area clicked');
-                document.getElementById('location-logo-file').click();
-            });
-            
-            document.getElementById('background-upload').addEventListener('click', function() {
-                console.log('Background upload area clicked');
-                document.getElementById('background-file').click();
-            });
-            
-            // Make sure file inputs are initialized properly
-            $('#location-logo-file').on('change', function(e) {
-                console.log('Location logo file selected:', e.target.files);
-                readURL(this, 'location-logo-preview');
+            $('#location-logo-file').on('change', function() {
+                readURL(this, 'preview-location-logo');
             });
 
-            $('#background-file').on('change', function(e) {
-                console.log('Background file selected:', e.target.files);
-                readURL(this, 'background-preview');
+            $('#background-file').on('change', function() {
+                readURL(this, 'preview-background');
             });
 
             // Handle expand preview functionality
@@ -1138,14 +1015,88 @@
                 // Re-initialize feather icons
                 feather.replace();
             });
+        });
+
+        // Function to load a design for editing
+        function loadDesignForEditing(designId) {
+            // Show the designer section and hide the list
+            $('#captive-portal-designs-list').hide();
+            $('#captive-portal-designer').show();
+
+            // Load design data based on the designId
+            let designData;
             
-            // Edit design buttons - now using event delegation for dynamically created elements
+            switch(designId) {
+                case 'default':
+                    designData = {
+                        name: 'Minimal Login',
+                        description: 'Clean and minimal login page design',
+                        theme_color: '#7367f0',
+                        welcome_message: 'Welcome to our WiFi network',
+                        login_instructions: 'Enter your email to connect to our WiFi network',
+                        button_text: 'Connect to WiFi',
+                        show_terms: true
+                    };
+                    break;
+                case 'business':
+                    designData = {
+                        name: 'Business Portal',
+                        description: 'Professional design for business environments',
+                        theme_color: '#28c76f',
+                        welcome_message: 'Welcome to our Business WiFi',
+                        login_instructions: 'Please enter your business email to connect',
+                        button_text: 'Connect Securely',
+                        show_terms: true
+                    };
+                    break;
+                // Add other cases as needed
+            }
+
+            // Populate form fields with design data
+            if (designData) {
+                $('#portal-name').val(designData.name);
+                $('#portal-description').val(designData.description);
+                $('#theme-color').val(designData.theme_color);
+                $('.color-preview').css('background-color', designData.theme_color);
+                $('.color-value').text(designData.theme_color);
+                $('#welcome-message').val(designData.welcome_message);
+                $('#login-instructions').val(designData.login_instructions);
+                $('#button-text').val(designData.button_text);
+                $('#show-terms').prop('checked', designData.show_terms);
+                
+                // Update preview elements if they exist
+                if ($('#preview-welcome').length) {
+                    $('#preview-welcome').text(designData.welcome_message);
+                }
+                if ($('#preview-button').length) {
+                    $('#preview-button').text(designData.button_text);
+                }
+
+                // Update preview
+                $('#preview-welcome').text(designData.welcome_message);
+                $('#preview-instructions').text(designData.login_instructions);
+                $('#preview-button').text(designData.button_text);
+                $('#preview-button').css({
+                    'background-color': designData.theme_color,
+                    'border-color': designData.theme_color
+                });
+                $('#preview-terms-container').toggle(designData.show_terms);
+            }
+
+            // Initialize any components that need it
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+        }
+
+        // Make sure the click handlers are inside document.ready
+        $(document).ready(function() {
+            // Edit design buttons
             $(document).on('click', '.edit-design', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                // alert('edit design');
                 const designId = $(this).data('id');
-                fetchDesignDetails(designId);
+                loadDesignForEditing(designId);
             });
 
             // Back to Designs button handler
@@ -1153,9 +1104,24 @@
                 $('#captive-portal-designer').hide();
                 $('#captive-portal-designs-list').show();
                 
-                // Reset for next use
-                resetDesignForm();
-                currentDesignId = null;
+                // Reset form fields
+                $('#portal-name').val('');
+                $('#portal-description').val('');
+                $('#theme-color').val('#7367f0');
+                $('#welcome-message').val('Welcome to our WiFi');
+                $('#login-instructions').val('Enter your email to connect to our WiFi network');
+                $('#button-text').val('Connect to WiFi');
+                $('#show-terms').prop('checked', true);
+                
+                // Reset preview
+                $('#preview-welcome').text('Welcome to our WiFi');
+                $('#preview-instructions').text('Enter your email to connect to our WiFi network');
+                $('#preview-button').text('Connect to WiFi');
+                $('#preview-button').css({
+                    'background-color': '#7367f0',
+                    'border-color': '#7367f0'
+                });
+                $('#preview-terms-container').show();
             });
 
             // Create New Design button handler
@@ -1163,511 +1129,43 @@
                 $('#captive-portal-designs-list').hide();
                 $('#captive-portal-designer').show();
                 
-                // Reset the current design ID when creating new
-                currentDesignId = null;
-                
                 // Set default values
-                resetDesignForm();
+                $('#portal-name').val('New Design');
+                $('#portal-description').val('');
+                $('#theme-color').val('#7367f0');
+                $('#welcome-message').val('Welcome to our WiFi');
+                $('#login-instructions').val('Enter your email to connect to our WiFi network');
+                $('#button-text').val('Connect to WiFi');
+                $('#show-terms').prop('checked', true);
                 
-                console.log("Creating new design, form reset with default values");
+                // Update preview with default values
+                $('#preview-welcome').text('Welcome to our WiFi');
+                $('#preview-instructions').text('Enter your email to connect to our WiFi network');
+                $('#preview-button').text('Connect to WiFi');
+                $('#preview-button').css({
+                    'background-color': '#7367f0',
+                    'border-color': '#7367f0'
+                });
+                $('#preview-terms-container').show();
                 
-                // Initialize any event handlers or components that need it
-                if (typeof feather !== 'undefined') {
-                    feather.replace();
-                }
+                // Reset image previews
+                $('#preview-location-logo').html('<img src="{{ asset("assets/logo-placeholder.png") }}" alt="Location Logo" style="max-height: 40px; width: auto;">');
+                $('#location-logo-preview').hide();
+                $('#background-preview').hide();
             });
-            
-            // Save design button
-            $(document).on('click', '#save-design', function() {
-                // Validate required fields
-                const name = $('#portal-name').val().trim();
-                const themeColor = $('#theme-color').val().trim();
-                const welcomeMessage = $('#welcome-message').val().trim();
-                const buttonText = $('#button-text').val().trim();
-                
-                // Check for required fields
-                let hasErrors = false;
-                let errorMessages = [];
-                
-                if (!name) {
-                    hasErrors = true;
-                    errorMessages.push('Portal name is required');
-                    $('#portal-name').addClass('is-invalid');
-                } else {
-                    $('#portal-name').removeClass('is-invalid');
-                }
-                
-                if (!themeColor) {
-                    hasErrors = true;
-                    errorMessages.push('Theme color is required');
-                    $('#theme-color').addClass('is-invalid');
-                } else {
-                    $('#theme-color').removeClass('is-invalid');
-                }
-                
-                if (!welcomeMessage) {
-                    hasErrors = true;
-                    errorMessages.push('Welcome message is required');
-                    $('#welcome-message').addClass('is-invalid');
-                } else {
-                    $('#welcome-message').removeClass('is-invalid');
-                }
-                
-                if (!buttonText) {
-                    hasErrors = true;
-                    errorMessages.push('Button text is required');
-                    $('#button-text').addClass('is-invalid');
-                } else {
-                    $('#button-text').removeClass('is-invalid');
-                }
-                
-                if (hasErrors) {
-                    toastr.error(errorMessages.join('<br>'));
-                    return;
-                }
-
-                const formData = new FormData();
-
-                // Collect form data
-                formData.append('name', name);
-                formData.append('description', $('#portal-description').val());
-                formData.append('theme_color', themeColor);
-                formData.append('welcome_message', welcomeMessage);
-                formData.append('login_instructions', $('#login-instructions').val());
-                formData.append('button_text', buttonText);
-                formData.append('show_terms', $('#show-terms').is(':checked') ? 1 : 0);
-                console.log('formData:', formData);
-                // Add files if selected
-                if ($('#location-logo-file')[0].files[0]) {
-                    formData.append('location_logo', $('#location-logo-file')[0].files[0]);
-                }
-                
-                if ($('#background-file')[0].files[0]) {
-                    formData.append('background_image', $('#background-file')[0].files[0]);
-                }
-                
-                // Add CSRF token for Laravel
-                formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
-                
-                console.log('Current design ID:', currentDesignId);
-                console.log('Form data prepared for submission:');
-                
-                // Log form data for debugging (can't directly console.log FormData)
-                for (let pair of formData.entries()) {
-                    console.log(pair[0] + ': ' + (pair[1] instanceof File ? pair[1].name : pair[1]));
-                }
-                
-                if (currentDesignId) {
-                    // Update existing design
-                    saveDesign(formData, `/api/captive-portal-designs/${currentDesignId}`);
-                } else {
-                    // Create new design
-                    saveDesign(formData, '/api/captive-portal-designs/create');
-                }
-            });
-
-            // Add drag and drop functionality
-            function setupDragAndDrop(dropAreaId, fileInputId) {
-                const dropArea = document.getElementById(dropAreaId);
-                const fileInput = document.getElementById(fileInputId);
-                
-                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                    dropArea.addEventListener(eventName, preventDefaults, false);
-                });
-                
-                function preventDefaults(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }
-                
-                ['dragenter', 'dragover'].forEach(eventName => {
-                    dropArea.addEventListener(eventName, highlight, false);
-                });
-                
-                ['dragleave', 'drop'].forEach(eventName => {
-                    dropArea.addEventListener(eventName, unhighlight, false);
-                });
-                
-                function highlight() {
-                    dropArea.classList.add('highlight');
-                }
-                
-                function unhighlight() {
-                    dropArea.classList.remove('highlight');
-                }
-                
-                dropArea.addEventListener('drop', handleDrop, false);
-                
-                function handleDrop(e) {
-                    const dt = e.dataTransfer;
-                    const files = dt.files;
-                    
-                    if (files.length) {
-                        console.log('File dropped:', files[0].name);
-                        fileInput.files = files;
-                        $(fileInput).trigger('change');
-                    }
-                }
-            }
-            
-            // Initialize drag and drop
-            setupDragAndDrop('location-logo-upload', 'location-logo-file');
-            setupDragAndDrop('background-upload', 'background-file');
         });
 
-        // Global variable to store the current design ID being edited
-        let currentDesignId = null;
-
-        // Function to load a design for editing - now fetches from API
-        function fetchDesignDetails(designId) {
-            console.log("Fetching design details for ID:", designId);
-            
-            // Show loading state
-            $('#captive-portal-designer').prepend(
-                `<div class="loading-overlay">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="sr-only">Loading...</span>
-                    </div>
-                </div>`
-            );
-            
-            // Hide the designs list and show the designer
-            $('#captive-portal-designs-list').hide();
-            $('#captive-portal-designer').show();
-            
-            // Fetch design details from API
-            $.ajax({
-                url: `/api/captive-portal-designs/${designId}`,
-                method: 'GET',
-                headers: {
-                    'Authorization': 'Bearer ' + token
-                },
-                success: function(response) {
-                    console.log('Design details received:', response);
-                    
-                    // Store the current design ID
-                    currentDesignId = designId;
-                    
-                    if (response.success && response.data) {
-                        const design = response.data;
-                        console.log('Populating form with design data:', design);
-                        
-                        // Populate form fields with default fallbacks
-                        $('#portal-name').val(design.name || 'New Design');
-                        $('#portal-description').val(design.description || '');
-                        $('#theme-color').val(design.theme_color || '#7367f0');
-                        $('.color-preview').css('background-color', design.theme_color || '#7367f0');
-                        $('.color-value').text(design.theme_color || '#7367f0');
-                        $('#welcome-message').val(design.welcome_message || 'Welcome to our WiFi');
-                        $('#login-instructions').val(design.login_instructions || 'Enter your email to connect to our WiFi network');
-                        $('#button-text').val(design.button_text || 'Connect to WiFi');
-                        $('#show-terms').prop('checked', design.show_terms === undefined ? true : !!design.show_terms);
-                        
-                        // Update preview values
-                        $('#preview-welcome').text(design.welcome_message || 'Welcome to our WiFi');
-                        $('#preview-instructions').text(design.login_instructions || 'Enter your email to connect to our WiFi network');
-                        $('#preview-button').text(design.button_text || 'Connect to WiFi');
-                        $('#preview-button').css({
-                            'background-color': design.theme_color || '#7367f0',
-                            'border-color': design.theme_color || '#7367f0'
-                        });
-                        $('#preview-terms-container').toggle(design.show_terms === undefined ? true : !!design.show_terms);
-                        
-                        // Handle logo preview if available
-                        if (design.location_logo_url) {
-                            const logoUrl = design.location_logo_url;
-                            $('#location-logo-preview').attr('src', logoUrl).show();
-                            $('#preview-location-logo').html(`<img src="${logoUrl}" alt="${design.name}" style="max-height: 60px; width: auto;">`);
-                        } else if (design.location_logo_path) {
-                            const logoUrl = `/storage/${design.location_logo_path}`;
-                            $('#location-logo-preview').attr('src', logoUrl).show();
-                            $('#preview-location-logo').html(`<img src="${logoUrl}" alt="${design.name}" style="max-height: 60px; width: auto;">`);
-                        }
-                        
-                        // Handle background preview if available
-                        if (design.background_image_path) {
-                            const bgUrl = `/storage/${design.background_image_path}`;
-                            $('#background-preview').attr('src', bgUrl).show();
-                            
-                            // Apply background to preview container
-                            $('.portal-preview').css({
-                                'background-image': `url(${bgUrl})`,
-                                'background-size': 'cover',
-                                'background-position': 'center',
-                                'background-repeat': 'no-repeat'
-                            });
-                        }
-                    } else {
-                        console.error('Invalid response format or missing data');
-                        toastr.error('Could not load design details. Invalid response format.');
-                    }
-                    
-                    // Remove loading overlay
-                    $('.loading-overlay').remove();
-                },
-                error: function(xhr) {
-                    console.error('Error fetching design details:', xhr.responseText);
-                    toastr.error('Failed to load design details. Please try again.');
-                    
-                    // Remove loading overlay
-                    $('.loading-overlay').remove();
-                    
-                    // Go back to list view
-                    $('#captive-portal-designer').hide();
-                    $('#captive-portal-designs-list').show();
-                }
-            });
-        }
-        
-        // Function to fetch all designs and populate the list
-        function fetchDesigns() {
-            console.log("fetchDesigns called");
-            
-            // Show loading state
-            $('#portal-designs-container').html(
-                `<div class="col-12 text-center py-3">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="sr-only">Loading designs...</span>
-                    </div>
-                </div>`
-            );
-            
-            // Fetch designs from API
-            $.ajax({
-                url: '/api/captive-portal-designs',
-                method: 'POST',
-                headers: {
-                    'Authorization': 'Bearer ' + token
-                },
-                success: function(response) {
-                    console.log("Designs received:", response);
-                    // Clear container
-                    $('#portal-designs-container').empty();
-                    
-                    if (response.data && response.data.length > 0) {
-                        // Populate designs
-                        response.data.forEach(function(design) {
-                            const bgColorClass = getRandomBgColorClass();
-                            const formattedDate = new Date(design.updated_at).toISOString().split('T')[0];
-                            
-                            const designCard = `
-                                <div class="col-md-3 col-sm-6 mb-2">
-                                    <div class="card design-card">
-                                        <div class="card-body p-2">
-                                            <div class="design-preview ${bgColorClass}">
-                                                <div class="preview-content">
-                                                    <div class="location-logo-mini">
-                                                        ${design.location_logo_url ? 
-                                                          `<img src="${design.location_logo_url}" alt="${design.name}" style="max-height: 20px;">` : 
-                                                          (design.location_logo_path ? 
-                                                          `<img src="/storage/${design.location_logo_path}" alt="${design.name}" style="max-height: 20px;">` :
-                                                          '<span>Logo</span>')}
-                                                    </div>
-                                                    <div class="login-area-mini">${design.name}</div>
-                                                    <div class="brand-logo-mini">
-                                                        <img src="{{ asset('app-assets/mrwifi-assets/Mr-Wifi.PNG') }}" alt="Mr WiFi" style="max-height: 15px;">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="mt-1">
-                                                <h5 class="mb-0">${design.name}</h5>
-                                                <small class="text-muted">Last modified: ${formattedDate}</small>
-                                            </div>
-                                            <div class="design-actions mt-1 d-flex justify-content-between align-items-center">
-                                                <button class="btn btn-sm btn-outline-primary edit-design" data-id="${design.id}">
-                                                    <i data-feather="edit-2" class="mr-25"></i> Edit
-                                                </button>
-                                                <div class="dropdown">
-                                                    <button class="btn btn-sm btn-icon btn-outline-secondary" data-toggle="dropdown">
-                                                        <i data-feather="more-vertical"></i>
-                                                    </button>
-                                                    <div class="dropdown-menu dropdown-menu-right">
-                                                        <a class="dropdown-item" href="javascript:void(0);" onclick="duplicateDesign(${design.id})">
-                                                            <i data-feather="copy" class="mr-50"></i> Duplicate
-                                                        </a>
-                                                        <a class="dropdown-item text-danger" href="javascript:void(0);" onclick="deleteDesign(${design.id})">
-                                                            <i data-feather="trash-2" class="mr-50"></i> Delete
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            `;
-                            
-                            $('#portal-designs-container').append(designCard);
-                        });
-                    } else {
-                        // No designs found
-                        $('#portal-designs-container').html(
-                            `<div class="col-12 text-center py-5">
-                                <div class="empty-state">
-                                    <i data-feather="layout" style="height: 64px; width: 64px; color: #d0d0d0;"></i>
-                                    <h4 class="mt-2">No captive portal designs found</h4>
-                                    <p>Create your first design to get started</p>
-                                </div>
-                            </div>`
-                        );
-                    }
-                    
-                    // Re-initialize feather icons for the newly added elements
-                    if (typeof feather !== 'undefined') {
-                        feather.replace();
-                    }
-                },
-                error: function(xhr) {
-                    console.error('Error fetching designs:', xhr.responseText);
-                    try {
-                        const errorResponse = JSON.parse(xhr.responseText);
-                        console.error('Error details:', errorResponse);
-                    } catch (e) {
-                        console.error('Could not parse error response');
-                    }
-                    
-                    $('#portal-designs-container').html(
-                        `<div class="col-12 text-center py-3">
-                            <div class="alert alert-danger">
-                                Failed to load designs. Please try again later.
-                            </div>
-                        </div>`
-                    );
-                }
-            });
+        // Add this JavaScript for the new functions
+        function duplicateDesign(id) {
+            // Add your duplication logic here
+            console.log('Duplicating design:', id);
         }
 
-        // Function to save a design (create or update)
-        function saveDesign(formData, url) {
-            // Show loading state
-            const saveBtn = $('#save-design');
-            const originalText = saveBtn.html();
-            saveBtn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...');
-            saveBtn.attr('disabled', true);
-
-            console.log('formData #2:', formData);
-            
-            // Determine the HTTP method based on whether it's a create or update operation
-            const isUpdate = !url.includes('/create');
-            const method = isUpdate ? 'POST' : 'POST'; // Always use POST, but use method spoofing for updates
-            
-            // If it's an update, add the _method field for Laravel method spoofing
-            if (isUpdate) {
-                formData.append('_method', 'PUT');
+        function deleteDesign(id) {
+            // Add your deletion logic here
+            if (confirm('Are you sure you want to delete this design?')) {
+                console.log('Deleting design:', id);
             }
-            
-            console.log('Request method:', method);
-            console.log('Is update operation:', isUpdate);
-            console.log('URL:', url);
-            
-            $.ajax({
-                url: url,
-                method: method,
-                data: formData,
-                processData: false,
-                contentType: false,
-                headers: {
-                    'Authorization': 'Bearer ' + token
-                },
-                success: function(response) {
-                    console.log('Save response:', response);
-                    toastr.success('Captive portal design saved successfully');
-                    
-                    // Return to the designs list and refresh
-                    $('#captive-portal-designer').hide();
-                    $('#captive-portal-designs-list').show();
-                    fetchDesigns();
-                    
-                    // Reset form for next use
-                    resetDesignForm();
-                    
-                    // Clear background image
-                    $('.portal-preview').css({
-                        'background-image': 'none',
-                        'background-color': '#fff'
-                    });
-                },
-                error: function(xhr) {
-                    console.error('Error saving design:', xhr.responseText);
-                    
-                    try {
-                        const responseObj = JSON.parse(xhr.responseText);
-                        if (responseObj.debug) {
-                            console.log('Debug info:', responseObj.debug);
-                        }
-                        
-                        if (xhr.status === 422 && responseObj.errors) {
-                            // Validation errors
-                            let errorMessage = 'Please correct the following errors:<br>';
-                            
-                            for (const field in responseObj.errors) {
-                                errorMessage += `- ${responseObj.errors[field][0]}<br>`;
-                            }
-                            
-                            toastr.error(errorMessage);
-                        } else {
-                            toastr.error(responseObj.message || 'Failed to save design. Please try again.');
-                        }
-                    } catch (e) {
-                        toastr.error('Failed to save design. Please try again.');
-                    }
-                },
-                complete: function() {
-                    // Reset button state
-                    saveBtn.html(originalText);
-                    saveBtn.attr('disabled', false);
-                }
-            });
-        }
-
-        // Helper function to get random background color class for design cards
-        function getRandomBgColorClass() {
-            const colorClasses = [
-                'bg-light-primary',
-                'bg-light-success',
-                'bg-light-danger',
-                'bg-light-warning',
-                'bg-light-info'
-            ];
-            return colorClasses[Math.floor(Math.random() * colorClasses.length)];
-        }
-
-        // Function to reset the design form to default values
-        function resetDesignForm() {
-            // Set default values for required fields
-            $('#portal-name').val('New Design');
-            $('#portal-description').val('');
-            $('#theme-color').val('#7367f0');
-            $('.color-preview').css('background-color', '#7367f0');
-            $('.color-value').text('#7367f0');
-            $('#welcome-message').val('Welcome to our WiFi');
-            $('#login-instructions').val('Enter your email to connect to our WiFi network');
-            $('#button-text').val('Connect to WiFi');
-            $('#show-terms').prop('checked', true);
-            
-            // Reset file inputs
-            $('#location-logo-file').val('');
-            $('#background-file').val('');
-            
-            // Hide image previews
-            $('#location-logo-preview').attr('src', '').hide();
-            $('#background-preview').attr('src', '').hide();
-            
-            // Reset background of preview
-            $('.portal-preview').css({
-                'background-image': 'none',
-                'background-color': '#fff'
-            });
-            
-            // Update preview with default values
-            $('#preview-welcome').text('Welcome to our WiFi');
-            $('#preview-instructions').text('Enter your email to connect to our WiFi network');
-            $('#preview-button').text('Connect to WiFi');
-            $('#preview-button').css({
-                'background-color': '#7367f0',
-                'border-color': '#7367f0'
-            });
-            $('#preview-terms-container').show();
-            $('#preview-location-logo').html('<img src="{{ asset("app-assets/mrwifi-assets/Mr-Wifi.PNG") }}" alt="Mr WiFi" style="max-height: 60px; width: auto;">');
         }
     </script>
 </body>

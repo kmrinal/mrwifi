@@ -16,67 +16,80 @@ class LocationSettings extends Model
      */
     protected $fillable = [
         'location_id',
-        // WiFi Network Settings
+        // Basic WiFi settings
         'wifi_name',
         'wifi_password',
-        'broadcast_ssid',
-        'encryption_type',
-        'wifi_channel',
-        'wifi_bandwidth',
-        'qos_enabled',
+        'wifi_visible',
+        'wifi_security_type',
         
-        // Captive Portal Settings
+        // Captive Portal settings
         'captive_portal_enabled',
+        'captive_portal_ssid',
+        'captive_portal_visible',
+        'captive_auth_method',
+        'captive_portal_password',
         'redirect_url',
         'session_timeout',
         'idle_timeout',
-        'bandwidth_limit_up',
-        'bandwidth_limit_down',
-        'data_cap_limit',
-        'data_cap_period',
         
-        // User Experience Settings
+        // Bandwidth and rate limiting
+        'bandwidth_limit',
+        'download_limit',
+        'upload_limit',
+        'rate_limiting_enabled',
+        'max_devices_per_user',
+        
+        // Radio settings
+        'country_code',
+        'transmit_power_2g',
+        'transmit_power_5g',
+        'channel_2g',
+        'channel_5g',
+        'channel_width_2g',
+        'channel_width_5g',
+        
+        // Access control
+        'mac_filter_mode',
+        'mac_filter_list',
+        'web_filter_enabled',
+        'web_filter_domains',
+        
+        // Network settings
+        'password_wifi_enabled',
+        'password_wifi_ip_mode',
+        'password_wifi_ip',
+        'password_wifi_netmask',
+        'password_wifi_dhcp_enabled',
+        'password_wifi_dhcp_start',
+        'password_wifi_dhcp_end',
+        
+        // Captive portal IP settings
+        'captive_portal_ip',
+        'captive_portal_netmask',
+        'captive_portal_dhcp_enabled',
+        'captive_portal_dhcp_start',
+        'captive_portal_dhcp_end',
+        
+        // Quality of service
+        'qos_enabled',
+        'traffic_priority',
+        'reserved_bandwidth',
+        
+        // User data and analytics
         'collect_user_data',
         'terms_enabled',
         'terms_content',
-        'privacy_policy_content',
         'social_login_enabled',
         'enabled_social_platforms',
-        'email_login_enabled',
-        'phone_login_enabled',
-        'verification_required',
         
-        // Access Control
-        'access_control_enabled',
-        'allowed_domains',
-        'blocked_domains',
-        'content_filtering_level',
-        'rate_limiting_enabled',
-        'max_devices_per_user',
-        'device_expiration_time',
-        
-        // Branding and Customization
+        // Theme and UI settings
         'theme_color',
-        'secondary_color',
         'logo_url',
-        'background_image_url',
         'welcome_message',
-        'success_message',
-        'footer_text',
+        'captive_portal_design',
         
-        // Analytics and Reporting
+        // System settings
         'analytics_enabled',
-        'google_analytics_id',
-        'custom_analytics_script',
-        'data_retention_days',
-        
-        // Advanced Settings
-        'timezone',
-        'login_attempts_limit',
-        'admin_notification_email',
-        'maintenance_mode',
-        'hotspot_type',
-        'api_access_enabled',
     ];
 
     /**
@@ -86,39 +99,39 @@ class LocationSettings extends Model
      */
     protected $casts = [
         // Boolean casts
+        'wifi_visible' => 'boolean',
         'captive_portal_enabled' => 'boolean',
-        'broadcast_ssid' => 'boolean',
+        'captive_portal_visible' => 'boolean',
+        'rate_limiting_enabled' => 'boolean',
+        'web_filter_enabled' => 'boolean',
+        'password_wifi_enabled' => 'boolean',
+        'password_wifi_dhcp_enabled' => 'boolean',
+        'captive_portal_dhcp_enabled' => 'boolean',
         'qos_enabled' => 'boolean',
         'collect_user_data' => 'boolean',
         'terms_enabled' => 'boolean',
         'social_login_enabled' => 'boolean',
-        'email_login_enabled' => 'boolean',
-        'phone_login_enabled' => 'boolean',
-        'verification_required' => 'boolean',
-        'access_control_enabled' => 'boolean',
-        'rate_limiting_enabled' => 'boolean',
         'analytics_enabled' => 'boolean',
-        'api_access_enabled' => 'boolean',
-        'maintenance_mode' => 'boolean',
         
         // JSON casts
         'enabled_social_platforms' => 'json',
-        'allowed_domains' => 'json',
-        'blocked_domains' => 'json',
+        'mac_filter_list' => 'json',
+        'web_filter_domains' => 'json',
         
         // Integer casts
-        'wifi_channel' => 'integer',
         'session_timeout' => 'integer',
         'idle_timeout' => 'integer',
-        'bandwidth_limit_up' => 'integer',
-        'bandwidth_limit_down' => 'integer',
-        'data_cap_limit' => 'integer',
+        'bandwidth_limit' => 'integer',
+        'download_limit' => 'integer',
+        'upload_limit' => 'integer',
         'max_devices_per_user' => 'integer',
-        'login_attempts_limit' => 'integer',
-        'data_retention_days' => 'integer',
-        
-        // Other casts
-        'device_expiration_time' => 'datetime',
+        'transmit_power_2g' => 'integer',
+        'transmit_power_5g' => 'integer',
+        'channel_2g' => 'integer',
+        'channel_5g' => 'integer',
+        'channel_width_2g' => 'integer',
+        'channel_width_5g' => 'integer',
+        'reserved_bandwidth' => 'integer',
     ];
 
     /**

@@ -6,6 +6,8 @@ use App\Http\Controllers\LocationController;
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SystemSettingController;
+use App\Http\Controllers\GuestNetworkUserController;
+use App\Http\Controllers\CaptivePortalDesignController;
 
 // Public routes (no auth required)
 Route::post('auth/login', [AuthController::class, 'login']);
@@ -51,3 +53,18 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'system-settings'], functi
     Route::post('/', [SystemSettingController::class, 'update']);
     Route::post('/test-email', [SystemSettingController::class, 'testEmail']);
 });
+
+Route::group(['middleware' => 'auth:api', 'prefix' => 'captive-portal-designs'], function () {
+    Route::post('/', [CaptivePortalDesignController::class, 'get_all']);
+    Route::get('/{captivePortalDesign}', [CaptivePortalDesignController::class, 'show']);
+    Route::post('/create', [CaptivePortalDesignController::class, 'create']);
+    Route::put('/{captivePortalDesign}', [CaptivePortalDesignController::class, 'update']);
+    Route::delete('/{captivePortalDesign}', [CaptivePortalDesignController::class, 'destroy']);
+    Route::post('/{captivePortalDesign}/duplicate', [CaptivePortalDesignController::class, 'duplicate']);
+});
+
+Route::post('/captive-portal/{location_id}/info', [GuestNetworkUserController::class, 'info']);
+Route::get('/captive-portal/{location_id}/info', [GuestNetworkUserController::class, 'info']);
+Route::post('/captive-portal/login', [GuestNetworkUserController::class, 'login']);
+Route::get('/locations/{location}/guest-users', [GuestNetworkUserController::class, 'index']);
+Route::resource('/guest-users', GuestNetworkUserController::class);

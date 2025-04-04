@@ -70,3 +70,23 @@ Route::get('/captive-portals', function () {
 Route::get('/guest-login', function () {
     return view('guest-login');
 })->name('guest-login');
+
+Route::get('/email-login/{location}/{mac_address}', function () {
+    return view('email-login');
+})->name('email-login');
+
+Route::get('/sms-login/{location}/{mac_address}', function () {
+    return view('sms-login');
+})->name('sms-login');
+
+Route::get('/social-login/facebook/{location}/{mac_address}', function () {
+    return view('facebook-login');
+})->name('facebook-login');
+
+Route::get('/social-login/twitter/{location}/{mac_address}', function () {
+    return view('twitter-login');
+})->name('twitter-login');
+
+Route::get('/click-login/{location}/{mac_address}', function () {
+    return view('click-login');
+})->name('click-login');

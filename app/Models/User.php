@@ -66,4 +66,14 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
+    /**
+     * Get all captive portal designs created by this user
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function captivePortalDesigns()
+    {
+        return $this->hasMany(CaptivePortalDesign::class);
+    }
 }
