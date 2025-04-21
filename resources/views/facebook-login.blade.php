@@ -238,7 +238,10 @@
         <div id="login-container" class="login-container text-center mt-4">
             <!-- Facebook Login Button -->
             <button id="facebook-login-button" class="facebook-button">
-                <i class="fa fa-facebook"></i> Connect with Facebook
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" style="margin-right: 12px;">
+                    <path fill="#1877F2" d="M17 9.5a7.5 7.5 0 10-8.674 7.4v-5.23H6.201V9.5h2.125V7.724c0-2.1 1.253-3.26 3.161-3.26.914 0 1.871.164 1.871.164v2.062h-1.053c-1.04 0-1.365.645-1.365 1.306V9.5h2.322l-.37 2.17h-1.951V16.9A7.5 7.5 0 0017 9.5z"/>
+                    <path fill="#ffffff" d="M11.89 11.67l.372-2.17h-2.32V8.001c0-.667.323-1.307 1.365-1.307h1.052V4.633s-.957-.164-1.87-.164c-1.91 0-3.162 1.156-3.162 3.256V9.5H5.202v2.17h2.125V16.9a8.471 8.471 0 002.625 0v-5.23h1.94z"/>
+                </svg> Connect with Facebook
             </button>
         </div>
 

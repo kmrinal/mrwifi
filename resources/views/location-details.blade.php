@@ -1321,11 +1321,39 @@
                                                         <div class="row">
                                                             <div class="col-6">
                                                                  <label for="captive-download-limit">Download (Mbps)</label>
-                                                                <input type="number" class="form-control form-control-sm" id="captive-download-limit" placeholder="Download (Mbps)" value="">
+                                                                <select class="form-control form-control-sm" id="captive-download-limit">
+                                                                    <option value="">Select Download Limit</option>
+                                                                    <option value="1">1 Mbps</option>
+                                                                    <option value="2">2 Mbps</option>
+                                                                    <option value="5">5 Mbps</option>
+                                                                    <option value="10">10 Mbps</option>
+                                                                    <option value="15">15 Mbps</option>
+                                                                    <option value="20">20 Mbps</option>
+                                                                    <option value="25">25 Mbps</option>
+                                                                    <option value="30">30 Mbps</option>
+                                                                    <option value="35">35 Mbps</option>
+                                                                    <option value="40">40 Mbps</option>
+                                                                    <option value="45">45 Mbps</option>
+                                                                    <option value="50">50 Mbps</option>
+                                                                </select>
                                                             </div>
                                                             <div class="col-6">
                                                                 <label for="captive-upload-limit">Upload (Mbps)</label>
-                                                                <input type="number" class="form-control form-control-sm" id="captive-upload-limit" placeholder="Upload (Mbps)" value="0">
+                                                                <select class="form-control form-control-sm" id="captive-upload-limit">
+                                                                    <option value="0">Select Upload Limit</option>
+                                                                    <option value="1">1 Mbps</option>
+                                                                    <option value="2">2 Mbps</option>
+                                                                    <option value="5">5 Mbps</option>
+                                                                    <option value="10">10 Mbps</option>
+                                                                    <option value="15">15 Mbps</option>
+                                                                    <option value="20">20 Mbps</option>
+                                                                    <option value="25">25 Mbps</option>
+                                                                    <option value="30">30 Mbps</option>
+                                                                    <option value="35">35 Mbps</option>
+                                                                    <option value="40">40 Mbps</option>
+                                                                    <option value="45">45 Mbps</option>
+                                                                    <option value="50">50 Mbps</option>
+                                                                </select>
                                                             </div>
                                                         </div>
                                                     </div>
