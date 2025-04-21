@@ -56,6 +56,10 @@ class LocationSettings extends Model
         
         // Network settings
         'password_wifi_enabled',
+        'password_wifi_ssid',
+        'password_wifi_password',
+        'password_wifi_security',
+        'password_wifi_cipher_suites',
         'password_wifi_ip_mode',
         'password_wifi_ip',
         'password_wifi_netmask',
@@ -66,6 +70,7 @@ class LocationSettings extends Model
         // Captive portal IP settings
         'captive_portal_ip',
         'captive_portal_netmask',
+        'captive_portal_gateway',
         'captive_portal_dhcp_enabled',
         'captive_portal_dhcp_start',
         'captive_portal_dhcp_end',
@@ -90,6 +95,21 @@ class LocationSettings extends Model
         
         // System settings
         'analytics_enabled',
+        
+        // WAN Settings
+        'wan_connection_type',
+        'wan_ip_address',
+        'wan_netmask',
+        'wan_gateway',
+        'wan_primary_dns',
+        'wan_secondary_dns',
+        'wan_pppoe_username',
+        'wan_pppoe_password',
+        'wan_pppoe_service_name',
+        'wan_enabled',
+        'wan_mac_address',
+        'wan_mtu',
+        'wan_nat_enabled',
     ];
 
     /**
@@ -132,6 +152,11 @@ class LocationSettings extends Model
         'channel_width_2g' => 'integer',
         'channel_width_5g' => 'integer',
         'reserved_bandwidth' => 'integer',
+        
+        // WAN Settings casts
+        'wan_enabled' => 'boolean',
+        'wan_nat_enabled' => 'boolean',
+        'wan_mtu' => 'integer',
     ];
 
     /**

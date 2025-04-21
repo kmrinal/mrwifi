@@ -155,10 +155,26 @@ class DeviceController extends Controller
             'accounting_port' => $system_settings->accounting_port,
         ];
 
+        $whitelist_domains = env('GUEST_WHITELIST_DOMAINS');
+        $whitelist_servers = env('GUEST_WHITELIST_SERVERS');
+        // if settings.captive_auth_method is set to social and captive_social_auth_method is set to twitter then return whitelist_domains as ['twitter.com']
+        if ($settings->captive_auth_method == 'social' && $settings->captive_social_auth_method == 'google') {
+            $whitelist_domains = $whitelist_domains . ',' . env('GOOGLE_WHITELIST_DOMAINS');
+            $whitelist_servers = $whitelist_servers . ',' . env('GOOGLE_WHITELIST_SERVERS');
+        }
+
+        if ($settings->captive_auth_method == 'social' && $settings->captive_social_auth_method == 'facebook') {
+            $whitelist_domains = $whitelist_domains . ',' . env('FACEBOOK_WHITELIST_DOMAINS');
+            $whitelist_servers = $whitelist_servers . ',' . env('FACEBOOK_WHITELIST_SERVERS');
+        }
+
+        $whitelist_domains = rtrim($whitelist_domains, ',');
+        $whitelist_servers = rtrim($whitelist_servers, ',');
+        
         $guest_settings = [
             'login_url' => env('GUEST_LOGIN_URL'),
-            'whitelist_servers' => env('GUEST_WHITELIST_SERVERS'),
-            'whitelist_domains' => env('GUEST_WHITELIST_DOMAINS'),
+            'whitelist_servers' => $whitelist_servers,
+            'whitelist_domains' => $whitelist_domains,
         ];
 
         return response()->json(

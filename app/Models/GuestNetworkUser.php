@@ -13,7 +13,14 @@ class GuestNetworkUser extends Model
         'expiration_time',
         'download_bandwidth',
         'upload_bandwidth',
-        'blocked'
+        'blocked',
+        'email',
+        'phone'
+    ];
+    
+    protected $casts = [
+        'expiration_time' => 'datetime',
+        'blocked' => 'boolean',
     ];
     
     public function location()

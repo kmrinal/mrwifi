@@ -2,7 +2,7 @@ $(document).ready(function() {
     // Get the location_id and mac_address from URL path segments
     // URL format: /click-login/{location_id}/{mac_address}
     let locationId, macAddress;
-    let locationData = JSON.parse(localStorage.getItem('location_data'));
+    let locationData = JSON.parse(localStorage.getItem('location_data') || '{}');
     let designData = JSON.parse(localStorage.getItem('design_data'));
 
     console.log('locationData', locationData);
@@ -25,34 +25,32 @@ $(document).ready(function() {
         if (e) {
             e.preventDefault();
         }
-        alert('handleLogin');
+        
         // Show loading state on button
         const $loginButton = $('.login-button');
         const originalButtonText = $loginButton.text();
         $loginButton.text('Connecting...').prop('disabled', true);
         
-        // Get CSRF token
-        const csrfToken = $('input[name="_token"]').val();
+        const challenge = localStorage.getItem('challenge');
+        const locationDataObj = JSON.parse(localStorage.getItem('location_data') || '{}');
+        const ipAddress = locationDataObj.ip_address;
         
         // Create data object for login
         const loginData = {
             location_id: locationId,
             mac_address: macAddress,
-            login_method: 'click-through'
+            login_method: 'click-through',
+            challenge: challenge,
+            ip_address: ipAddress
         };
         
         console.log('Login data:', loginData);
         
         // Make API call to login endpoint using jQuery AJAX
         $.ajax({
-            url: '/api/captive-portal/login',
+            url: '/api/guest/login',
             type: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': csrfToken,
-                'Accept': 'application/json'
-            },
-            contentType: 'application/json',
-            data: JSON.stringify(loginData),
+            data: loginData,
             success: function(data) {
                 console.log('Login response:', data);
                 
@@ -62,35 +60,22 @@ $(document).ready(function() {
                         .removeClass('btn-primary')
                         .addClass('btn-success');
                     
-                    // Check if there's a redirect URL in location settings
-                    // $.ajax({
-                    //     url: `/api/guest-network/info/${locationId}`,
-                    //     type: 'GET',
-                    //     data: { mac_address: macAddress },
-                    //     headers: { 
-                    //         'Accept': 'application/json' 
-                    //     },
-                    //     success: function(locationData) {
-                    //         if (locationData.success && 
-                    //             locationData.location && 
-                    //             locationData.location.settings && 
-                    //             locationData.location.settings.redirect_url) {
-                                
-                    //             // Redirect after successful login
-                    //             setTimeout(function() {
-                    //                 window.location.href = locationData.location.settings.redirect_url;
-                    //             }, 1500);
-                    //         }
-                    //     },
-                    //     error: function(xhr, status, error) {
-                    //         console.error('Error fetching location info:', error);
-                    //     }
-                    // });
+                    // Show success message
+                    showAlert('Successfully connected to WiFi', 'success');
+                    
+                    // Redirect to login URL after delay
+                    setTimeout(function() {
+                        const redirectUrl = data.login_url;
+                        window.location.href = redirectUrl;
+                    }, 2000);
                 } else {
                     // If login failed
                     $loginButton.text('Login Failed')
                         .removeClass('btn-primary')
                         .addClass('btn-danger');
+                    
+                    // Show error message
+                    showAlert(data.message || 'Failed to connect to WiFi', 'danger');
                     
                     // Reset button after delay
                     setTimeout(function() {
@@ -108,6 +93,13 @@ $(document).ready(function() {
                     .removeClass('btn-primary')
                     .addClass('btn-danger');
                 
+                // Show error message
+                let errorMessage = 'Error connecting to WiFi';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                }
+                showAlert(errorMessage, 'danger');
+                
                 // Reset button after delay
                 setTimeout(function() {
                     $('.login-button').text(originalButtonText)
@@ -118,18 +110,46 @@ $(document).ready(function() {
             }
         });
     }
+    
+    // Function to show alerts
+    function showAlert(message, type) {
+        // Check if alert container exists, if not create it
+        if ($('#alert-container').length === 0) {
+            $('<div id="alert-container" style="margin-bottom: 20px;"></div>').insertBefore('#login-form');
+        }
+        
+        $('#alert-container').html(`
+            <div class="alert alert-${type}" role="alert">
+                ${message}
+            </div>
+        `).show();
+        
+        // Auto-hide success alerts after 5 seconds
+        if (type === 'success') {
+            setTimeout(function() {
+                $('#alert-container').fadeOut();
+            }, 5000);
+        }
+    }
 
-    // Get location information
+    // Get location information including challenge and IP address
     $.ajax({
         url: `/api/captive-portal/${locationId}/info`,
         type: 'GET',
         data: { mac_address: macAddress },
         headers: { 'Accept': 'application/json' },
-        success: function(locationData) {
-            console.log('Location data:', locationData);
+        success: function(locationInfo) {
+            console.log('Location info:', locationInfo);
+            
+            // Store location data and challenge in localStorage
+            if (locationInfo.success && locationInfo.location) {
+                localStorage.setItem('location_data', JSON.stringify(locationInfo.location));
+                localStorage.setItem('challenge', locationInfo.location.challenge);
+            }
         },
         error: function(xhr, status, error) {
             console.error('Error fetching location info:', error);
+            showAlert('Error loading WiFi information. Please refresh the page.', 'danger');
         }
     });
     

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Social WiFi Login with Facebook</title>
+    <title>Social WiFi Login with Google</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" type="text/css" href="/app-assets/css/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="/app-assets/css/bootstrap-extended.css">
@@ -80,37 +80,38 @@
             background-color: var(--theme-color-dark);
         }
 
-        .facebook-button {
-            background-color: #1877f2;
-            color: white;
-            border: none;
+        .google-button {
+            background-color: #ffffff;
+            color: #3c4043;
+            border: 1px solid #dadce0;
             border-radius: 8px;
             padding: 14px 28px;
             font-size: 1.1rem;
-            transition: background-color 0.3s ease;
+            transition: all 0.3s ease;
             width: 100%;
             margin: 1rem auto;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
+            font-weight: 500;
         }
 
-        .facebook-button:hover {
-            background-color: #166fe5;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        .google-button:hover {
+            background-color: #f8f9fa;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
         }
 
-        .facebook-button:active {
-            transform: translateY(0);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        .google-button:active {
+            background-color: #f1f3f4;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
         }
 
-        .facebook-button i {
-            margin-right: 10px;
+        .google-button i {
+            margin-right: 12px;
             font-size: 1.2rem;
+            color: #4285f4;
         }
 
         .divider {
@@ -228,17 +229,17 @@
 
         <!-- Welcome Text -->
         <div class="welcome-text" id="welcome-text">
-            Connect to our WiFi network using your Facebook account.
+            Connect to our WiFi network using your Google account.
         </div>
 
         <!-- Alert for messages -->
         <div id="alert-container" style="display: none;"></div>
 
-        <!-- Facebook Login -->
+        <!-- Google Login -->
         <div id="login-container" class="login-container text-center mt-4">
-            <!-- Facebook Login Button -->
-            <button id="facebook-login-button" class="facebook-button">
-                <i class="fa fa-facebook"></i> Connect with Facebook
+            <!-- Google Login Button -->
+            <button id="google-login-button" class="google-button">
+                <i class="fa fa-google"></i> Sign in with Google
             </button>
         </div>
 
@@ -262,13 +263,13 @@
     
     <script>
         $(document).ready(function() {
-            console.log('Document ready, initializing Facebook login page');
+            console.log('Document ready, initializing Google login page');
             console.log('Full URL:', window.location.href);
             console.log('Path:', window.location.pathname);
             
             // Quick check for social-login pattern
             const path = window.location.pathname;
-            const isSocialLogin = path.includes('social-login/facebook');
+            const isSocialLogin = path.includes('social-login/google');
             console.log('Is social login pattern:', isSocialLogin);
             
             // Get location data from localStorage
@@ -290,13 +291,13 @@
                 const pathSegments = path.split('/').filter(segment => segment.length > 0);
                 console.log('Path segments:', pathSegments);
                 
-                // Special handling for social-login/facebook pattern
-                if (path.includes('social-login/facebook') && pathSegments.length >= 4) {
+                // Special handling for social-login/google pattern
+                if (path.includes('social-login/google') && pathSegments.length >= 4) {
                     locationId = locationId || pathSegments[2];
                     macAddress = macAddress || pathSegments[3];
                     console.log('Detected social-login pattern. Location:', locationId, 'MAC:', macAddress);
                 } else if (pathSegments.length >= 2) {
-                    // Typically the format would be /facebook-login/{location}/{mac}
+                    // Typically the format would be /google-login/{location}/{mac}
                     locationId = locationId || pathSegments[1];
                     macAddress = macAddress || pathSegments[2];
                 }
@@ -315,9 +316,9 @@
             // Apply design settings
             applyDesignSettings(locationSettings, designData);
             
-            // Handle Facebook login button click
-            $('#facebook-login-button').on('click', function () {
-                console.log('Facebook login button clicked');
+            // Handle Google login button click
+            $('#google-login-button').on('click', function () {
+                console.log('Google login button clicked');
 
                 if (!locationId || !macAddress) {
                     showAlert('Missing required parameters (location ID or MAC address)', 'danger');
@@ -342,24 +343,27 @@
                     login_url: login_url
                 };
 
-                console.log('Facebook login state data:', loginData);
+                console.log('Google login state data:', loginData);
                 
-                // Construct Facebook OAuth URL
-                const facebookLoginUrl = 'https://www.facebook.com/v18.0/dialog/oauth' +
-                '?client_id=1187295546218563' +
-                '&redirect_uri=https%3A%2F%2Fmrwifi.cnctdwifi.com%2Fsocial-login%2Ffacebook-callback' +
+                // Construct Google OAuth URL
+                const googleLoginUrl = 'https://accounts.google.com/o/oauth2/v2/auth' +
+                '?client_id=1054715244217-bik1jertq6rd5r6qerd2k62pfds3231q.apps.googleusercontent.com' +
+                '&redirect_uri=https%3A%2F%2Fmrwifi.cnctdwifi.com%2Fsocial-login%2Fgoogle-callback' +
+                '&response_type=code' +
+                '&scope=email%20profile' +
                 '&state=' + encodeURIComponent(JSON.stringify(loginData)) +
-                '&scope=email,public_profile';
+                '&access_type=offline' +
+                '&prompt=consent';
 
-                console.log('Redirecting to Facebook auth URL:', facebookLoginUrl);
-                window.location.href = facebookLoginUrl;
+                console.log('Redirecting to Google auth URL:', googleLoginUrl);
+                window.location.href = googleLoginUrl;
             });
             
-            // Verify Facebook button is present
-            if ($('#facebook-login-button').length) {
-                console.log('Facebook button found in DOM');
+            // Verify Google button is present
+            if ($('#google-login-button').length) {
+                console.log('Google button found in DOM');
             } else {
-                console.error('Facebook button not found in DOM');
+                console.error('Google button not found in DOM');
             }
             
             // Function to show alerts
@@ -401,7 +405,7 @@
                 }
                 
                 // Set welcome message from full design data, fallback to settings
-                const welcomeMessage = design.welcome_message || settings.welcome_message || 'Connect to our WiFi network using your Facebook account.';
+                const welcomeMessage = design.welcome_message || settings.welcome_message || 'Connect to our WiFi network using your Google account.';
                 if (welcomeMessage) {
                     $('#welcome-text').text(welcomeMessage);
                     
@@ -446,21 +450,21 @@
                 console.log('URL path:', path);
                 console.log('Path parts:', pathParts);
                 
-                // Check for social-login/facebook pattern
-                if (path.includes('social-login/facebook')) {
+                // Check for social-login/google pattern
+                if (path.includes('social-login/google')) {
                     if (param === 'location') {
-                        // URL pattern: /social-login/facebook/{location_id}/{mac_address}
+                        // URL pattern: /social-login/google/{location_id}/{mac_address}
                         return pathParts[3] || '';
                     } else if (param === 'mac_address') {
-                        // URL pattern: /social-login/facebook/{location_id}/{mac_address}
+                        // URL pattern: /social-login/google/{location_id}/{mac_address}
                         return pathParts[4] || '';
                     }
-                } else if (path.includes('facebook-login')) {
+                } else if (path.includes('google-login')) {
                     if (param === 'location') {
-                        // Assuming URL pattern like /facebook-login/{location}/{mac_address}
+                        // Assuming URL pattern like /google-login/{location}/{mac_address}
                         return pathParts[2] || '';
                     } else if (param === 'mac_address') {
-                        // Assuming URL pattern like /facebook-login/{location}/{mac_address}
+                        // Assuming URL pattern like /google-login/{location}/{mac_address}
                         return pathParts[3] || '';
                     }
                 } else {

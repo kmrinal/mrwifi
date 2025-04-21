@@ -3,12 +3,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const urlParams = new URLSearchParams(window.location.search);
     const nasid = urlParams.get('nasid');
     const mac_address = urlParams.get('mac');
-    
+    const challenge = urlParams.get('challenge');
+    const nas_ip = urlParams.get('uamip');
     if (!nasid) {
         showError('Missing location identifier');
         return;
     }
-    
+
     // Extract location ID from nasid
     const locationId = extractLocationId(nasid);
     
@@ -16,9 +17,8 @@ document.addEventListener('DOMContentLoaded', function() {
         showError('Invalid location identifier: ' + nasid+" locationId :: "+locationId);
         return;
     }
-    
     // Fetch location details
-    fetchLocationInfo(locationId, mac_address);
+    fetchLocationInfo(locationId, mac_address, challenge, nas_ip);
 });
 
 /**
@@ -42,7 +42,7 @@ function extractLocationId(nasid) {
  * Fetch location info from API
  * @param {string} locationId - Location ID
  */
-function fetchLocationInfo(locationId, mac_address) {
+function fetchLocationInfo(locationId, mac_address, challenge, nas_ip) {
     fetch(`/api/captive-portal/${locationId}/info`)
         .then(response => {
             if (!response.ok) {
@@ -52,7 +52,7 @@ function fetchLocationInfo(locationId, mac_address) {
         })
         .then(data => {
             if (data.success) {
-                processLocationData(data.location, mac_address);
+                processLocationData(data.location, mac_address, challenge, nas_ip);
             } else {
                 showError(data.message || 'Could not fetch location data');
             }
@@ -66,8 +66,10 @@ function fetchLocationInfo(locationId, mac_address) {
 /**
  * Process location data and redirect based on auth method
  * @param {Object} location - Location data from API
+ * @param {string} mac_address - MAC address
+ * @param {string} challenge - Challenge
  */
-function processLocationData(location, mac_address) {
+function processLocationData(location, mac_address, challenge, nas_ip) {
     if (!location || !location.settings) {
         showError('Invalid location data');
         return;
@@ -82,6 +84,8 @@ function processLocationData(location, mac_address) {
     // Save complete location data including design in localStorage
     localStorage.setItem('location_data', JSON.stringify(location));
     localStorage.setItem('design_data', JSON.stringify(design));
+    localStorage.setItem('nas_ip', nas_ip);
+    localStorage.setItem('challenge', challenge);
     // Check if captive portal is enabled
     if (!settings.captive_portal_enabled) {
         showError('Captive portal is not enabled for this location');
@@ -90,17 +94,20 @@ function processLocationData(location, mac_address) {
 
     // Determine login method from captive_auth_method
     const authMethod = settings.captive_auth_method;
-    
+    alert(authMethod);
     // Redirect based on auth method
     switch (authMethod) {
         case 'email':
             window.location.href = `/email-login/${location.id}/${mac_address}`;
             break;
         case 'sms':
+            console.log('SMS login');
+            console.log('location', location);
             window.location.href = `/sms-login/${location.id}/${mac_address}`;
             break;
         case 'social':
-            var social_logins = location.settings.enabled_social_platforms
+            var social_logins = location.settings.captive_social_auth_method
+            alert('social_logins' + social_logins);
             if (social_logins.includes('facebook')) {
                 window.location.href = `/social-login/facebook/${location.id}/${mac_address}`;
             } else if (social_logins.includes('google')) {
@@ -108,8 +115,10 @@ function processLocationData(location, mac_address) {
             }
             break;
         case 'click-through':
-            // console.log('location_data', localStorage.getItem('location_data'));
             window.location.href = `/click-login/${location.id}/${mac_address}`;
+            break;
+        case 'password':
+            window.location.href = `/password-login/${location.id}/${mac_address}`;
             break;
         default:
             // Default to click-through if auth method is not recognized

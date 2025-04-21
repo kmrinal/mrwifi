@@ -9,6 +9,18 @@ Route::get('/', function () {
     return view('login');
 })->name('login.show');
 
+Route::get('/tos', function () {
+    return view('tos');
+})->name('tos');
+
+Route::get('/privacy-policy', function () {
+    return view('privacy-policy');
+})->name('privacy-policy');
+
+Route::get('/terms-of-service', function () {
+    return view('terms-of-service');
+})->name('terms-of-service');
+
 // Handle login submission
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 
@@ -68,7 +80,16 @@ Route::get('/captive-portals', function () {
 })->name('captive-portals');
 
 Route::get('/guest-login', function () {
-    return view('guest-login');
+    $responseState = request('res', 'notyet');
+    
+    if ($responseState === 'success') {
+        return view('guest-login-success');
+    } else if ($responseState === 'failed') {
+        return view('guest-login-failed');
+    } else {
+        // Default to 'notyet' state
+        return view('guest-login');
+    }
 })->name('guest-login');
 
 Route::get('/email-login/{location}/{mac_address}', function () {
@@ -83,13 +104,36 @@ Route::get('/social-login/facebook/{location}/{mac_address}', function () {
     return view('facebook-login');
 })->name('facebook-login');
 
+Route::get('/social-login/facebook-callback', function () {
+    return view('facebook-login-callback');
+})->name('facebook-login-callback');
+
 Route::get('/social-login/twitter/{location}/{mac_address}', function () {
     return view('twitter-login');
 })->name('twitter-login');
 
+Route::get('/social-login/twitter-callback', function () {
+    return view('twitter-login-callback');
+})->name('twitter-login-callback');
+
+Route::get('/social-login/google/{location}/{mac_address}', function () {
+    return view('google-login');
+})->name('google-login');
+
+Route::get('/social-login/google-callback', function () {
+    return view('google-login-callback');
+})->name('google-login-callback');
+
+
 Route::get('/click-login/{location}/{mac_address}', function () {
     return view('click-login');
 })->name('click-login');
+
+Route::get('/password-login/{location}/{mac_address}', function () {
+    return view('password-login');
+})->name('password-login');
+
+
 
 // Captive Portal routes
 Route::get('/captive-portal/{location_id}', [CaptivePortalController::class, 'showLoginPage']);

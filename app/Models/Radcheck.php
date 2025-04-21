@@ -50,7 +50,8 @@ class Radcheck extends Model
         'location_id',
         'download_bandwidth',
         'upload_bandwidth',
-        'expiration_time'
+        'expiration_time',
+        'idle_timeout'
     ];
 
     /**
@@ -74,6 +75,20 @@ class Radcheck extends Model
     }
 
     /**
+     * Get records by username and location_id
+     *
+     * @param string $username
+     * @param int $locationId
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public static function getByUsernameAndLocation(string $username, int $locationId)
+    {
+        return self::where('username', $username)
+            ->where('location_id', $locationId)
+            ->get();
+    }
+
+    /**
      * Update or create a radcheck record
      *
      * @param string $username
@@ -91,10 +106,14 @@ class Radcheck extends Model
             $data = array_merge($data, $additional);
         }
         
-        return self::updateOrCreate(
-            ['username' => $username, 'attribute' => $attribute],
-            $data
-        );
+        $conditions = ['username' => $username, 'attribute' => $attribute];
+        
+        // Add location_id to the conditions if it exists in additional data
+        if (isset($additional['location_id'])) {
+            $conditions['location_id'] = $additional['location_id'];
+        }
+        
+        return self::updateOrCreate($conditions, $data);
     }
 
     /**
@@ -107,7 +126,21 @@ class Radcheck extends Model
     {
         return self::where('username', $username)->delete();
     }
-} 
-        return self::where('username', $username)->delete();
+    
+    /**
+     * Delete records for a specific username and location
+     *
+     * @param string $username
+     * @param int $locationId
+     * @return int
+     */
+    public static function deleteByUsernameAndLocation(string $username, int $locationId)
+    {
+        return self::where('username', $username)
+            ->where('location_id', $locationId)
+            ->delete();
     }
 } 
+//         return self::where('username', $username)->delete();
+//     }
+// } 

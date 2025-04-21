@@ -8,8 +8,7 @@
     <meta name="author" content="monsieur-wifi">
     <title>Location Details - monsieur-wifi Controller</title>
     <link rel="apple-touch-icon" href="/app-assets/images/ico/apple-icon-120.png">
-    <link rel="shortcut icon" type="image/x-icon" href="/app-assets/mrwifi-assets/MrWifi.png">
-
+    <link rel="shortcut icon" type="image/x-icon" href="/app-assets/mrwifi-assets/Mr-Wifi.PNG">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600" rel="stylesheet">
 
     <!-- BEGIN: Vendor CSS-->
@@ -19,7 +18,7 @@
     <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/forms/select/select2.min.css">
     <link rel="stylesheet" type="text/css" href="/app-assets/vendors/css/pickers/flatpickr/flatpickr.min.css">
     <!-- END: Vendor CSS-->
-
+    
     <!-- BEGIN: Theme CSS-->
     <link rel="stylesheet" type="text/css" href="/app-assets/css/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="/app-assets/css/bootstrap-extended.css">
@@ -37,11 +36,11 @@
     <link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/maps/map-leaflet.css">
     <link rel="stylesheet" type="text/css" href="/app-assets/css/plugins/forms/pickers/form-flat-pickr.css">
     <!-- END: Page CSS-->
-
+    
     <!-- BEGIN: Custom CSS-->
     <link rel="stylesheet" type="text/css" href="/assets/css/style.css">
     <!-- END: Custom CSS-->
-
+    
     <style>
         .status-badge {
             padding: 5px 10px;
@@ -366,14 +365,6 @@
             background-color: #ea5455;
             width: 80%;
         }
-
-        .pppoe_display {
-            display: none;
-        }
-
-        .static_ip_display {
-            display: none;
-        }
     </style>
 
     <!-- Add this right before the closing body tag -->
@@ -412,6 +403,7 @@
 </head>
 <!-- END: Head-->
 
+
 <!-- BEGIN: Body-->
 <body class="vertical-layout vertical-menu-modern navbar-floating footer-static menu-collapsed" data-open="click" data-menu="vertical-menu-modern" data-col="">
     <!-- BEGIN: Header-->
@@ -421,6 +413,7 @@
                 <ul class="nav navbar-nav d-xl-none">
                     <li class="nav-item"><a class="nav-link menu-toggle" href="javascript:void(0);"><i data-feather="menu"></i></a></li>
                 </ul>
+                
             </div>
             <ul class="nav navbar-nav align-items-center ml-auto">
                 <!-- Language dropdown -->
@@ -436,14 +429,16 @@
                         <a class="dropdown-item" href="javascript:void(0);" data-language="fr">
                             <i class="flag-icon flag-icon-fr"></i> French
                         </a>
-                    </div>
+                                    </div>
                 </li>
+                
                 <!-- Dark mode toggle -->
                 <li class="nav-item d-none d-lg-block">
                     <a class="nav-link nav-link-style">
                         <i class="ficon" data-feather="moon"></i>
-                    </a>
-                </li>
+                                </a>
+                            </li>
+                
                 <!-- Notifications -->
                 <li class="nav-item dropdown dropdown-notification mr-25">
                     <a class="nav-link" href="javascript:void(0);" data-toggle="dropdown">
@@ -491,9 +486,7 @@
                 </li>
             </ul>
         </div>
-
         <div class="shadow-bottom"></div>
-
         <div class="main-menu-content">
             <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
                 <!-- Management Section -->
@@ -523,7 +516,7 @@
                         <span class="menu-title text-truncate">Captive Portals</span>
                     </a>
                 </li>
-
+                
                 <!-- For Admin Section -->
                 <li class="navigation-header"><span>For Admin</span></li>
                 <li class="nav-item">
@@ -570,7 +563,7 @@
     <!-- END: Main Menu-->
 
     <!-- BEGIN: Content-->
-    <div class="app-content content">
+<div class="app-content content">
         <div class="content-overlay"></div>
         <div class="header-navbar-shadow"></div>
         <div class="content-wrapper">
@@ -798,49 +791,32 @@
                                                     </div>
                                                     <div class="card-body">
                                                         <!-- WAN IP Details -->
-                                                        <div class="ip-details" id="wan-interface-details">
+                                                        <div class="ip-details">
                                                             <h6 class="mb-1">IP Configuration</h6>
                                                             <div class="d-flex justify-content-between mb-1">
                                                                 <span class="text-muted">Connection Type:</span>
-                                                                <span class="font-weight-bold" id="wan-type-display"></span>
+                                                                <span class="font-weight-bold" id="wan-type-display">DHCP</span>
                                                             </div>
-                                                            <div class="wan-static-ip-display_div hidden">
-                                                                <div class="d-flex justify-content-between mb-1">
-                                                                    <span class="text-muted">IP Address:</span>
-                                                                    <span class="font-weight-bold" id="wan-ip-display">192.168.1.1</span>
-                                                                </div>
-                                                                <div class="d-flex justify-content-between mb-1">
-                                                                    <span class="text-muted">Subnet Mask:</span>
-                                                                    <span class="font-weight-bold" id="wan-subnet-display">255.255.255.0</span>
-                                                                </div>
-                                                                <div class="d-flex justify-content-between mb-1">
-                                                                    <span class="text-muted">Gateway:</span>
-                                                                    <span class="font-weight-bold" id="wan-gateway-display">192.168.1.1</span>
-                                                                </div>
-                                                                <div class="d-flex justify-content-between mb-1">
-                                                                    <span class="text-muted">Primary DNS:</span>
-                                                                    <span class="font-weight-bold" id="wan-dns1-display">8.8.8.8</span>
-                                                                </div>
-                                                                <div class="d-flex justify-content-between mb-1">
-                                                                    <span class="text-muted">Secondary DNS:</span>
-                                                                    <span class="font-weight-bold" id="wan-dns2-display">8.8.4.4</span>
-                                                                </div>
+                                                            <div class="d-flex justify-content-between mb-1">
+                                                                <span class="text-muted">IP Address:</span>
+                                                                <span class="font-weight-bold" id="wan-ip-display">192.168.1.1</span>
                                                             </div>
-                                                            <div class="wan-pppoe-display_div hidden">
-                                                                <div class="d-flex justify-content-between mb-1">
-                                                                    <span class="text-muted">Username:</span>
-                                                                    <span class="font-weight-bold" id="wan-pppoe-username">Username</span>
-                                                                </div>
-                                                                <div class="d-flex justify-content-between mb-1">
-                                                                    <span class="text-muted">Password:</span>
-                                                                    <span class="font-weight-bold" id="wan-pppoe-password">Password</span>
-                                                                </div>
-                                                                <div class="d-flex justify-content-between mb-1">
-                                                                    <span class="text-muted">Service Name:</span>
-                                                                    <span class="font-weight-bold" id="wan-pppoe-service-name">Service Name</span>
-                                                                </div>
+                                                            <div class="d-flex justify-content-between mb-1">
+                                                                <span class="text-muted">Subnet Mask:</span>
+                                                                <span class="font-weight-bold" id="wan-subnet-display">255.255.255.0</span>
                                                             </div>
-
+                                                            <div class="d-flex justify-content-between mb-1">
+                                                                <span class="text-muted">Gateway:</span>
+                                                                <span class="font-weight-bold" id="wan-gateway-display">192.168.1.1</span>
+                                                            </div>
+                                                            <div class="d-flex justify-content-between mb-1">
+                                                                <span class="text-muted">Primary DNS:</span>
+                                                                <span class="font-weight-bold" id="wan-dns1-display">8.8.8.8</span>
+                                                            </div>
+                                                            <div class="d-flex justify-content-between mb-1">
+                                                                <span class="text-muted">Secondary DNS:</span>
+                                                                <span class="font-weight-bold" id="wan-dns2-display">8.8.4.4</span>
+                                                            </div>
                                                         </div>
                                                         <div class="interface-actions mt-3">
                                                             <button class="btn btn-primary btn-block" data-toggle="modal" data-target="#wan-settings-modal">
@@ -868,7 +844,7 @@
                                                     </div>
                                                     <div class="card-body">
                                                         <!-- Captive Portal IP Details -->
-                                                        <div class="ip-details" id="captive-portal-details">
+                                                        <div class="ip-details">
                                                             <h6 class="mb-1">IP Configuration</h6>
                                                             <div class="d-flex justify-content-between mb-1">
                                                                 <span class="text-muted">Connection Type:</span>
@@ -913,29 +889,27 @@
                                                     </div>
                                                     <div class="card-body">
                                                         <!-- Password WiFi IP Details -->
-                                                        <div class="ip-details" id="password-wifi-details">
+                                                        <div class="ip-details">
                                                             <h6 class="mb-1">IP Configuration</h6>
                                                             <div class="d-flex justify-content-between mb-1">
                                                                 <span class="text-muted">Connection Type:</span>
-                                                                <span class="font-weight-bold" id="password-wifi-ip-type-display"></span>
+                                                                <span class="font-weight-bold" id="password-ip-type-display">Static IP</span>
                                                             </div>
-                                                            <div class="hidden password-ip-assignment-display_div">
-                                                                <div class="d-flex justify-content-between mb-1">
-                                                                    <span class="text-muted">IP Address:</span>
-                                                                    <span class="font-weight-bold" id="password-ip-display">192.168.1.1</span>
-                                                                </div>
-                                                                <div class="d-flex justify-content-between mb-1">
-                                                                    <span class="text-muted">Subnet Mask:</span>
-                                                                    <span class="font-weight-bold" id="password-netmask-display">255.255.255.0</span>
-                                                                </div>
-                                                                <div class="d-flex justify-content-between mb-1">
-                                                                    <span class="text-muted">Gateway:</span>
-                                                                    <span class="font-weight-bold" id="password-gateway-display">192.168.1.1</span>
-                                                                </div>
-                                                                <div class="d-flex justify-content-between mb-1">
-                                                                    <span class="text-muted">DHCP Server:</span>
-                                                                    <span class="font-weight-bold" id="password-dhcp-status-display">Enabled</span>
-                                                                </div>
+                                                            <div class="d-flex justify-content-between mb-1">
+                                                                <span class="text-muted">IP Address:</span>
+                                                                <span class="font-weight-bold" id="password-ip-display">192.168.1.1</span>
+                                                            </div>
+                                                            <div class="d-flex justify-content-between mb-1">
+                                                                <span class="text-muted">Subnet Mask:</span>
+                                                                <span class="font-weight-bold" id="password-netmask-display">255.255.255.0</span>
+                                                            </div>
+                                                            <div class="d-flex justify-content-between mb-1">
+                                                                <span class="text-muted">Gateway:</span>
+                                                                <span class="font-weight-bold" id="password-gateway-display">192.168.1.1</span>
+                                                            </div>
+                                                            <div class="d-flex justify-content-between mb-1">
+                                                                <span class="text-muted">DHCP Server:</span>
+                                                                <span class="font-weight-bold" id="password-dhcp-status-display">Enabled</span>
                                                             </div>
                                                         </div>
                                                         <div class="interface-actions mt-3">
@@ -1055,7 +1029,7 @@
                                 <div class="card-body">
                                     <div class="mb-2">
                                         <!-- Channel selection for 2.4 GHz -->
-                                        <div class="form-group">
+                                                    <div class="form-group">
                                             <label for="channel-2g">Channel (2.4 GHz)</label>
                                             <div class="d-flex align-items-center">
                                                 <select class="form-control mr-1" id="channel-2g">
@@ -1072,9 +1046,11 @@
                                                     <option value="11">Channel 11 (2462 MHz)</option>
                                                 </select>
                                                 
-                                            </div>
+                                                                </div>
                                             <small class="text-muted">Channels 1, 6, or 11 typically have less interference.</small>
-                                        </div>
+                                                            </div>
+                                        
+                                       
                                         
                                         <!-- Channel selection for 5 GHz -->
                                         <div class="form-group">
@@ -1098,151 +1074,91 @@
                                                     <option value="136">Channel 136 (5680 MHz)</option>
                                                     <option value="140">Channel 140 (5700 MHz)</option>
                                                 </select>
-                                            </div>
+                                                
+                                                        </div>
                                             <small class="text-muted">5 GHz typically has less interference than 2.4 GHz.</small>
-                                        </div>
+                                                                </div>
                                         
+                                      
                                         <div class="d-flex justify-content-center mt-2">
                                             <button class="btn btn-primary" id="save-channels-btn">
                                                 <i data-feather="edit" class="mr-1"></i> Save Channel Settings
-                                            </button>
-                                        </div>
-                                    </div>
+                                                            </button>
+                                                            </div>
+                                        
+                                                        </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                                    <!-- Simplified Captive Portal WiFi Tab Content -->
-                                    <div class="tab-pane fade" id="captive-portal" role="tabpanel" aria-labelledby="captive-portal-tab">
-                                            <div class="card">
-                                                <div class="card-header d-flex justify-content-between align-items-center">
-                                                    <h4 class="card-title mb-0">Captive Portal WiFi</h4>
-                                                    <button class="btn btn-primary save-captive-portal">
-                                                        <i data-feather="save" class="mr-1"></i> Save Settings
-                                                    </button>
-                                                </div>
-                                    
-                                                <div class="card-body">
-                                                    <!-- Basic Settings Section -->
-                                                    <div class="row">
-                                                        <div class="col-md-6">
-                                                            <div class="form-group">
-                                                                <label for="portal-ssid">Network Name (SSID)</label>
-                                                                <input type="text" class="form-control" id="captive-portal-ssid" placeholder="Guest WiFi">
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <div class="form-group">
-                                                                <label for="portal-visibility">Network Visibility</label>
-                                                                <select class="form-control" id="captive-portal-visible">
-                                                                    <option value="1" selected>Visible (Broadcast SSID)</option>
-                                                                    <option value="0">Hidden (Don't Broadcast SSID)</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Authentication Section -->
-                                                    <h5 class="border-bottom pb-1">Authentication</h5>
-                                                    <div class="row">
-                                                        <div class="col-md-6">
-                                                            <div class="form-group">
-                                                                <label for="captive-auth-method">Authentication Method</label>
-                                                                <select class="form-control" id="captive-auth-method">
-                                                                    <option value="click-through" selected>Click-through (No Authentication)</option>
-                                                                    <option value="password">Password-based</option>
-                                                                    <option value="sms">SMS Verification</option>
-                                                                    <option value="email">Email Verification</option>
-                                                                    <option value="social">Social Media Login</option>
-                                                                </select>
-                                                            </div>
-
-                                                            <div class="form-group hidden" id="password-auth-options">
-                                                                <label for="captive_portal_password">Password</label>
-                                                                <div class="input-group">
-                                                                    <input type="password" class="form-control form-control-sm" id="captive_portal_password" value="">
-                                                                    <div class="input-group-append">
-                                                                        <button class="btn btn-outline-secondary btn-sm" type="button" id="toggle-captive-password">
-                                                                            <i data-feather="eye"></i>
-                                                                        </button>
-                                                                    </div>
                                                                 </div>
                                                             </div>
+                                                        </div>
 
-                                                            <div class="form-group hidden" id="social-auth-options">
-                                                                <label for="captive-social-auth-method">Social Media Logins</label>
-                                                                <select class="form-control" id="captive-social-auth-method">
-                                                                    <option value="facebook">Facebook</option>
-                                                                    <option value="google">Google</option>
-                                                                </select>
-                                                            </div>
-                                                    
-                                                            <!-- Session Settings -->
-                                                            <div class="row">
-                                                                <div class="col-6">
-                                                                <div class="form-group">
-                                                                        <label for="captive-session-timeout">Session (mins)</label>
-                                                                        <select class="form-control" id="captive-session-timeout">
-                                                                            <option value="60">1 Hr</option>
-                                                                            <option value="120">2 Hrs</option>
-                                                                            <option value="180">3 Hrs</option>
-                                                                            <option value="240">4 Hrs</option>
-                                                                            <option value="300">5 Hrs</option>
-                                                                            <option value="360">6 Hrs</option>
-                                                                            <option value="720">12 Hrs</option>
-                                                                            <option value="1440">1 Day</option>
-                                                                            <option value="2880">2 Days</option>
-                                                                            <option value="4320">3 Days</option>
-                                                                            <option value="5760">4 Days</option>
-                                                                            <option value="7200">5 Days</option>
-                                                                            <option value="8640">6 Days</option>
-                                                                            <option value="10080">1 Week</option>
-                                                                            <option value="11520">2 Weeks</option>
-                                                                            <option value="12960">3 Weeks</option>
-                                                                            <option value="14400">1 Month</option>
-                                                                            <option value="28800">2 Months</option>
-                                                                            <option value="43200">3 Months</option>
-                                                                            <option value="57600">4 Months</option>
-                                                                            <option value="72000">5 Months</option>
-                                                                            <option value="86400">6 Months</option>
-                                                                            <option value="100800">7 Months</option>
-                                                                            <option value="115200">8 Months</option>
-                                                                            <option value="129600">9 Months</option>
-                                                                            <option value="144000">10 Months</option>
-                                                                            <option value="158400">11 Months</option>
-                                                                            <option value="172800">1 Year</option>
-                                                                            <option value="345600">2 Years</option>
-                                                                            <option value="604800">3 Years</option>
-                                                                            <option value="1209600">4 Years</option>
-                                                                        </select>
+                                    <!-- Simplified Captive Portal WiFi Tab Content -->
+                                <div class="tab-pane fade" id="captive-portal" role="tabpanel" aria-labelledby="captive-portal-tab">
+                                            <div class="card">
+                                        <div class="card-header d-flex justify-content-between align-items-center">
+                                            <h4 class="card-title mb-0">Captive Portal WiFi</h4>
+                                            <button class="btn btn-primary" id="save-captive-portal">
+                                                <i data-feather="save" class="mr-1"></i> Save Settings
+                                                </button>
+                                                                </div>
+                                    
+                                                <div class="card-body">
+                                            <!-- Basic Settings Section -->
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="portal-ssid">Network Name (SSID)</label>
+                                                        <input type="text" class="form-control" id="portal-ssid" placeholder="Guest WiFi">
                                                             </div>
                                                         </div>
-                                                        <div class="col-6">
-                                                            <div class="form-group">
-                                                                <label for="captive-idle-timeout">Idle (mins)</label>
-                                                                <select class="form-control" id="captive-idle-timeout">
-                                                                    <option value="15">15 Mins</option>
-                                                                    <option value="30">30 Mins</option>
-                                                                    <option value="45">45 Mins</option>
-                                                                    <option value="60">1 Hr</option>
-                                                                    <option value="120">2 Hrs</option>
-                                                                    <option value="180">3 Hrs</option>
-                                                                    <option value="240">4 Hrs</option>
-                                                                    <option value="360">6 Hrs</option>
-                                                                    <option value="720">12 Hrs</option>
-                                                                    <option value="1440">1 Day</option>
-                                                                </select>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="portal-visibility">Network Visibility</label>
+                                                        <select class="form-control" id="portal-visibility">
+                                                            <option value="visible" selected>Visible (Broadcast SSID)</option>
+                                                            <option value="hidden">Hidden (Don't Broadcast SSID)</option>
+                                                        </select>
+                                                                </div>
                                                             </div>
+                                                        </div>
+
+                                            <!-- Authentication Section -->
+                                            <h5 class="border-bottom pb-1">Authentication</h5>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="captive-auth-method">Authentication Method</label>
+                                                        <select class="form-control" id="captive-auth-method">
+                                                            <option value="click-through" selected>Click-through (No Authentication)</option>
+                                                            <option value="password">Password-based</option>
+                                                            <option value="sms">SMS Verification</option>
+                                                            <option value="email">Email Verification</option>
+                                                            <option value="social">Social Media Login</option>
+                                                        </select>
+                                            </div>
+                                                    
+                                                    <!-- Session Settings -->
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                        <div class="form-group">
+                                                                <label for="captive-session-timeout">Session (mins)</label>
+                                                                <input type="number" class="form-control form-control-sm" id="captive-session-timeout" value="60">
+                                                    </div>
+                                                            </div>
+                                                        <div class="col-6">
+                                                    <div class="form-group">
+                                                                <label for="captive-idle-timeout">Idle (mins)</label>
+                                                                <input type="number" class="form-control form-control-sm" id="captive-idle-timeout" value="15">
+                                    </div>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                        </div>
 
                                                 <div class="col-md-6">
                                                     <!-- Password Auth Options -->
                                                     <div id="password-auth-options" class="auth-options-section" style="display: none;">
-                                                        <div class="form-group">
+                                                    <div class="form-group">
                                                             <label for="portal-shared-password">Shared Password</label>
                                                             <div class="input-group">
                                                                 <input type="password" id="portal-shared-password" class="form-control" placeholder="Enter password">
@@ -1252,17 +1168,17 @@
                                                             </button>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            </div>
+                                </div>
+                            </div>
 
-                                            <!-- SMS/Email Auth Options -->
-                                            <div id="sms-auth-options" class="auth-options-section" style="display: none;">
-                                                <div class="alert alert-info mb-0 p-2">SMS verification will be used to authenticate guests.</div>
-                                            </div>
+                                                    <!-- SMS/Email Auth Options -->
+                                                    <div id="sms-auth-options" class="auth-options-section" style="display: none;">
+                                                        <div class="alert alert-info mb-0 p-2">SMS verification will be used to authenticate guests.</div>
+                        </div>
 
-                                            <div id="email-auth-options" class="auth-options-section" style="display: none;">
-                                                <div class="alert alert-info mb-0 p-2">Email verification will be used to authenticate guests.</div>
-                                            </div>
+                                                    <div id="email-auth-options" class="auth-options-section" style="display: none;">
+                                                        <div class="alert alert-info mb-0 p-2">Email verification will be used to authenticate guests.</div>
+                                </div>
 
                                                     <!-- Social Login Options -->
                                                     <div id="social-auth-options" class="auth-options-section" style="display: none;">
@@ -1317,15 +1233,16 @@
                                                     <div class="form-group">
                                                         <div class="d-flex justify-content-between align-items-center mb-1">
                                                             <label class="mb-0">Bandwidth Limits</label>
+                                                           
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-6">
                                                                  <label for="captive-download-limit">Download (Mbps)</label>
-                                                                <input type="number" class="form-control form-control-sm" id="captive-download-limit" placeholder="Download (Mbps)" value="">
+                                                                <input type="number" class="form-control form-control-sm" id="captive-download-limit" placeholder="Download (Mbps)" value="10">
                                                             </div>
                                                             <div class="col-6">
                                                                 <label for="captive-upload-limit">Upload (Mbps)</label>
-                                                                <input type="number" class="form-control form-control-sm" id="captive-upload-limit" placeholder="Upload (Mbps)" value="0">
+                                                                <input type="number" class="form-control form-control-sm" id="captive-upload-limit" placeholder="Upload (Mbps)" value="2">
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1333,7 +1250,7 @@
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <label class="mb-2">Portal Configuration</label>
-                                                        <select class="form-control form-control-sm" id="captive-portal-design">
+                                                        <select class="form-control form-control-sm" id="captive-portal-config">
                                                             <!-- Options will be populated dynamically -->
                                                         </select>
                                                     </div>
@@ -1401,7 +1318,7 @@
                                             <div class="card">
                                         <div class="card-header d-flex justify-content-between align-items-center">
                                             <h4 class="card-title mb-0">Password WiFi</h4>
-                                            <button class="btn btn-primary save-password-network" id="save-secured-wifi">
+                                            <button class="btn btn-primary" id="save-secured-wifi">
                                                 <i data-feather="save" class="mr-1"></i> Save Settings
                                             </button>
                                             </div>
@@ -1412,14 +1329,14 @@
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label for="wifi-ssid">Network Name (SSID)</label>
-                                                        <input type="text" class="form-control" id="password-wifi-ssid" placeholder="Home WiFi">
+                                                        <input type="text" class="form-control" id="wifi-ssid" placeholder="Home WiFi">
                                                 </div>
                                             </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group">
-                                                        <label for="password-wifi-password">WiFi Password</label>
+                                                        <label for="wifi-password">WiFi Password</label>
                                                         <div class="input-group">
-                                                            <input type="password" class="form-control" id="password-wifi-password" placeholder="Password">
+                                                            <input type="password" class="form-control" id="wifi-password" placeholder="Password">
                                                             <div class="input-group-append">
                                                                 <button class="btn btn-outline-secondary" type="button" id="toggle-password">
                                                                     <i data-feather="eye"></i>
@@ -1431,7 +1348,7 @@
                                                 <div class="col-md-2">
                                                     <div class="form-group">
                                                         <label for="wifi-security">Security Type</label>
-                                                        <select class="form-control" id="password-wifi-security">
+                                                        <select class="form-control" id="wifi-security">
                                                             <option value="wpa2-psk" selected>WPA2-PSK (Recommended)</option>
                                                             <option value="wpa-wpa2-psk">WPA/WPA2-PSK Mixed</option>
                                                             <option value="wpa3-psk">WPA3-PSK (Most Secure)</option>
@@ -1441,11 +1358,11 @@
                                                 </div>
                                                 <div class="col-md-2">
                                                     <div class="form-group">
-                                                        <label for="password_wifi_cipher_suites">Cipher Suites</label>
-                                                        <select class="form-control" id="password_wifi_cipher_suites">
-                                                            <option value="CCMP" selected>CCMP</option>
-                                                            <option value="TKIP">TKIP</option>
-                                                            <option value="TKIP+CCMP">TKIP+CCMP</option>
+                                                        <label for="wifi-security">Cipher Suites</label>
+                                                        <select class="form-control" id="wifi-security">
+                                                            <option value="wpa2-psk" selected>CCMP</option>
+                                                            <option value="wpa-wpa2-psk">TKIP</option>
+                                                            <option value="wpa3-psk">TKIP+CCMP</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -2012,16 +1929,16 @@ document.addEventListener('DOMContentLoaded', function() {
        });
    }
 });</textarea>
-                                          </div>
-                         <div class="tab-pane" id="preview" role="tabpanel" aria-labelledby="preview-pill">
-                             <div style="border: 1px solid #ddd; border-radius: 4px; padding: 1rem; background-color: #f9f9f9; height: 400px; overflow: auto;">
-                                 <h5 class="text-center">Preview will be rendered here</h5>
-                                 <p class="text-center text-muted">This is a placeholder for the live preview of your portal page.</p>
-                                 <!-- Preview content will be rendered here -->
-                                     </div>
-                                 </div>
-                             </div>
-                         </div>
+                                        </div>
+                        <div class="tab-pane" id="preview" role="tabpanel" aria-labelledby="preview-pill">
+                            <div style="border: 1px solid #ddd; border-radius: 4px; padding: 1rem; background-color: #f9f9f9; height: 400px; overflow: auto;">
+                                <h5 class="text-center">Preview will be rendered here</h5>
+                                <p class="text-center text-muted">This is a placeholder for the live preview of your portal page.</p>
+                                <!-- Preview content will be rendered here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
                     <button type="button" class="btn btn-primary">Save Changes</button>
@@ -2095,36 +2012,36 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="form-group">
                         <label>IP Assignment</label>
                         <select class="form-control" id="password-ip-assignment">
-                            <option value="STATIC" selected>Static IP</option>
-                            <option value="DHCP">DHCP Client</option>
+                            <option value="static" selected>Static IP</option>
+                            <option value="dhcp">DHCP Client</option>
                         </select>
                         <small class="text-muted">When using DHCP Client, DHCP Server will be automatically disabled.</small>
                     </div>
                     
-                    <div id="password-static-fields" class="hidden">
+                    <div id="password-static-fields">
                         <div class="form-group">
                             <label>IP Address</label>
-                            <input type="text" class="form-control" placeholder="192.168.1.1" id="password-ip" value="">
+                            <input type="text" class="form-control" placeholder="192.168.1.1" value="192.168.1.1">
                         </div>
                         <div class="form-group">
                             <label>Netmask</label>
-                            <input type="text" class="form-control" placeholder="255.255.255.0" id="password-netmask" value="">
+                            <input type="text" class="form-control" placeholder="255.255.255.0" value="255.255.255.0">
                         </div>
                         <div class="form-group">
                             <label>Gateway</label>
-                            <input type="text" class="form-control" placeholder="192.168.1.1" id="password-gateway" value="">
+                            <input type="text" class="form-control" placeholder="192.168.1.1" value="192.168.1.1">
                         </div>
                         <div class="form-group">
                             <label>Broadcast IP</label>
-                            <input type="text" class="form-control" placeholder="192.168.1.255" id="password-broadcast" value="">
+                            <input type="text" class="form-control" placeholder="192.168.1.255" value="192.168.1.255">
                         </div>
                         <div class="form-group">
                             <label>Primary DNS</label>
-                            <input type="text" class="form-control" placeholder="8.8.8.8" id="password-primary-dns" value="">
+                            <input type="text" class="form-control" placeholder="8.8.8.8" value="8.8.8.8">
                         </div>
                         <div class="form-group">
                             <label>Secondary DNS</label>
-                            <input type="text" class="form-control" placeholder="1.1.1.1" id="password-secondary-dns" value="">
+                            <input type="text" class="form-control" placeholder="1.1.1.1" value="1.1.1.1">
                         </div>
 
                         <div class="form-group mt-3 pt-2 border-top">
@@ -2135,25 +2052,25 @@ document.addEventListener('DOMContentLoaded', function() {
                             <small class="text-muted">Provides automatic IP addressing for connected clients.</small>
                         </div>
                         
-                        <div id="password-dhcp-server-fields" class="hidden">
+                        <div id="password-dhcp-server-fields">
                             <div class="form-group">
                                 <label>DHCP Range Start</label>
-                                <input type="text" class="form-control" placeholder="192.168.1.100" id="password-dhcp-start" value="192.168.1.100">
+                                <input type="text" class="form-control" placeholder="192.168.1.100" value="192.168.1.100">
                             </div>
                             <div class="form-group">
                                 <label>DHCP Range End</label>
-                                <input type="text" class="form-control" placeholder="192.168.1.200" id="password-dhcp-end" value="192.168.1.200">
+                                <input type="text" class="form-control" placeholder="192.168.1.200" value="192.168.1.200">
                             </div>
                             <div class="form-group">
                                 <label>Lease Time (hours)</label>
-                                <input type="number" class="form-control" placeholder="24" id="password-lease-time" value="24">
+                                <input type="number" class="form-control" placeholder="24" value="24">
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary save-password-network">Save Changes</button>
+                    <button type="button" class="btn btn-primary" id="save-password-network">Save Changes</button>
                 </div>
             </div>
         </div>
@@ -2173,53 +2090,53 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="form-group">
                         <label>Connection Type</label>
                         <select class="form-control" id="wan-connection-type">
-                            <option value="DHCP">DHCP</option>
-                            <option value="STATIC">Static IP</option>
-                            <option value="PPPOE">PPPoE</option>
+                            <option value="dhcp" selected>DHCP</option>
+                            <option value="static">Static IP</option>
+                            <option value="pppoe">PPPoE</option>
                         </select>
                     </div>
                     
-                    <div id="wan-static-fields" class="hidden">
+                    <div id="wan-static-fields" style="display: none;">
                         <div class="form-group">
                             <label>IP Address</label>
-                            <input type="text" class="form-control" id="wan-ip-address" placeholder="203.0.113.10" value="203.0.113.10">
+                            <input type="text" class="form-control" placeholder="203.0.113.10" value="203.0.113.10">
                         </div>
                         <div class="form-group">
                             <label>Netmask</label>
-                            <input type="text" class="form-control" id="wan-netmask" placeholder="255.255.255.0" value="255.255.255.0">
+                            <input type="text" class="form-control" placeholder="255.255.255.0" value="255.255.255.0">
                         </div>
                         <div class="form-group">
                             <label>Gateway</label>
-                            <input type="text" class="form-control" id="wan-gateway" placeholder="203.0.113.1" value="203.0.113.1">
+                            <input type="text" class="form-control" placeholder="203.0.113.1" value="203.0.113.1">
                         </div>
                         <div class="form-group">
                             <label>Primary DNS</label>
-                            <input type="text" class="form-control" id="wan-primary-dns" placeholder="8.8.8.8" value="8.8.8.8">
+                            <input type="text" class="form-control" placeholder="8.8.8.8" value="8.8.8.8">
                         </div>
                         <div class="form-group">
                             <label>Secondary DNS</label>
-                            <input type="text" class="form-control" id="wan-secondary-dns" placeholder="1.1.1.1" value="1.1.1.1">
+                            <input type="text" class="form-control" placeholder="1.1.1.1" value="1.1.1.1">
                         </div>
                     </div>
                     
                     <div id="wan-pppoe-fields" style="display: none;">
                         <div class="form-group">
                             <label>Username</label>
-                            <input type="text" class="form-control" id="wan-pppoe-username" placeholder="Username">
+                            <input type="text" class="form-control" placeholder="Username">
                         </div>
                         <div class="form-group">
                             <label>Password</label>
-                            <input type="password" class="form-control" id="wan-pppoe-password" placeholder="Password">
+                            <input type="password" class="form-control" placeholder="Password">
                         </div>
                         <div class="form-group">
                             <label>Service Name (Optional)</label>
-                            <input type="text" class="form-control" id="wan-pppoe-service-name" placeholder="Service Name">
+                            <input type="text" class="form-control" placeholder="Service Name">
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary save-wan-settings">Save Changes</button>
+                    <button type="button" class="btn btn-primary" id="save-wan-settings">Save Changes</button>
                 </div>
             </div>
         </div>
@@ -2269,7 +2186,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary save-lan-settings">Save Changes</button>
+                    <button type="button" class="btn btn-primary">Save Changes</button>
                 </div>
             </div>
         </div>
@@ -2312,7 +2229,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary save-captive-portal" id="save-captive-portal-settings">Save Changes</button>
+                    <button type="button" class="btn btn-primary" id="save-captive-portal-settings">Save Changes</button>
                 </div>
             </div>
         </div>
@@ -2342,9 +2259,1910 @@ document.addEventListener('DOMContentLoaded', function() {
     <script src="/app-assets/js/scripts/maps/map-leaflet.js"></script>
     <!-- END: Page JS-->
     <script src="/assets/js/config.js"></script>
-    <script src="/assets/js/location-details.js?time=<?php echo time(); ?>"></script>
-    <script>
 
+    <script>
+        $(window).on('load', function() {
+            if (feather) {
+                feather.replace({
+                    width: 14,
+                    height: 14
+                });
+            }
+            
+            // Initialize tooltips
+            $('[data-toggle="tooltip"]').tooltip();
+            
+            // Initialize network usage chart
+            var networkUsageOptions = {
+                chart: {
+                    height: 250,
+                    type: 'area',
+                    toolbar: {
+                        show: false
+                    },
+                    sparkline: {
+                        enabled: true
+                    }
+                },
+                colors: ['#7367F0', '#00CFE8'],
+                dataLabels: {
+                    enabled: false
+                },
+                stroke: {
+                    curve: 'smooth',
+                    width: 2
+                },
+                series: [{
+                    name: 'Download',
+                    data: [1.2, 2.5, 1.8, 3.0, 2.4, 1.9, 2.7, 3.5, 3.8, 2.9, 4.2, 5.8]
+                }, {
+                    name: 'Upload',
+                    data: [0.5, 0.8, 0.6, 1.2, 0.9, 0.7, 1.3, 1.5, 1.7, 1.4, 2.3, 2.4]
+                }],
+                fill: {
+                    type: 'gradient',
+                    gradient: {
+                        shadeIntensity: 1,
+                        opacityFrom: 0.7,
+                        opacityTo: 0.5,
+                        stops: [0, 90, 100]
+                    }
+                },
+                tooltip: {
+                    x: { show: false }
+                },
+                xaxis: {
+                    labels: {
+                        show: false
+                    }
+                },
+                yaxis: {
+                    labels: {
+                        show: false
+                    }
+                }
+            };
+            var networkUsageChart = new ApexCharts(document.querySelector('#network-usage-chart'), networkUsageOptions);
+            networkUsageChart.render();
+            
+            // Initialize location map
+            var locationMap = L.map('location-map').setView([48.8566, 2.3522], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(locationMap);
+            
+            // Add marker for the location
+            L.marker([48.8566, 2.3522]).addTo(locationMap)
+                .bindPopup('<span class="location_name">Location Name</span><br><span class="location_address">Address</span>')
+                .openPopup();
+                
+            // Country selection handling 
+            $('#wifi-country').on('change', function() {
+                const country = $(this).val();
+                const countryName = $(this).find('option:selected').text().split('(')[0].trim();
+                
+                // Show notification about country change
+                toastr.info(`WiFi settings updated to comply with ${countryName} regulations.`, 'Country Updated', {
+                    closeButton: true,
+                    tapToDismiss: false
+                });
+                
+                // Some countries might have different available channels
+                updateAvailableChannels(country);
+            });
+            
+            // Function to update available channels based on country
+            function updateAvailableChannels(country) {
+                // This is a simplified example
+                // In a real application, you would have a comprehensive database of channel regulations
+                
+                const channel2g = $('#channel-2g');
+                const channel5g = $('#channel-5g');
+                
+                // Reset to default first
+                channel2g.find('option:not(:first)').remove();
+                channel5g.find('option:not(:first)').remove();
+                
+                // Add channels for 2.4GHz (most countries allow 1-11)
+                for (let i = 1; i <= 11; i++) {
+                    const freq = 2407 + (i * 5);
+                    channel2g.append(`<option value="${i}">Channel ${i} (${freq} MHz)</option>`);
+                }
+                
+                // Add channels 12-13 only for certain countries
+                if (['FR', 'DE', 'IT', 'ES', 'GB', 'JP', 'CN', 'IN'].includes(country)) {
+                    channel2g.append(`<option value="12">Channel 12 (2467 MHz)</option>`);
+                    channel2g.append(`<option value="13">Channel 13 (2472 MHz)</option>`);
+                }
+                
+                // Add channel 14 only for Japan
+                if (country === 'JP') {
+                    channel2g.append(`<option value="14">Channel 14 (2484 MHz)</option>`);
+                }
+                
+                // 5GHz channels (simplified example)
+                const baseChannels5g = [36, 40, 44, 48, 52, 56, 60, 64, 100, 104, 108, 112, 116, 132, 136, 140];
+                
+                baseChannels5g.forEach(ch => {
+                    const freq = ch === 36 ? 5180 : (5180 + ((ch - 36) * 5));
+                    channel5g.append(`<option value="${ch}">Channel ${ch} (${freq} MHz)</option>`);
+                });
+                
+                // Add high channels for certain countries
+                if (['US', 'CA', 'AU'].includes(country)) {
+                    const highChannels = [149, 153, 157, 161, 165];
+                    highChannels.forEach(ch => {
+                        const freq = 5745 + ((ch - 149) * 5);
+                        channel5g.append(`<option value="${ch}">Channel ${ch} (${freq} MHz)</option>`);
+                    });
+                }
+            }
+            
+            // Initialize available channels for default country (US)
+            updateAvailableChannels('US');
+            
+            // Handle channel scan button for 2.4 GHz
+            $('#scan-channels-2g').on('click', function() {
+                // Show a scanning notification
+                toastr.info('Scanning for optimal 2.4 GHz channels...', 'Channel Scan', {
+                    closeButton: false,
+                    timeOut: 3000
+                });
+                
+                // Simulate scanning delay
+                setTimeout(function() {
+                    // In a real application, this would be populated with actual scan results
+                    const bestChannel = 6; // Example result
+                    
+                    $('#channel-2g').val(bestChannel);
+                    
+                    toastr.success(`Best channel for 2.4 GHz: Channel ${bestChannel}`, 'Scan Complete', {
+                        closeButton: true,
+                        timeOut: 5000
+                    });
+                }, 3000);
+            });
+            
+            // Handle channel scan button for 5 GHz
+            $('#scan-channels-5g').on('click', function() {
+                // Show a scanning notification
+                toastr.info('Scanning for optimal 5 GHz channels...', 'Channel Scan', {
+                    closeButton: false,
+                    timeOut: 3000
+                });
+                
+                // Simulate scanning delay
+                setTimeout(function() {
+                    // In a real application, this would be populated with actual scan results
+                    const bestChannel = 36; // Example result
+                    
+                    $('#channel-5g').val(bestChannel);
+                    
+                    toastr.success(`Best channel for 5 GHz: Channel ${bestChannel}`, 'Scan Complete', {
+                        closeButton: true,
+                        timeOut: 5000
+                    });
+                }, 3000);
+            });
+            
+            // Power level dropdown handling
+            $('#save-power-settings').on('click', function() {
+                const power2g = $('#power-level-2g').val();
+                const power5g = $('#power-level-5g').val();
+                const channel2g = $('#channel-2g').val();
+                const channel5g = $('#channel-5g').val();
+                const width2g = $('#channel-width-2g').val();
+                const width5g = $('#channel-width-5g').val();
+                
+                // Format channel information for display
+                const channel2gText = channel2g === 'auto' ? 'Auto (Best Channel)' : `Channel ${channel2g}`;
+                const channel5gText = channel5g === 'auto' ? 'Auto (Best Channel)' : `Channel ${channel5g}`;
+                
+                // Format width information for display
+                const width2gText = width2g === '20' ? '20 MHz' : '20/40 MHz';
+                let width5gText = '';
+                switch(width5g) {
+                    case '20': width5gText = '20 MHz'; break;
+                    case '40': width5gText = '40 MHz'; break;
+                    case '80': width5gText = '80 MHz'; break;
+                    case '160': width5gText = '160 MHz'; break;
+                    default: width5gText = '80 MHz';
+                }
+                
+                // Get the text representation of the power levels (includes dBm and mW values)
+                const power2gText = $('#power-level-2g option:selected').text();
+                const power5gText = $('#power-level-5g option:selected').text();
+                
+                // Show success message
+                toastr.success(`WiFi settings updated successfully:
+                    <br>2.4 GHz: ${channel2gText}, Width: ${width2gText}, Power: ${power2gText}
+                    <br>5 GHz: ${channel5gText}, Width: ${width5gText}, Power: ${power5gText}`, 
+                    'Settings Updated', {
+                        closeButton: true,
+                        tapToDismiss: false,
+                        timeOut: 5000
+                    }
+                );
+                
+                // Log transmit power change for network monitoring
+                console.log(`WiFi settings changed - 2.4 GHz: CH ${channel2g}, ${width2g}MHz, ${power2g}dBm | 5 GHz: CH ${channel5g}, ${width5g}MHz, ${power5g}dBm`);
+            });
+            
+            // Channel width change validation
+            $('#channel-width-2g').on('change', function() {
+                const selectedWidth = $(this).val();
+                const selectedChannel = $('#channel-2g').val();
+                
+                // Show warning for 40 MHz on 2.4 GHz if not using recommended channels
+                if (selectedWidth === '40' && !['auto', '1', '5', '9'].includes(selectedChannel)) {
+                    toastr.warning('40 MHz on 2.4 GHz works best with channels 1, 5, or 9 as primary channel.', 'Channel Width Notice', {
+                        closeButton: true,
+                        timeOut: 5000
+                    });
+                }
+            });
+            
+            // Channel width change validation for 5 GHz
+            $('#channel-width-5g').on('change', function() {
+                const selectedWidth = $(this).val();
+                const selectedChannel = $('#channel-5g').val();
+                
+                // Show notice for very wide channels
+                if (selectedWidth === '160') {
+                    toastr.info('160 MHz channels provide maximum speed but may not be supported by all clients.', 'Channel Width Notice', {
+                        closeButton: true,
+                        timeOut: 5000
+                    });
+                }
+            });
+            
+            // Fix the channel scanning functionality
+            // Main button to open the scan modal
+            $('#scan-channels-btn').on('click', function() {
+                console.log("Opening channel scan modal"); // Debug log
+                $('#channel-scan-modal').modal('show');
+                
+                // Show the pre-scan view
+                $('#pre-scan-view').show();
+                $('#scan-in-progress-view, #scan-results-view').hide();
+                
+                // Reset the progress bar and timeline
+                $('#channel-scan-modal .progress-bar').css('width', '0%').attr('aria-valuenow', 0);
+                $('#channel-scan-modal .timeline-point-indicator:not(:first)').removeClass('timeline-point-primary');
+                
+                // Ensure feather icons are initialized
+                if (feather) {
+                    feather.replace({
+                        width: 14,
+                        height: 14
+                    });
+                }
+            });
+            
+            // Button inside modal to actually start the scan
+            $('#start-scan-btn').on('click', function() {
+                console.log("Starting channel scan from modal button"); // Debug log
+                
+                // Switch views
+                $('#pre-scan-view, #scan-results-view').hide();
+                $('#scan-in-progress-view').show();
+                
+                // Ensure feather icons are refreshed in the new view
+                if (feather) {
+                    feather.replace({
+                        width: 14,
+                        height: 14
+                    });
+                }
+                
+                // Start the scan animation
+                simulateChannelScan();
+            });
+            
+            // Button to run another scan from the results view
+            $('#back-to-scan-btn').on('click', function() {
+                // Switch back to the scan progress view
+                $('#pre-scan-view, #scan-results-view').hide();
+                $('#scan-in-progress-view').show();
+                
+                // Reset the progress bar and timeline
+                $('#channel-scan-modal .progress-bar').css('width', '0%').attr('aria-valuenow', 0);
+                $('#channel-scan-modal .timeline-point-indicator:not(:first)').removeClass('timeline-point-primary');
+                
+                // Start another scan
+                simulateChannelScan();
+            });
+            
+            // Button to apply the scan results
+            $('#apply-scan-results').on('click', function() {
+                // Get only the recommended channel values (not width)
+                const channel2g = $('#result-channel-2g').text();
+                const channel5g = $('#result-channel-5g').text();
+                
+                // Update the channel selectors with recommended values
+                $('#channel-2g').val(channel2g);
+                $('#channel-5g').val(channel5g);
+                
+                // Close the modal
+                $('#channel-scan-modal').modal('hide');
+                
+                // Show a success message
+                toastr.success('Channel settings have been applied. Remember to save your changes.', 'Settings Applied', {
+                    closeButton: true,
+                    timeOut: 5000
+                });
+            });
+            
+            function simulateChannelScan() {
+                let progress = 0;
+                const progressBar = $('#scan-in-progress-view .progress-bar');
+                const timelinePoints = $('#scan-in-progress-view .timeline-point-indicator');
+                
+                console.log("Channel scan animation started"); // Debug log
+                
+                const interval = setInterval(function() {
+                    progress += 5;
+                    progressBar.css('width', progress + '%');
+                    progressBar.attr('aria-valuenow', progress);
+                    
+                    // Update timeline indicators
+                    if (progress >= 33) {
+                        $(timelinePoints[1]).addClass('timeline-point-primary');
+                    }
+                    if (progress >= 66) {
+                        $(timelinePoints[2]).addClass('timeline-point-primary');
+                    }
+                    
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        
+                        // Simulate some randomness in results for demo purposes
+                        const channels2g = [1, 6, 11];
+                        const channels5g = [36, 40, 44, 48, 149, 153];
+                        
+                        // Select random values (in a real app this would be based on actual scan)
+                        const randChannel2g = channels2g[Math.floor(Math.random() * channels2g.length)];
+                        const randChannel5g = channels5g[Math.floor(Math.random() * channels5g.length)];
+                        
+                        // Wait a moment then show results
+                        setTimeout(function() {
+                            // Update the results view with scan data - only channels now
+                            $('#result-channel-2g').text(randChannel2g);
+                            $('#result-channel-5g').text(randChannel5g);
+                            
+                            // Update the last scan time for the next view
+                            const now = new Date();
+                            const formattedDate = now.getFullYear() + '-' + 
+                                                 String(now.getMonth() + 1).padStart(2, '0') + '-' +
+                                                 String(now.getDate()).padStart(2, '0') + ' ' +
+                                                 String(now.getHours()).padStart(2, '0') + ':' +
+                                                 String(now.getMinutes()).padStart(2, '0');
+                            
+                            $('#last-scan-time').text(formattedDate);
+                            $('#last-best-channel-2g').text('Channel ' + randChannel2g);
+                            $('#last-best-channel-5g').text('Channel ' + randChannel5g);
+                            
+                            // Switch to the results view
+                            $('#pre-scan-view, #scan-in-progress-view').hide();
+                            $('#scan-results-view').show();
+                            
+                            // Ensure feather icons are refreshed in the new view
+                            if (feather) {
+                                feather.replace({
+                                    width: 14,
+                                    height: 14
+                                });
+                            }
+                        }, 1000);
+                    }
+                }, 250);
+            }
+            
+            // WAN Settings Connection Type Toggle
+            $('#wan-connection-type').on('change', function() {
+                const selectedType = $(this).val();
+                
+                // Hide all field groups first
+                $('#wan-static-fields, #wan-pppoe-fields').hide();
+                
+                // Show the relevant fields based on selection
+                if (selectedType === 'static') {
+                    $('#wan-static-fields').show();
+                } else if (selectedType === 'pppoe') {
+                    $('#wan-pppoe-fields').show();
+                }
+            });
+            
+            // DHCP Server Toggle for LAN Settings
+            $('#dhcp-server-toggle').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $('#dhcp-server-fields').show();
+                } else {
+                    $('#dhcp-server-fields').hide();
+                }
+            });
+            
+            // Password WiFi Static/DHCP Toggle (in card)
+            $('#static-ip-radio, #dhcp-client-radio').on('change', function() {
+                if ($('#static-ip-radio').is(':checked')) {
+                    $('#static-ip-config').show();
+                    $('#dhcp-client-config').hide();
+                } else {
+                    $('#static-ip-config').hide();
+                    $('#dhcp-client-config').show();
+                }
+            });
+            
+            // Password WiFi IP Assignment Toggle (in modal)
+            $('#password-ip-assignment').on('change', function() {
+                if ($(this).val() === 'static') {
+                    $('#password-static-fields').show();
+                } else {
+                    $('#password-static-fields').hide();
+                }
+            });
+            
+            // Initialize match height on load
+            $('.match-height').each(function() {
+                const rowCards = $(this).find('.card');
+                let maxHeight = 0;
+                
+                // Find max height
+                rowCards.each(function() {
+                    const cardHeight = $(this).outerHeight();
+                    if (cardHeight > maxHeight) {
+                        maxHeight = cardHeight;
+                    }
+                });
+                
+                // Set all cards to max height
+                rowCards.css('height', maxHeight + 'px');
+            });
+            
+            // Add hover effects for cards
+            $('.card').hover(
+                function() { $(this).addClass('shadow-lg'); },
+                function() { $(this).removeClass('shadow-lg'); }
+            );
+            
+            // Toggle password visibility
+            $('#toggle-password').on('click', function() {
+                const passwordField = $('#wifi-password');
+                const fieldType = passwordField.attr('type');
+                
+                if (fieldType === 'password') {
+                    passwordField.attr('type', 'text');
+                    $(this).find('i').replaceWith(feather.icons['eye-off'].toSvg({ class: '' }));
+                } else {
+                    passwordField.attr('type', 'password');
+                    $(this).find('i').replaceWith(feather.icons['eye'].toSvg({ class: '' }));
+                }
+                
+                // Re-initialize feather icons
+                if (feather) {
+                    feather.replace({
+                        width: 14,
+                        height: 14
+                    });
+                }
+            });
+            
+            // Add MAC address functionality
+            $('#captive-add-mac, #secured-add-mac').on('click', function() {
+                const isCaptive = $(this).attr('id') === 'captive-add-mac';
+                const macField = isCaptive ? $('#captive-mac-address') : $('#secured-mac-address');
+                const macValue = macField.val().trim();
+                
+                // Simple MAC address validation
+                const macRegex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
+                
+                if (macRegex.test(macValue)) {
+                    const macList = $(this).closest('.card-body').find('.filtered-mac-list');
+                    const newItem = `
+                        <div class="filtered-mac-item">
+                            <span>${macValue}</span>
+                            <button class="btn btn-sm btn-icon btn-outline-danger remove-mac">
+                                <i data-feather="x"></i>
+                            </button>
+                        </div>
+                    `;
+                    
+                    macList.append(newItem);
+                    macField.val('');
+                    
+                    // Re-initialize feather icons
+                    if (feather) {
+                        feather.replace({
+                            width: 14,
+                            height: 14
+                        });
+                    }
+                } else {
+                    // Show validation error
+                    macField.addClass('is-invalid');
+                    setTimeout(() => {
+                        macField.removeClass('is-invalid');
+                    }, 2000);
+                }
+            });
+            
+            // Remove MAC address item
+            $(document).on('click', '.remove-mac', function() {
+                $(this).closest('.filtered-mac-item').remove();
+            });
+            
+            // Add domain functionality
+            $('#captive-add-domain, #secured-add-domain').on('click', function() {
+                const isCaptive = $(this).attr('id') === 'captive-add-domain';
+                const domainField = isCaptive ? $('#captive-domain') : $('#secured-domain');
+                const domainValue = domainField.val().trim();
+                
+                if (domainValue) {
+                    const domainList = $(this).closest('.card-body').find('.filtered-domain-list');
+                    const newItem = `
+                        <div class="filtered-mac-item">
+                            <span>${domainValue}</span>
+                            <button class="btn btn-sm btn-icon btn-outline-danger remove-domain">
+                                <i data-feather="x"></i>
+                            </button>
+                        </div>
+                    `;
+                    
+                    domainList.append(newItem);
+                    domainField.val('');
+                    
+                    // Re-initialize feather icons
+                    if (feather) {
+                        feather.replace({
+                            width: 14,
+                            height: 14
+                        });
+                    }
+                } else {
+                    // Show validation error
+                    domainField.addClass('is-invalid');
+                    setTimeout(() => {
+                        domainField.removeClass('is-invalid');
+                    }, 2000);
+                }
+            });
+            
+            // Remove domain item
+            $(document).on('click', '.remove-domain', function() {
+                $(this).closest('.filtered-mac-item').remove();
+            });
+            
+            // Ensure proper tab functionality
+            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                // Refresh elements inside the newly shown tab
+                if (feather) {
+                    feather.replace({
+                        width: 14,
+                        height: 14
+                    });
+                }
+                
+                // Adjust card heights for better alignment
+                $('.match-height').each(function() {
+                    const rowCards = $(this).find('.card');
+                    let maxHeight = 0;
+                    
+                    // Reset heights
+                    rowCards.css('height', 'auto');
+                    
+                    // Find max height
+                    rowCards.each(function() {
+                        const cardHeight = $(this).outerHeight();
+                        if (cardHeight > maxHeight) {
+                            maxHeight = cardHeight;
+                        }
+                    });
+                    
+                    // Set all cards to max height
+                    rowCards.css('height', maxHeight + 'px');
+                });
+            });
+            
+            // Fix for match height in network interface cards
+            function matchInterfaceCardHeights() {
+                // Get all interface cards
+                const interfaceCards = $('.card-header:contains("WAN Interface"), .card-header:contains("Captive Portal"), .card-header:contains("Password WiFi")').closest('.card.shadow-none');
+                
+                // Reset heights first
+                interfaceCards.css('height', 'auto');
+                
+                // Find max height
+                let maxHeight = 0;
+                interfaceCards.each(function() {
+                    const cardHeight = $(this).outerHeight();
+                    if (cardHeight > maxHeight) {
+                        maxHeight = cardHeight;
+                    }
+                });
+                
+                // Set all cards to max height
+                interfaceCards.css('height', maxHeight + 'px');
+            }
+            
+            // Apply match height on initial load
+            matchInterfaceCardHeights();
+        });
+
+        // Handle authentication method selection for captive portal
+        $('#captive-auth-method').on('change', function() {
+            const selectedMethod = $(this).val();
+            
+            // Hide all auth options sections first
+            $('.auth-options-section').hide();
+            
+            // Show the relevant section based on selection
+            switch(selectedMethod) {
+                case 'password':
+                    $('#password-auth-options').show();
+                    break;
+                case 'sms':
+                    $('#sms-auth-options').show();
+                    break;
+                case 'email':
+                    $('#email-auth-options').show();
+                    break;
+                case 'social':
+                    $('#social-auth-options').show();
+                    break;
+                // Click-through doesn't need additional options
+            }
+            
+            // Re-initialize feather icons
+            if (feather) {
+                feather.replace({
+                    width: 14,
+                    height: 14
+                });
+            }
+        });
+
+        // Toggle portal password visibility
+        $('#toggle-portal-password').on('click', function() {
+            const passwordField = $('#portal-shared-password');
+            const fieldType = passwordField.attr('type');
+            
+            if (fieldType === 'password') {
+                passwordField.attr('type', 'text');
+                $(this).find('i').replaceWith(feather.icons['eye-off'].toSvg({ class: '' }));
+            } else {
+                passwordField.attr('type', 'password');
+                $(this).find('i').replaceWith(feather.icons['eye'].toSvg({ class: '' }));
+            }
+            
+            // Re-initialize feather icons
+            if (feather) {
+                feather.replace({
+                    width: 14,
+                    height: 14
+                });
+            }
+        });
+
+        // Handle social login toggle switches
+        $('#social-facebook, #social-google, #social-twitter, #social-apple').on('change', function() {
+            const socialId = $(this).attr('id');
+            const configId = socialId.replace('social-', '') + '-config';
+            
+            if ($(this).is(':checked')) {
+                $('#' + configId).slideDown();
+            } else {
+                $('#' + configId).slideUp();
+            }
+        });
+
+        // Additional handlers for compact layouts
+        $(document).ready(function() {
+            // DHCP/Static IP Toggle for Password WiFi
+            $('#static-ip-radio, #dhcp-client-radio').on('change', function() {
+                if ($('#static-ip-radio').is(':checked')) {
+                    $('#static-ip-field, #static-netmask-field, #advanced-network-btn').show();
+                    $('#dhcp-client-message').hide();
+                } else {
+                    $('#static-ip-field, #static-netmask-field, #advanced-network-btn').hide();
+                    $('#dhcp-client-message').show();
+                }
+            });
+            
+            // Convert legacy radio buttons to use the new dropdown selectors
+            // For Captive Portal MAC filtering
+            $('input[name="portal-mac-filter"]').on('change', function() {
+                let value = 'allow-all';
+                if ($('#portal-mac-allow-list').is(':checked')) value = 'allow-listed';
+                if ($('#portal-mac-block-list').is(':checked')) value = 'block-listed';
+                $('#portal-mac-filter').val(value);
+            });
+            
+            $('#portal-mac-filter').on('change', function() {
+                let value = $(this).val();
+                if (value === 'allow-all') $('#portal-mac-allow-all').prop('checked', true);
+                if (value === 'allow-listed') $('#portal-mac-allow-list').prop('checked', true);
+                if (value === 'block-listed') $('#portal-mac-block-list').prop('checked', true);
+            });
+            
+            // For Secured WiFi MAC filtering
+            $('input[name="secured-mac-filter"]').on('change', function() {
+                let value = 'allow-all';
+                if ($('#secured-mac-allow-list').is(':checked')) value = 'allow-listed';
+                if ($('#secured-mac-block-list').is(':checked')) value = 'block-listed';
+                $('#secured-mac-filter').val(value);
+            });
+            
+            $('#secured-mac-filter').on('change', function() {
+                let value = $(this).val();
+                if (value === 'allow-all') $('#secured-mac-allow-all').prop('checked', true);
+                if (value === 'allow-listed') $('#secured-mac-allow-list').prop('checked', true);
+                if (value === 'block-listed') $('#secured-mac-block-list').prop('checked', true);
+            });
+        });
+    </script>
+
+    <!-- Location Settings AJAX Functionality -->
+    <script>
+        $(document).ready(function() {
+            // Get location ID from URL
+            function getLocationId() {
+                // Example from URL: /location-details/123
+                const pathParts = window.location.pathname.split('/');
+                console.log("pathParts", pathParts);
+                const locationId = pathParts[pathParts.length - 1];
+                console.log("locationId", locationId);
+                
+                // If location ID is not in URL, try to get from a data attribute on the page
+                // Or default to 1 for testing purposes
+                return locationId;
+            }
+            
+            // Load location data including settings
+            function loadLocationData() {
+                const locationId = getLocationId();
+                // alert("locationId", locationId);
+                
+                // Show loading indicators
+                $('#router-tab, #captive-portal-tab, #secured-wifi-tab').append('<div class="spinner-border spinner-border-sm text-primary ml-1" role="status"><span class="sr-only">Loading...</span></div>');
+
+                // Make AJAX request to get location data including settings
+                $.ajax({
+                    url: `/api/locations/${locationId}`,
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('mrwifi_auth_token')
+                    },
+                    success: function(response) {
+                        console.log("response", response);
+                        // Remove loading indicators
+                        $('.spinner-border').remove();
+                        
+                        if (response && response.location) {
+                            const location = response.location;
+                            const settings = location.settings || {};
+
+                            // Update page title and breadcrumb with location name
+                            updateLocationName(location.name);
+
+                            // Populate basic location info
+                            populateLocationInfo(location);
+
+                            // Populate settings forms
+                            if (settings) {
+                                populateRouterSettings(settings);
+                                populateCaptivePortalSettings(settings);
+                                populatePasswordWifiSettings(settings);
+                            }
+
+                            console.log('Location data loaded successfully');
+                        } else {
+                            showNotification('warning', 'Could not load location data. Using default values.');
+                        }
+                    },
+                    error: function(xhr) {
+                        // Remove loading indicators
+                        $('.spinner-border').remove();
+
+                        console.error('Error loading location data:', xhr);
+
+                        // Show error notification
+                        let errorMessage = 'Failed to load location data';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+
+                        showNotification('error', errorMessage);
+                    }
+                });
+            }
+            
+            // Update location name in title and breadcrumb
+            function updateLocationName(locationName) {
+                // alert("locationName:: " + locationName);
+                if (locationName) {
+                    // Update page title
+                    document.title = `${locationName} - monsieur-wifi Controller`;
+                    $('.location_name').text(locationName);
+                    
+                    // Update headings
+                    $('.content-header-title').text(`${locationName} Details`);
+                    
+                    // Update breadcrumb
+                    $('.breadcrumb-item.active').text(locationName);
+                }
+            }
+            
+            // Populate basic location info
+            function populateLocationInfo(location) {
+                // Location info card
+                $('.card-body h4.font-weight-bolder').first().text(location.name || 'Location Name');
+                
+                // If we have an address from the location object
+                if (location.address) {
+                    $('.card-body p.card-text.text-muted').first().text(location.address);
+                }
+
+                // set location name, address, city, state, country, manager, contact email, contact phone, status, description
+                $('#location-name').val(location.name);
+                $('#location-address').val(location.address);
+                $('#location-city').val(location.city);
+                $('#location-state').val(location.state);
+                $('#location-country').val(location.country);
+                $('#location-manager').val(location.manager_name);
+                $('#location-contact-email').val(location.contact_email);
+                $('#location-contact-phone').val(location.contact_phone);
+                $('#location-status').val(location.status);
+                $('#location-description').val(location.description);
+                
+                
+                // If we have a device connected to this location
+                if (location.device) {
+                    const device = location.device;
+                    
+                    // Update device status
+                    const statusClass = device.is_online ? 'status-online' : 'status-offline';
+                    const statusText = device.is_online ? 'Online' : 'Offline';
+                    $('.status-badge').removeClass('status-online status-offline status-warning').addClass(statusClass).text(statusText);
+                    
+                    // Update device info
+                    $('.card-body .d-flex:contains("Router Model:")').find('.font-weight-bold').text(device.model || 'Unknown');
+                    $('.card-body .d-flex:contains("Firmware:")').find('.font-weight-bold').text(device.firmware_version || 'Unknown');
+                    
+                    // If we have uptime info
+                    if (device.last_seen) {
+                        const lastSeen = new Date(device.last_seen);
+                        const now = new Date();
+                        const diffMs = now - lastSeen;
+                        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                        const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        
+                        $('.card-body .d-flex:contains("Uptime:")').find('.font-weight-bold').text(`${diffDays} days, ${diffHours} hours`);
+                    }
+                }
+            }
+
+            // Populate Router Settings
+            function populateRouterSettings(settings) {
+                // WiFi Radio Settings
+                $('#wifi-country').val(settings.wifi_country || 'US');
+                $('#power-level-2g').val(settings.power_level_2g || '15');
+                $('#power-level-5g').val(settings.power_level_5g || '17');
+                
+                // Channel Settings
+                $('#channel-width-2g').val(settings.channel_width_2g || '40');
+                $('#channel-width-5g').val(settings.channel_width_5g || '80');
+                $('#channel-2g').val(settings.channel_2g || '6');
+                $('#channel-5g').val(settings.channel_5g || '36');
+            }
+
+            // Populate Captive Portal Settings
+            function populateCaptivePortalSettings(settings) {
+                // $('#portal-ssid').val(settings.captive_portal_ssid || 'Guest WiFi');
+                // $('#portal-visibility').val(settings.captive_portal_visible ? 'visible' : 'hidden');
+                $('#portal-ssid').val(settings.captive_portal_ssid || 'Guest WiFi');
+                $('#portal-visibility').val(settings.captive_portal_visible ? 'visible' : 'hidden');
+
+                // Authentication settings
+                const authMethod = settings.captive_portal_enabled ? 
+                                  (settings.social_login_enabled ? 'social' : 
+                                   (settings.email_login_enabled ? 'email' : 
+                                    (settings.verification_required ? 'sms' : 'click-through'))) : 
+                                  'click-through';
+                
+                $('#captive-auth-method').val(authMethod).trigger('change');
+
+                // Session settings
+                $('#captive-session-timeout').val(settings.session_timeout || 60);
+                $('#captive-idle-timeout').val(settings.idle_timeout || 15);
+                
+                // Load captive portal designs from API
+                loadCaptivePortalDesigns(settings.captive_portal_design);
+                
+                // MAC Filtering
+                if (settings.access_control_enabled) {
+                    // Set the filter mode
+                    const macFilterMode = settings.allowed_domains ? 'allow-listed' : 'block-listed';
+                    $('#portal-mac-filter').val(macFilterMode);
+                    
+                    // Populate domains if available
+                    if (settings.allowed_domains) {
+                        try {
+                            const allowedDomains = JSON.parse(settings.allowed_domains);
+                            $('.filtered-domain-list').empty();
+                            
+                            allowedDomains.forEach(domain => {
+                                $('.filtered-domain-list').append(`
+                                    <div class="filtered-mac-item">
+                                        <span>${domain}</span>
+                                        <button class="btn btn-sm btn-icon btn-outline-danger remove-domain">
+                                            <i data-feather="x"></i>
+                                        </button>
+                                    </div>
+                                `);
+                            });
+                            
+                            // Re-initialize feather icons
+                            if (feather) {
+                                feather.replace({
+                                    width: 14,
+                                    height: 14
+                                });
+                            }
+                        } catch (e) {
+                            console.error('Error parsing allowed domains:', e);
+                        }
+                    }
+                    
+                    // Set web filtering toggle
+                    $('#captive-web-filter').prop('checked', settings.access_control_enabled);
+                }
+                
+                // Bandwidth limits
+                $('#captive-bandwidth-limit').prop('checked', settings.bandwidth_limit_up > 0 || settings.bandwidth_limit_down > 0);
+                $('#captive-download-limit').val(settings.bandwidth_limit_down || 10);
+                $('#captive-upload-limit').val(settings.bandwidth_limit_up || 2);
+            }
+            
+            // Function to fetch and populate captive portal designs
+            function loadCaptivePortalDesigns(selectedDesignId) {
+                $.ajax({
+                    url: '/api/captive-portal-designs/',
+                    method: 'POST', // Using POST as specified in routes/api.php
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('mrwifi_auth_token'),
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    data: JSON.stringify({}), // Empty object as POST body
+                    success: function(response) {
+                        console.log("captive-portal-designs", response);
+                        if (response.success && response.data) {
+                            const designs = response.data;
+                            const $select = $('#captive-portal-config');
+                            
+                            // Clear previous options
+                            $select.empty();
+                            
+                            // Add designs as options
+                            designs.forEach(function(design) {
+                                $select.append(`<option value="${design.id}">${design.name}</option>`);
+                            });
+                            
+                            // Select the saved design if provided
+                            if (selectedDesignId) {
+                                $select.val(selectedDesignId);
+                            }
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error('Error fetching captive portal designs:', xhr);
+                    }
+                });
+            }
+            
+            // Populate Password WiFi Settings
+            function populatePasswordWifiSettings(settings) {
+                $('#wifi-ssid').val(settings.wifi_name || 'Home WiFi');
+                $('#wifi-password').val(settings.wifi_password || '');
+                $('#wifi-security').val(settings.encryption_type || 'wpa2-psk');
+                
+                // Web filtering for secured network
+                $('#secured-web-filter').prop('checked', settings.access_control_enabled);
+                $('#guest-secured-web-filter').prop('checked', settings.access_control_enabled);
+            }
+            
+            // Save Router Settings
+            $('#save-power-settings, #save-channel-settings, #save-channels-btn').on('click', function() {
+                const locationId = getLocationId();
+                
+                const settings = {
+                    // WiFi Radio Settings
+                    wifi_country: $('#wifi-country').val(),
+                    power_level_2g: $('#power-level-2g').val(),
+                    power_level_5g: $('#power-level-5g').val(),
+                    
+                    // Channel Settings
+                    channel_width_2g: $('#channel-width-2g').val(),
+                    channel_width_5g: $('#channel-width-5g').val(),
+                    channel_2g: $('#channel-2g').val(),
+                    channel_5g: $('#channel-5g').val()
+                };
+                
+                saveSettings(locationId, settings, 'router');
+            });
+            
+            // Save Captive Portal Settings
+            $('#save-captive-portal').on('click', function() {
+                const locationId = getLocationId();
+                
+                // Collect all domain items
+                const allowedDomains = [];
+                $('.filtered-domain-list .filtered-mac-item span').each(function() {
+                    allowedDomains.push($(this).text());
+                });
+                
+                // Get captive portal design ID
+                const captivePortalDesignId = $('#captive-portal-config').val();
+                console.log('Selected captive portal design ID:', captivePortalDesignId);
+                
+                const settings = {
+                    // Basic Settings
+                    captive_portal_ssid: $('#portal-ssid').val(),
+                    captive_portal_visible: $('#portal-visibility').val() === 'visible',
+                    
+                    // Captive Portal Settings
+                    captive_portal_enabled: true,
+                    
+                    // Authentication Type
+                    social_login_enabled: $('#captive-auth-method').val() === 'social',
+                    email_login_enabled: $('#captive-auth-method').val() === 'email',
+                    verification_required: $('#captive-auth-method').val() === 'sms',
+                    
+                    // Session settings
+                    session_timeout: parseInt($('#captive-session-timeout').val()) || 60,
+                    idle_timeout: parseInt($('#captive-idle-timeout').val()) || 15,
+                    
+                    // Access Control
+                    access_control_enabled: $('#captive-web-filter').is(':checked'),
+                    allowed_domains: JSON.stringify(allowedDomains),
+                    
+                    // Bandwidth
+                    bandwidth_limit_up: $('#captive-bandwidth-limit').is(':checked') ? parseInt($('#captive-upload-limit').val()) || 2 : 0,
+                    bandwidth_limit_down: $('#captive-bandwidth-limit').is(':checked') ? parseInt($('#captive-download-limit').val()) || 10 : 0,
+                    
+                    // Captive Portal Design
+                    captive_portal_design_id: captivePortalDesignId
+                };
+                
+                console.log('Saving captive portal settings:', settings);
+                
+                saveSettings(locationId, settings, 'captive');
+            });
+            
+            // Save Password WiFi Settings
+            $('#save-secured-wifi').on('click', function() {
+                const locationId = getLocationId();
+                
+                // Collect all domain items for secured wifi
+                const blockedDomains = [];
+                $('#secured-wifi .filtered-domain-list .filtered-mac-item span').each(function() {
+                    blockedDomains.push($(this).text());
+                });
+                
+                const settings = {
+                    // Basic WiFi Settings
+                    wifi_name: $('#wifi-ssid').val(),
+                    wifi_password: $('#wifi-password').val(),
+                    encryption_type: $('#wifi-security').val(),
+                    
+                    // Web filtering for secured network
+                    access_control_enabled: $('#secured-web-filter').is(':checked'),
+                    blocked_domains: JSON.stringify(blockedDomains)
+                };
+                
+                saveSettings(locationId, settings, 'wifi');
+            });
+            
+            // Function to save settings
+            function saveSettings(locationId, settings, settingsType) {
+                // Show spinner on the save button
+                const $button = settingsType === 'router' ? $('#save-power-settings, #save-channel-settings, #save-channels-btn') : 
+                               (settingsType === 'captive' ? $('#save-captive-portal') : $('#save-secured-wifi'));
+
+                // Store original HTML and classes before modifying
+                const originalHtml = $button.html();
+                const originalClasses = $button.attr('class');
+                
+                // Show loading state
+                $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...');
+                $button.prop('disabled', true);
+
+                // Log the data being sent to the server
+                console.log('Saving settings data:', {
+                    settings: settings,
+                    settings_type: settingsType
+                });
+
+                // Make AJAX request to save settings
+                $.ajax({
+                    url: `/api/locations/${locationId}`,
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('mrwifi_auth_token'),
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    data: JSON.stringify({
+                        settings: settings,
+                        settings_type: settingsType
+                    }),
+                    success: function(response) {
+                        // Restore button to original state
+                        $button.html(originalHtml);
+                        $button.attr('class', originalClasses); // This restores all original classes
+                        $button.prop('disabled', false);
+
+                        // Log the response from the server
+                        console.log('Settings saved successfully, response:', response);
+
+                        showNotification('success', 'Settings saved successfully');
+
+                        // Reload the location data to refresh any dependent settings
+                        setTimeout(loadLocationData, 1000);
+                    },
+                    error: function(xhr) {
+                        // Restore button to original state
+                        $button.html(originalHtml);
+                        $button.attr('class', originalClasses); // This restores all original classes
+                        $button.prop('disabled', false);
+                        
+                        console.error('Error saving settings:', xhr);
+                        
+                        // Show error notification
+                        let errorMessage = 'Failed to save settings';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+                        
+                        showNotification('error', errorMessage);
+                    }
+                });
+            }
+            
+            // Function to display notifications
+            function showNotification(type, message) {
+                if (typeof toastr !== 'undefined') {
+                    toastr[type](message, '', {
+                        closeButton: true,
+                        tapToDismiss: false,
+                        progressBar: true,
+                        timeOut: 5000
+                    });
+                } else {
+                    alert(`${message}`)
+                    console.log(`${message}`);
+                }
+            }
+            
+            // Load location data when page loads
+            loadLocationData();
+            
+            // Channel scanning functionality
+            $('#scan-channels-btn').on('click', function() {
+                const locationId = getLocationId();
+                
+                // Show the scanning modal
+                $('#channel-scan-modal').modal('show');
+                
+                // Hide results view, show progress view
+                $('#pre-scan-view').hide();
+                $('#scan-results-view').hide();
+                $('#scan-in-progress-view').show();
+                
+                // Start progress bar animation
+                let progress = 0;
+                const progressBar = $('#scan-in-progress-view .progress-bar');
+                
+                // Simulate scanning progress
+                const progressInterval = setInterval(function() {
+                    progress += 5;
+                    progressBar.css('width', progress + '%').attr('aria-valuenow', progress);
+                    
+                    // Update timeline indicators based on progress
+                    if (progress >= 30) {
+                        $('#scan-in-progress-view .timeline-item:nth-child(1) .timeline-point-indicator').addClass('timeline-point-primary');
+                    }
+                    if (progress >= 60) {
+                        $('#scan-in-progress-view .timeline-item:nth-child(2) .timeline-point-indicator').addClass('timeline-point-primary');
+                    }
+                    if (progress >= 90) {
+                        $('#scan-in-progress-view .timeline-item:nth-child(3) .timeline-point-indicator').addClass('timeline-point-primary');
+                    }
+                    
+                    if (progress >= 100) {
+                        clearInterval(progressInterval);
+                        
+                        // Make AJAX request to get scan results
+                        $.ajax({
+                            url: `/api/locations/${locationId}/channel-scan`,
+                            method: 'GET',
+                            headers: {
+                                'Authorization': 'Bearer ' + localStorage.getItem('token')
+                            },
+                            success: function(response) {
+                                // Show scan results
+                                $('#scan-in-progress-view').hide();
+                                $('#scan-results-view').show();
+                                
+                                if (response && response.data) {
+                                    const results = response.data;
+                                    
+                                    // Update result displays
+                                    $('#result-channel-2g').text(results.recommended_channel_2g || '6');
+                                    $('#result-channel-5g').text(results.recommended_channel_5g || '36');
+                                    
+                                    // Update nearby networks table if available
+                                    if (results.nearby_networks) {
+                                        // Clear existing rows
+                                        $('#scan-results-view table tbody').empty();
+                                        
+                                        results.nearby_networks.forEach(network => {
+                                            $('#scan-results-view table tbody').append(`
+                                                <tr>
+                                                    <td>${network.band}</td>
+                                                    <td>${network.channel}</td>
+                                                    <td>${network.count}</td>
+                                                </tr>
+                                            `);
+                                        });
+                                    }
+                                } else {
+                                    // Show default results if no data available
+                                    $('#result-channel-2g').text('6');
+                                    $('#result-channel-5g').text('36');
+                                }
+                            },
+                            error: function(xhr) {
+                                // Hide scanning progress, show default results
+                                $('#scan-in-progress-view').hide();
+                                $('#scan-results-view').show();
+                                
+                                console.error('Error getting scan results:', xhr);
+                                showNotification('error', 'Failed to get channel scan results');
+                            }
+                        });
+                    }
+                }, 200);
+            });
+            
+            // Apply scan results
+            $('#apply-scan-results').on('click', function() {
+                const channel2g = $('#result-channel-2g').text();
+                const channel5g = $('#result-channel-5g').text();
+                
+                // Update the channel selectors
+                $('#channel-2g').val(channel2g);
+                $('#channel-5g').val(channel5g);
+                
+                // Close the modal
+                $('#channel-scan-modal').modal('hide');
+                
+                // Show success notification
+                showNotification('success', 'Channel settings applied');
+                
+                // Save the settings
+                $('#save-channels-btn').trigger('click');
+            });
+            
+            // Back to scan button
+            $('#back-to-scan-btn').on('click', function() {
+                $('#scan-results-view').hide();
+                $('#pre-scan-view').show();
+            });
+        });
+
+        // Load location information into the form
+function loadLocationInfo(locationData) {
+    $('#location-name').val(locationData.name || '');
+    $('#location-address').val(locationData.address || '');
+    $('#location-city').val(locationData.city || '');
+    $('#location-state').val(locationData.state || '');
+    $('#location-postal-code').val(locationData.postal_code || '');
+    $('#location-country').val(locationData.country || '');
+    $('#location-manager').val(locationData.manager_name || '');
+    $('#location-contact-email').val(locationData.contact_email || '');
+    $('#location-contact-phone').val(locationData.contact_phone || '');
+    $('#location-description').val(locationData.description || '');
+    $('#location-status').val(locationData.status || 'active');
+}
+
+// Modify your existing loadLocationData function to call this
+// Add this line where you process the location data in your success callback
+// function loadLocationData() {
+//     // Your existing code...
+    
+//     $.ajax({
+//         // Your existing AJAX call...
+//         url: `/api/locations/${locationId}`,
+//         method: 'GET',
+//         headers: {
+//             'Authorization': 'Bearer ' + localStorage.getItem('mrwifi_auth_token'),
+//             'Content-Type': 'application/json',
+//             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+//         },
+//         success: function(response) {
+//             // Add this line to load location information
+//             loadLocationInfo(response.location);
+//         }
+//     });
+// }
+
+// Handle saving location information
+$(document).on('click', '#save-location-info', function() {
+    function showNotification(type, message) {
+                if (typeof toastr !== 'undefined') {
+                    toastr[type](message, '', {
+                        closeButton: true,
+                        tapToDismiss: false,
+                        progressBar: true,
+                        timeOut: 5000
+                    });
+                } else {
+                    alert(`${message}`)
+                    console.log(`${message}`);
+                }
+        }
+    const pathParts = window.location.pathname.split('/');
+    console.log("pathParts", pathParts);
+    const locationId = pathParts[pathParts.length - 1];
+    console.log("locationId", locationId);
+    // const locationId = getLocationId(); // This should be defined elsewhere in your code
+    
+    const locationData = {
+        name: $('#location-name').val(),
+        address: $('#location-address').val(),
+        city: $('#location-city').val(),
+        state: $('#location-state').val(),
+        postal_code: $('#location-postal-code').val(),
+        country: $('#location-country').val(),
+        manager_name: $('#location-manager').val(),
+        contact_email: $('#location-contact-email').val(),
+        contact_phone: $('#location-contact-phone').val(),
+        description: $('#location-description').val(),
+        status: $('#location-status').val()
+    };
+    
+    // Show spinner on the button
+    const $button = $('#save-location-info');
+    const originalHtml = $button.html();
+    const originalClasses = $button.attr('class');
+    
+    $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...');
+    $button.prop('disabled', true);
+    
+    // Make AJAX request to save location info
+    $.ajax({
+        url: `/api/locations/${locationId}/general`,
+        method: 'PUT',
+        headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('mrwifi_auth_token'),
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        data: JSON.stringify(locationData),
+        success: function(response) {
+            // Restore button to original state
+            $button.html(originalHtml);
+            $button.attr('class', originalClasses);
+            $button.prop('disabled', false);
+            
+            showNotification('success', 'Location information saved successfully');
+            
+            // Reload the location data to refresh
+            setTimeout(loadLocationData, 1000);
+        },
+        error: function(xhr) {
+            // Restore button to original state
+            $button.html(originalHtml);
+            $button.attr('class', originalClasses);
+            $button.prop('disabled', false);
+            
+            console.error('Error saving location information:', xhr);
+            
+            // Show error notification
+            let errorMessage = 'Failed to save location information';
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                errorMessage = xhr.responseJSON.message;
+            }
+            
+            showNotification('error', errorMessage);
+        }
+    });
+});
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            $('.select2').select2({
+                placeholder: "Select filtering categories",
+                allowClear: true
+            });
+            
+            // Helper function to extract location ID from URL
+            function getLocationId() {
+                const pathSegments = window.location.pathname.split('/');
+                // Assuming URL pattern like /locations/{id}/details or /locations/{id}
+                for (let i = 0; i < pathSegments.length; i++) {
+                    if (pathSegments[i] === 'locations' && i + 1 < pathSegments.length) {
+                        return pathSegments[i + 1];
+                    }
+                }
+                return null;
+            }
+        });
+    </script>
+    
+    <!-- WAN Settings Save Script -->
+    <script>
+        // Helper function to extract location ID from URL
+        function getLocationId() {
+            const pathSegments = window.location.pathname.split('/');
+            // Assuming URL pattern like /locations/{id}/details or /locations/{id}
+            for (let i = 0; i < pathSegments.length; i++) {
+                if (pathSegments[i] === 'locations' && i + 1 < pathSegments.length) {
+                    return pathSegments[i + 1];
+                }
+            }
+            return null;
+        }
+        
+        $(document).ready(function() {
+            // Handle save WAN settings
+            $('#save-wan-settings').on('click', function() {
+                const $button = $(this);
+                const originalText = $button.text();
+                $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...').prop('disabled', true);
+                
+                const locationId = getLocationId();
+                const wanData = {
+                    settings_type: 'wan',
+                    wan_type: $('#wan-connection-type').val(),
+                    wan_ip: $('#wan-static-fields input:eq(0)').val(),
+                    wan_subnet: $('#wan-static-fields input:eq(1)').val(),
+                    wan_gateway: $('#wan-static-fields input:eq(2)').val(),
+                    wan_dns1: $('#wan-static-fields input:eq(3)').val(),
+                    wan_dns2: $('#wan-static-fields input:eq(4)').val(),
+                    pppoe_username: $('#wan-pppoe-fields input:eq(0)').val(),
+                    pppoe_password: $('#wan-pppoe-fields input:eq(1)').val(),
+                    pppoe_service: $('#wan-pppoe-fields input:eq(2)').val()
+                };
+                
+                $.ajax({
+                    url: `/api/locations/${locationId}`,
+                    type: 'PUT',
+                    data: wanData,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('mrwifi_auth_token')
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            showNotification('success', 'WAN settings updated successfully.');
+                            $('#wan-settings-modal').modal('hide');
+                            
+                            setTimeout(function() {
+                                location.reload(); // Reload to show updated settings
+                            }, 1500);
+                        } else {
+                            showNotification('error', response.message || 'Failed to update WAN settings.');
+                            $button.html(originalText).prop('disabled', false);
+                        }
+                    },
+                    error: function(xhr) {
+                        let errorMessage = 'Failed to update WAN settings.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+                        
+                        showNotification('error', errorMessage);
+                        $button.html(originalText).prop('disabled', false);
+                    }
+                });
+            });
+            
+            // Handle save Captive Portal settings
+            $('#save-captive-portal-settings').on('click', function() {
+                const $button = $(this);
+                const originalText = $button.text();
+                $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...').prop('disabled', true);
+                
+                const locationId = getLocationId();
+                const captivePortalData = {
+                    settings_type: 'captive',
+                    captive_portal_ip: $('#captive-portal-ip').val(),
+                    captive_portal_netmask: $('#captive-portal-netmask').val(),
+                    captive_portal_gateway: $('#captive-portal-gateway').val()
+                };
+                console.log("captivePortalData", captivePortalData);
+                $.ajax({
+                    url: `/api/locations/${locationId}`,
+                    type: 'PUT',
+                    data: captivePortalData,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('mrwifi_auth_token')
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            showNotification('success', 'Captive portal IP settings updated successfully.');
+                            $('#captive-portal-modal').modal('hide');
+                            
+                            setTimeout(function() {
+                                location.reload(); // Reload to show updated settings
+                            }, 1500);
+                        } else {
+                            showNotification('error', response.message || 'Failed to update captive portal settings.');
+                            $button.html(originalText).prop('disabled', false);
+                        }
+                    },
+                    error: function(xhr) {
+                        let errorMessage = 'Failed to update captive portal settings.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+                        
+                        showNotification('error', errorMessage);
+                        $button.html(originalText).prop('disabled', false);
+                    }
+                });
+            });
+            
+            // Handle save Password Network settings
+            $('#save-password-network').on('click', function() {
+                const $button = $(this);
+                const originalText = $button.text();
+                $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...').prop('disabled', true);
+                
+                const locationId = getLocationId();
+                const passwordNetworkData = {
+                    settings_type: 'wifi',
+                    password_network_enabled: 1,
+                    password_network_ssid: $('#wifi-ssid').val(),
+                    password_network_visible: 1,
+                    password_network_password: $('#wifi-password').val(),
+                    password_network_encryption: $('#wifi-security').val(),
+                    password_network_ip: $('#password-static-fields input:eq(0)').val(),
+                    password_network_netmask: $('#password-static-fields input:eq(1)').val(),
+                    password_network_gateway: $('#password-static-fields input:eq(2)').val(),
+                    password_network_dhcp_enabled: $('#password-dhcp-server-toggle').is(':checked') ? 1 : 0,
+                    password_network_dhcp_start: $('#password-dhcp-server-fields input:eq(0)').val(),
+                    password_network_dhcp_end: $('#password-dhcp-server-fields input:eq(1)').val(),
+                    password_network_dhcp_lease: $('#password-dhcp-server-fields input:eq(2)').val()
+                };
+                
+                $.ajax({
+                    url: `/api/locations/${locationId}`,
+                    type: 'PUT',
+                    data: passwordNetworkData,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('mrwifi_auth_token')
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            showNotification('success', 'Password network settings updated successfully.');
+                            $('#password-network-modal').modal('hide');
+                            
+                            setTimeout(function() {
+                                location.reload(); // Reload to show updated settings
+                            }, 1500);
+                        } else {
+                            showNotification('error', response.message || 'Failed to update password network settings.');
+                            $button.html(originalText).prop('disabled', false);
+                        }
+                    },
+                    error: function(xhr) {
+                        let errorMessage = 'Failed to update password network settings.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+                        
+                        showNotification('error', errorMessage);
+                        $button.html(originalText).prop('disabled', false);
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            // Helper function to extract location ID from URL
+            function getLocationId() {
+                const pathSegments = window.location.pathname.split('/');
+                // Assuming URL pattern like /locations/{id}/details or /locations/{id}
+                for (let i = 0; i < pathSegments.length; i++) {
+                    if (pathSegments[i] === 'locations' && i + 1 < pathSegments.length) {
+                        return pathSegments[i + 1];
+                    }
+                }
+                return null;
+            }
+            
+            // Load location data and populate interfaces
+            function loadLocationData() {
+                const locationId = getLocationId();
+                if (!locationId) {
+                    console.error('Location ID not found in URL');
+                    return;
+                }
+                
+                // Show loading spinners
+                $('#wan-interface, #captive-portal-interface, #password-wifi-interface').append(
+                    '<div class="text-center my-2 loading-spinner"><div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div></div>'
+                );
+                
+                // Fetch location data
+                $.ajax({
+                    url: `/api/locations/${locationId}`,
+                    type: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                        'Authorization': 'Bearer ' + localStorage.getItem('mrwifi_auth_token')
+                    },
+                    success: function(response) {
+                        // Remove loading spinners
+                        $('.loading-spinner').remove();
+                        
+                        if (response.success && response.data) {
+                            const location = response.data;
+                            
+                            // Update location general info
+                            updateLocationGeneralInfo(location);
+                            
+                            // Update WAN interface
+                            if (location.wan_settings) {
+                                $('#wan-type-display').text(location.wan_settings.wan_type || 'DHCP');
+                                $('#wan-ip-display').text(location.wan_settings.wan_ip || '192.168.1.1');
+                                $('#wan-subnet-display').text(location.wan_settings.wan_subnet || '255.255.255.0');
+                                $('#wan-gateway-display').text(location.wan_settings.wan_gateway || '192.168.1.1');
+                                $('#wan-dns1-display').text(location.wan_settings.wan_dns1 || '8.8.8.8');
+                                $('#wan-dns2-display').text(location.wan_settings.wan_dns2 || '8.8.4.4');
+                            }
+                            console.log("location :::: ", location);
+                            // Update Captive Portal interface
+                            if (location.settings) {
+                                $('#captive-ip-display').text(location.settings.captive_portal_ip || '192.168.2.1');
+                                $('#captive-netmask-display').text(location.settings.captive_portal_netmask || '255.255.255.0');
+                                $('#captive-gateway-display').text(location.settings.captive_portal_gateway || '192.168.2.1');
+                                
+                                // Store these values to populate the modal when opened
+                                window.captivePortalSettings = {
+                                    ip: location.settings.captive_portal_ip || '192.168.2.1',
+                                    netmask: location.settings.captive_portal_netmask || '255.255.255.0',
+                                    gateway: location.settings.captive_portal_gateway || '192.168.2.1'
+                                };
+                            }
+                            
+                            // Update Password WiFi interface
+                            if (location.password_network_settings) {
+                                const passwordType = location.password_network_settings.password_network_ip_type || 'Static IP';
+                                $('#password-ip-type-display').text(passwordType);
+                                $('#password-ip-display').text(location.password_network_settings.password_network_ip || '192.168.1.1');
+                                $('#password-netmask-display').text(location.password_network_settings.password_network_netmask || '255.255.255.0');
+                                $('#password-gateway-display').text(location.password_network_settings.password_network_gateway || '192.168.1.1');
+                                
+                                const dhcpStatus = location.password_network_settings.password_network_dhcp_enabled ? 'Enabled' : 'Disabled';
+                                $('#password-dhcp-status-display').text(dhcpStatus);
+                            }
+                        } else {
+                            console.error('Failed to load location data', response);
+                            showNotification('error', 'Failed to load location data');
+                        }
+                    },
+                    error: function(xhr) {
+                        // Remove loading spinners
+                        $('.loading-spinner').remove();
+                        
+                        console.error('Error loading location data:', xhr);
+                        showNotification('error', 'Error loading location data');
+                    }
+                });
+            }
+            
+            // Populate the Captive Portal modal fields when it's opened
+            $('#captive-portal-modal').on('show.bs.modal', function() {
+                if (window.captivePortalSettings) {
+                    $('#captive-portal-ip').val(window.captivePortalSettings.ip);
+                    $('#captive-portal-netmask').val(window.captivePortalSettings.netmask);
+                    $('#captive-portal-gateway').val(window.captivePortalSettings.gateway);
+                }
+            });
+            
+            // Helper function to update location general info
+            function updateLocationGeneralInfo(location) {
+                // Update location name and address
+                $('.location_name').text(location.name || 'Unknown Location');
+                $('.location_address').text(location.address || 'No address provided');
+                
+                // Update other location details if needed
+            }
+            
+            // Handle save WAN settings
+            $('#save-wan-settings').on('click', function() {
+                const $button = $(this);
+                const originalText = $button.text();
+                $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...').prop('disabled', true);
+                
+                const locationId = getLocationId();
+                const wanData = {
+                    settings_type: 'wan',
+                    wan_type: $('#wan-connection-type').val(),
+                    wan_ip: $('#wan-static-fields input:eq(0)').val(),
+                    wan_subnet: $('#wan-static-fields input:eq(1)').val(),
+                    wan_gateway: $('#wan-static-fields input:eq(2)').val(),
+                    wan_dns1: $('#wan-static-fields input:eq(3)').val(),
+                    wan_dns2: $('#wan-static-fields input:eq(4)').val(),
+                    pppoe_username: $('#wan-pppoe-fields input:eq(0)').val(),
+                    pppoe_password: $('#wan-pppoe-fields input:eq(1)').val(),
+                    pppoe_service: $('#wan-pppoe-fields input:eq(2)').val()
+                };
+                
+                $.ajax({
+                    url: `/api/locations/${locationId}`,
+                    type: 'PUT',
+                    data: wanData,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('mrwifi_auth_token')
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            showNotification('success', 'WAN settings updated successfully.');
+                            $('#wan-settings-modal').modal('hide');
+                            
+                            setTimeout(function() {
+                                location.reload(); // Reload to show updated settings
+                            }, 1500);
+                        } else {
+                            showNotification('error', response.message || 'Failed to update WAN settings.');
+                            $button.html(originalText).prop('disabled', false);
+                        }
+                    },
+                    error: function(xhr) {
+                        let errorMessage = 'Failed to update WAN settings.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+                        
+                        showNotification('error', errorMessage);
+                        $button.html(originalText).prop('disabled', false);
+                    }
+                });
+            });
+            
+            // Handle save Captive Portal settings
+            $('#save-captive-portal-settings').on('click', function() {
+                const $button = $(this);
+                const originalText = $button.text();
+                $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...').prop('disabled', true);
+                
+                const locationId = getLocationId();
+                const captivePortalData = {
+                    settings_type: 'captive',
+                    captive_portal_ip: $('#captive-portal-ip').val(),
+                    captive_portal_netmask: $('#captive-portal-netmask').val(),
+                    captive_portal_gateway: $('#captive-portal-gateway').val()
+                };
+                
+                $.ajax({
+                    url: `/api/locations/${locationId}`,
+                    type: 'PUT',
+                    data: captivePortalData,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('mrwifi_auth_token')
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            showNotification('success', 'Captive portal IP settings updated successfully.');
+                            $('#captive-portal-modal').modal('hide');
+                            
+                            // Store the updated values
+                            window.captivePortalSettings = {
+                                ip: captivePortalData.captive_portal_ip,
+                                netmask: captivePortalData.captive_portal_netmask,
+                                gateway: captivePortalData.captive_portal_gateway
+                            };
+                            
+                            // Update the displayed values
+                            $('#captive-ip-display').text(captivePortalData.captive_portal_ip);
+                            $('#captive-netmask-display').text(captivePortalData.captive_portal_netmask);
+                            $('#captive-gateway-display').text(captivePortalData.captive_portal_gateway);
+                            
+                            setTimeout(function() {
+                                location.reload(); // Reload to show updated settings
+                            }, 1500);
+                        } else {
+                            showNotification('error', response.message || 'Failed to update captive portal settings.');
+                            $button.html(originalText).prop('disabled', false);
+                        }
+                    },
+                    error: function(xhr) {
+                        let errorMessage = 'Failed to update captive portal settings.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+                        
+                        showNotification('error', errorMessage);
+                        $button.html(originalText).prop('disabled', false);
+                    }
+                });
+            });
+            
+            // Handle save Password Network settings
+            $('#save-password-network').on('click', function() {
+                const $button = $(this);
+                const originalText = $button.text();
+                $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...').prop('disabled', true);
+                
+                const locationId = getLocationId();
+                const passwordNetworkData = {
+                    settings_type: 'wifi',
+                    password_network_enabled: 1,
+                    password_network_ssid: $('#wifi-ssid').val(),
+                    password_network_visible: 1,
+                    password_network_password: $('#wifi-password').val(),
+                    password_network_encryption: $('#wifi-security').val(),
+                    password_network_ip: $('#password-static-fields input:eq(0)').val(),
+                    password_network_netmask: $('#password-static-fields input:eq(1)').val(),
+                    password_network_gateway: $('#password-static-fields input:eq(2)').val(),
+                    password_network_dhcp_enabled: $('#password-dhcp-server-toggle').is(':checked') ? 1 : 0,
+                    password_network_dhcp_start: $('#password-dhcp-server-fields input:eq(0)').val(),
+                    password_network_dhcp_end: $('#password-dhcp-server-fields input:eq(1)').val(),
+                    password_network_dhcp_lease: $('#password-dhcp-server-fields input:eq(2)').val()
+                };
+                
+                $.ajax({
+                    url: `/api/locations/${locationId}`,
+                    type: 'PUT',
+                    data: passwordNetworkData,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('mrwifi_auth_token')
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            showNotification('success', 'Password network settings updated successfully.');
+                            $('#password-network-modal').modal('hide');
+                            
+                            setTimeout(function() {
+                                location.reload(); // Reload to show updated settings
+                            }, 1500);
+                        } else {
+                            showNotification('error', response.message || 'Failed to update password network settings.');
+                            $button.html(originalText).prop('disabled', false);
+                        }
+                    },
+                    error: function(xhr) {
+                        let errorMessage = 'Failed to update password network settings.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+                        
+                        showNotification('error', errorMessage);
+                        $button.html(originalText).prop('disabled', false);
+                    }
+                });
+            });
+        });
     </script>
     </body>
 <!-- END: Body-->

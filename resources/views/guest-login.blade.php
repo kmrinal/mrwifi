@@ -79,6 +79,6 @@
         </div>
     </div>
     
-    <script src="{{ asset('app-assets/mrwifi-assets/captive-portal/js/loading.js') }}"></script>
+    <script src="{{ asset('app-assets/mrwifi-assets/captive-portal/js/loading.js') }}?v={{ time() }}"></script>
 </body>
 </html>

@@ -34,6 +34,7 @@ Route::group(['prefix' => 'devices'], function () {
 
 Route::get('/devices/{device_key}/{device_secret}/settings', [DeviceController::class, 'getSettings']);
 Route::get('/devices/{device_key}/{device_secret}/heartbeat', [DeviceController::class, 'heartbeat']);
+// Route::get('/devices/{mac_address}/{verification_code}/info', [DeviceController::class, 'info']);
 
 Route::get('/devices/{mac_address}/{verification_code}/verify', [DeviceController::class, 'verify']);   
 
@@ -67,5 +68,12 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'captive-portal-designs'],
 Route::post('/captive-portal/{location_id}/info', [GuestNetworkUserController::class, 'info']);
 Route::get('/captive-portal/{location_id}/info', [GuestNetworkUserController::class, 'info']);
 Route::post('/captive-portal/login', [GuestNetworkUserController::class, 'login']);
+Route::post('/captive-portal/twitter-login', [GuestNetworkUserController::class, 'twitterLogin']);
+
 Route::get('/locations/{location}/guest-users', [GuestNetworkUserController::class, 'index']);
 Route::resource('/guest-users', GuestNetworkUserController::class);
+
+// Guest Network User routes
+Route::post('/location/{location_id}/guest/info', [GuestNetworkUserController::class, 'info']);
+Route::post('/guest/login', [GuestNetworkUserController::class, 'login']);
+Route::post('/guest/request-otp', [GuestNetworkUserController::class, 'requestOtp']);

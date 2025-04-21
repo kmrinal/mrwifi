@@ -6,8 +6,11 @@ use Illuminate\Http\Request;
 use App\Models\Location;
 use App\Models\LocationSettings;
 use App\Models\GuestNetworkUser;
+use App\Models\Radcheck;
+use App\Models\OtpVerification;
+use App\Services\SmsService;
 use Validator;
-
+use Log;
 
 class GuestNetworkUserController extends Controller
 {
@@ -36,7 +39,7 @@ class GuestNetworkUserController extends Controller
                 'errors' => $validator->errors()
             ], 422);
         }
-        
+
         $locationId = $location_id;
         if (isset($request['mac_address'])) {
             $macAddress = $request['mac_address'];
@@ -73,6 +76,7 @@ class GuestNetworkUserController extends Controller
             'logo_url',
             'welcome_message',
             'captive_portal_design',
+            'captive_social_auth_method'
         ]);
 
         // Fetch the complete captive portal design if a design ID is set
@@ -80,6 +84,12 @@ class GuestNetworkUserController extends Controller
         if ($location->settings && $location->settings->captive_portal_design) {
             $captivePortalDesign = \App\Models\CaptivePortalDesign::find($location->settings->captive_portal_design);
         }
+
+        // Get the captive portal IP address from location settings or use a default
+        $captivePortalIp = $location->settings->captive_portal_ip ?? '10.1.0.1';
+        
+        // Generate a challenge for CHAP authentication
+        $challenge = bin2hex(random_bytes(16));
 
         $brand = [
             'name' => env('APP_BRAND_NAME'),
@@ -94,7 +104,9 @@ class GuestNetworkUserController extends Controller
             'name' => $location->name,
             'description' => $location->description,
             'settings' => $captivePortalSettings,
-            'design' => $captivePortalDesign
+            'design' => $captivePortalDesign,
+            'ip_address' => $captivePortalIp,
+            'challenge' => $challenge
         ];
 
         return response()->json([
@@ -104,7 +116,50 @@ class GuestNetworkUserController extends Controller
             'user' => $user,
             'brand' => $brand
         ]);
+    }
 
+    /**
+     * Request an SMS OTP for WiFi login
+     */
+    public function requestOtp(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'location_id' => 'required|exists:locations,id',
+            'phone' => 'required|string|max:20',
+            'mac_address' => 'nullable|string|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $phone = $request->phone;
+        $locationId = $request->location_id;
+        $macAddress = $request->mac_address;
+
+        // Generate a new OTP
+        $otpVerification = OtpVerification::generateOtp($phone, $locationId, $macAddress);
+
+        // Send the OTP via SMS
+        $smsService = new SmsService();
+        $smsSent = $smsService->sendOtp($phone, $otpVerification->otp);
+
+        if (!$smsSent) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to send OTP. Please try again later.'
+            ], 500);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'OTP sent successfully',
+            'expires_at' => $otpVerification->expires_at
+        ]);
     }
 
     /**
@@ -113,14 +168,18 @@ class GuestNetworkUserController extends Controller
     public function login(Request $request)
     {
         $request = $request->all();
+        Log::info($request);
         $validator = Validator::make($request, [
             'location_id' => 'required|exists:locations,id',
             'mac_address' => 'nullable|string|max:255',
-            'login_method' => 'required|string|in:email,sms,social,click-through',
+            'login_method' => 'required|string|in:email,sms,social,click-through,password',
             'name' => 'nullable|string|max:255',
             'email' => 'nullable|email|max:255',
             'phone' => 'nullable|string|max:255',
             'social_platform' => 'nullable|string|max:255',
+            'otp' => 'nullable|string|size:6',
+            'challenge' => 'required|string|max:255',
+            'ip_address' => 'required|string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -145,11 +204,26 @@ class GuestNetworkUserController extends Controller
                     'message' => 'Phone and OTP are required'
                 ], 422);
             }
+            
+            // Verify OTP
+            if (!OtpVerification::verifyOtp($request['phone'], $request['otp'], $request['location_id'])) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid or expired OTP'
+                ], 422);
+            }
         } else if ($request['login_method'] == 'social') {
             if (!$request['social_platform']) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Social platform is required'
+                ], 422);
+            }
+        } else if ($request['login_method'] == 'password') {
+            if (!$request['password']) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Password is required'
                 ], 422);
             }
         }
@@ -160,6 +234,21 @@ class GuestNetworkUserController extends Controller
         $location = Location::find($location_id);
         $location_settings = $location->settings;
 
+        if (!$location_settings) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Location settings not found'
+            ], 404);
+        }
+
+        if ($login_method == 'password') {
+            if ($request['password'] != $location_settings->captive_portal_password) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid password'
+                ], 422);
+            }
+        }
         // get if mac is already in the database
         $user = GuestNetworkUser::where('location_id', $location_id)
         ->where('mac_address', $mac_address)
@@ -183,13 +272,50 @@ class GuestNetworkUserController extends Controller
         $user->expiration_time = now()->addMinutes($location_settings->session_timeout); 
         $user->download_bandwidth = $location_settings->download_limit;
         $user->upload_bandwidth = $location_settings->upload_limit;
-
+        // $user->idle_timeout = $location_settings->idle_timeout;
         $user->save();
+
+        $radcheck = Radcheck::updateOrCreateRecord($user->mac_address, 'Cleartext-Password', $user->mac_address, '==', [
+            'location_id' => $location_id,
+            'download_bandwidth' => $user->download_bandwidth,
+            'upload_bandwidth' => $user->upload_bandwidth,
+            'expiration_time' => $user->expiration_time,
+            'idle_timeout' => $location_settings->idle_timeout
+        ]);
+
+        // Create login url 
+        $challenge = $request['challenge'];
+        $uamsecret = ''; // Get from environment or use empty string
+        
+        $username = $password = $request['mac_address'];
+        Log::info("username::".$username);
+        Log::info("password::".$password);
+        Log::info("uamsecret::".$uamsecret);
+        $hexchal = pack("H32", $challenge);
+        
+        // If strlen of $uamsecret is > 0 then apply MD5 hash with the secret
+        // if (strlen($uamsecret) > 0) {
+        //     $newchal = pack("H*", md5($hexchal . $uamsecret));
+        // } else {
+        // $newchal = $hexchal;
+        $newchal = pack("H*", md5($hexchal . $uamsecret));
+        // }
+        
+        $response = md5("\0" . $password . $newchal);
+        
+        // Get the captive portal IP address from the request
+        $ip_address = $request['ip_address']; // This is the captive portal WiFi IP
+        
+        // Build the login redirect URL
+        $redirect_url = $location_settings->redirect_url ?? 'https://www.mrwifi.net';
+        $login_redirect_url = 'http://' . $ip_address . ':3990/logon?username=' . $username . '&response=' . $response . '&userurl=' . urlencode($redirect_url);
 
         return response()->json([
             'success' => true,
             'message' => 'User logged in',
-            'user' => $user
+            'user' => $user,
+            'login_url' => $login_redirect_url,
+            'chap_response' => $response
         ]);
         
     }

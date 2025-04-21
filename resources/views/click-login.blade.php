@@ -124,6 +124,11 @@
             text-decoration: underline;
         }
 
+        .alert {
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
         @media (max-width: 576px) {
             .portal-container {
                 padding: 1.5rem;
@@ -154,6 +159,9 @@
         <div class="welcome-text" id="welcome-text">
             Welcome to our WiFi network. Click the button below to connect and enjoy high-speed internet access. By connecting, you agree to our terms of service and acceptable use policy.
         </div>
+
+        <!-- Alert for messages -->
+        <div id="alert-container" style="display: none;"></div>
 
         <!-- Click-Through Login Section -->
         <div class="text-center">
@@ -212,38 +220,68 @@
                 $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Connecting...');
                 $button.prop('disabled', true);
                 
+                const challenge = localStorage.getItem('challenge');
+                const ipAddress = locationData.ip_address;
+                
                 // Call the login API
                 $.ajax({
-                    url: '/api/captive-portal/login',
+                    url: '/api/guest/login',
                     method: 'POST',
                     data: {
                         location_id: locationId,
                         mac_address: macAddress,
                         login_method: 'click-through',
-                        ip_address: urlParams.get('ip') || ''
+                        challenge: challenge,
+                        ip_address: ipAddress
                     },
                     success: function(response) {
                         console.log('response', response);
                         if (response.success) {
-                            // Redirect to success page or Internet
-                            const redirectUrl = locationSettings.redirect_url || 'https://www.mrwifi.net';
-                            // window.location.href = redirectUrl;
-                            alert('Successfully connected to WiFi');
+                            // Show success message
+                            // showAlert('Successfully connected to WiFi', 'success');
+                            $button.html('Processing...').removeClass('btn-primary').addClass('btn-success');
+                            
+                            // Redirect to login URL
+                            setTimeout(function() {
+                                const redirectUrl = response.login_url;
+                                window.location.href = redirectUrl;
+                            }, 2000);
                         } else {
                             // Show error
                             $button.html(originalText);
                             $button.prop('disabled', false);
-                            alert('Error connecting to WiFi: ' + (response.message || 'Unknown error'));
+                            showAlert('Error connecting to WiFi: ' + (response.message || 'Unknown error'), 'danger');
                         }
                     },
-                    error: function() {
+                    error: function(xhr) {
                         // Restore button on error
                         $button.html(originalText);
                         $button.prop('disabled', false);
-                        alert('Error connecting to WiFi. Please try again.');
+                        
+                        let errorMessage = 'Failed to connect to WiFi';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+                        showAlert(errorMessage, 'danger');
                     }
                 });
             });
+            
+            // Function to show alerts
+            function showAlert(message, type) {
+                $('#alert-container').html(`
+                    <div class="alert alert-${type}" role="alert">
+                        ${message}
+                    </div>
+                `).show();
+                
+                // Auto-hide success alerts after 5 seconds
+                if (type === 'success') {
+                    setTimeout(function() {
+                        $('#alert-container').fadeOut();
+                    }, 5000);
+                }
+            }
             
             // Function to apply design settings
             function applyDesignSettings(settings, design) {
@@ -323,6 +361,46 @@
                 }
                 
                 return '';
+            }
+            
+            // Get location information including challenge and IP address
+            $.ajax({
+                url: `/api/captive-portal/${locationId}/info`,
+                type: 'GET',
+                data: { mac_address: macAddress },
+                headers: { 'Accept': 'application/json' },
+                success: function(locationInfo) {
+                    console.log('Location info:', locationInfo);
+                    
+                    // Store location data in localStorage for future use
+                    if (locationInfo.success && locationInfo.location) {
+                        // Store the challenge and location data
+                        localStorage.setItem('location_data', JSON.stringify(locationInfo.location));
+                        localStorage.setItem('challenge', locationInfo.location.challenge);
+                        
+                        // Apply design settings again with fresh data
+                        applyDesignSettings(
+                            locationInfo.location.settings || {}, 
+                            locationInfo.location.design || {}
+                        );
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching location info:', error);
+                    showAlert('Error loading WiFi information. Please refresh the page or contact support.', 'danger');
+                }
+            });
+            
+            // If location_id or mac_address is missing, show error
+            if (!locationId || !macAddress) {
+                $('.portal-container').html(`
+                    <div class="text-center">
+                        <div class="alert alert-danger" role="alert">
+                            <h4 class="alert-heading">Error</h4>
+                            <p>Required information is missing. Please check your connection or contact support.</p>
+                        </div>
+                    </div>
+                `);
             }
         });
     </script>

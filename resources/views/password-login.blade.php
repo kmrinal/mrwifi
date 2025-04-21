@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Social WiFi Login with Facebook</title>
+    <title>WiFi Login with Password</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" type="text/css" href="/app-assets/css/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="/app-assets/css/bootstrap-extended.css">
@@ -78,62 +78,6 @@
 
         .login-button:hover {
             background-color: var(--theme-color-dark);
-        }
-
-        .facebook-button {
-            background-color: #1877f2;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 14px 28px;
-            font-size: 1.1rem;
-            transition: background-color 0.3s ease;
-            width: 100%;
-            margin: 1rem auto;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-
-        .facebook-button:hover {
-            background-color: #166fe5;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        .facebook-button:active {
-            transform: translateY(0);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-        }
-
-        .facebook-button i {
-            margin-right: 10px;
-            font-size: 1.2rem;
-        }
-
-        .divider {
-            display: flex;
-            align-items: center;
-            margin: 20px 0;
-            color: #666;
-            font-size: 0.9rem;
-        }
-
-        .divider::before,
-        .divider::after {
-            content: "";
-            flex: 1;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .divider::before {
-            margin-right: 10px;
-        }
-
-        .divider::after {
-            margin-left: 10px;
         }
 
         .form-group {
@@ -228,18 +172,28 @@
 
         <!-- Welcome Text -->
         <div class="welcome-text" id="welcome-text">
-            Connect to our WiFi network using your Facebook account.
+            Please enter the password to connect to our WiFi network.
         </div>
 
         <!-- Alert for messages -->
         <div id="alert-container" style="display: none;"></div>
 
-        <!-- Facebook Login -->
-        <div id="login-container" class="login-container text-center mt-4">
-            <!-- Facebook Login Button -->
-            <button id="facebook-login-button" class="facebook-button">
-                <i class="fa fa-facebook"></i> Connect with Facebook
-            </button>
+        <!-- Password Login Form -->
+        <div id="password-form" class="password-container">
+            <form id="password-login-form">
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-group">
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter network password" required>
+                        <div class="input-group-append">
+                            <span class="input-group-text" id="toggle-password">
+                                <i class="fa fa-eye-slash" id="eye-icon"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="login-button" id="connect-button">Connect to WiFi</button>
+            </form>
         </div>
 
         <!-- Footer with Brand Logo and Terms -->
@@ -262,15 +216,6 @@
     
     <script>
         $(document).ready(function() {
-            console.log('Document ready, initializing Facebook login page');
-            console.log('Full URL:', window.location.href);
-            console.log('Path:', window.location.pathname);
-            
-            // Quick check for social-login pattern
-            const path = window.location.pathname;
-            const isSocialLogin = path.includes('social-login/facebook');
-            console.log('Is social login pattern:', isSocialLogin);
-            
             // Get location data from localStorage
             const locationData = JSON.parse(localStorage.getItem('location_data') || '{}');
             const locationSettings = locationData.settings || {};
@@ -282,85 +227,98 @@
             
             // Get URL parameters (for mac address, etc.)
             const urlParams = new URLSearchParams(window.location.search);
-            let macAddress = urlParams.get('mac') || getPathParameter('mac_address');
-            let locationId = getPathParameter('location');
-            
-            // Fallback: Extract location and MAC directly from URL path segments
-            if (!locationId || !macAddress) {
-                const pathSegments = path.split('/').filter(segment => segment.length > 0);
-                console.log('Path segments:', pathSegments);
-                
-                // Special handling for social-login/facebook pattern
-                if (path.includes('social-login/facebook') && pathSegments.length >= 4) {
-                    locationId = locationId || pathSegments[2];
-                    macAddress = macAddress || pathSegments[3];
-                    console.log('Detected social-login pattern. Location:', locationId, 'MAC:', macAddress);
-                } else if (pathSegments.length >= 2) {
-                    // Typically the format would be /facebook-login/{location}/{mac}
-                    locationId = locationId || pathSegments[1];
-                    macAddress = macAddress || pathSegments[2];
-                }
-                
-                // If still not found, try to get MAC from query string
-                if (!macAddress) {
-                    const queryString = window.location.search;
-                    const urlParamsAll = new URLSearchParams(queryString);
-                    macAddress = urlParamsAll.get('mac') || urlParamsAll.get('client_mac') || macAddress;
-                }
-            }
-            
-            console.log('Location ID:', locationId);
-            console.log('MAC Address:', macAddress);
+            const macAddress = urlParams.get('mac') || getPathParameter('mac_address');
+            const locationId = getPathParameter('location');
             
             // Apply design settings
             applyDesignSettings(locationSettings, designData);
             
-            // Handle Facebook login button click
-            $('#facebook-login-button').on('click', function () {
-                console.log('Facebook login button clicked');
-
-                if (!locationId || !macAddress) {
-                    showAlert('Missing required parameters (location ID or MAC address)', 'danger');
-                    console.error('Missing parameters - Location ID:', locationId, 'MAC Address:', macAddress);
-                    return;
+            // Toggle password visibility
+            $('#toggle-password').on('click', function() {
+                const passwordInput = $('#password');
+                const eyeIcon = $('#eye-icon');
+                
+                if (passwordInput.attr('type') === 'password') {
+                    passwordInput.attr('type', 'text');
+                    eyeIcon.removeClass('fa-eye-slash').addClass('fa-eye');
+                } else {
+                    passwordInput.attr('type', 'password');
+                    eyeIcon.removeClass('fa-eye').addClass('fa-eye-slash');
                 }
-
-                const $button = $(this);
-                const originalText = $button.html();
-                $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Connecting...')
-                    .prop('disabled', true);
-
-                // Get current URL as login_url for callback redirection
-                let login_url = window.location.href;
-                // Remove any fragments from the URL
-                login_url = login_url.split('#')[0];
-                
-                console.log('Setting login_url in state:', login_url);
-                
-                // Simple state object with just the login_url
-                const loginData = {
-                    login_url: login_url
-                };
-
-                console.log('Facebook login state data:', loginData);
-                
-                // Construct Facebook OAuth URL
-                const facebookLoginUrl = 'https://www.facebook.com/v18.0/dialog/oauth' +
-                '?client_id=1187295546218563' +
-                '&redirect_uri=https%3A%2F%2Fmrwifi.cnctdwifi.com%2Fsocial-login%2Ffacebook-callback' +
-                '&state=' + encodeURIComponent(JSON.stringify(loginData)) +
-                '&scope=email,public_profile';
-
-                console.log('Redirecting to Facebook auth URL:', facebookLoginUrl);
-                window.location.href = facebookLoginUrl;
             });
             
-            // Verify Facebook button is present
-            if ($('#facebook-login-button').length) {
-                console.log('Facebook button found in DOM');
-            } else {
-                console.error('Facebook button not found in DOM');
-            }
+            // Handle password form submission
+            $('#password-login-form').on('submit', function(e) {
+                e.preventDefault();
+                
+                const password = $('#password').val();
+                
+                if (!password) {
+                    showAlert('Please enter the network password', 'danger');
+                    return;
+                }
+                
+                // Show loading state
+                const $button = $('#connect-button');
+                const originalText = $button.text();
+                $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Connecting...').prop('disabled', true);
+                
+                // Get location data and challenge
+                const challenge = localStorage.getItem('challenge');
+                const location_data = JSON.parse(localStorage.getItem('location_data') || '{}');
+                const ipAddress = localStorage.getItem('nas_ip');
+                
+                // Prepare login data for password method
+                var login_data = {
+                    location_id: locationId,
+                    mac_address: macAddress,
+                    login_method: 'password',
+                    password: password,
+                    challenge: challenge,
+                    ip_address: ipAddress
+                }
+                
+                console.log('Login data:', login_data);
+                
+                // Call the login API with password authentication
+                $.ajax({
+                    url: '/api/guest/login',
+                    method: 'POST',
+                    data: login_data,
+                    success: function(response) {
+                        console.log('Login response:', response);
+                        if (response.success) {
+                            // Show success message
+                            // showAlert('Successfully connected to WiFi', 'success');
+                            // Show message on the button
+                            
+                            $button.html('Password Verified!').removeClass('btn-primary').addClass('btn-success');
+                            
+                            // Redirect to success page or Internet after delay
+                            setTimeout(function() {
+                                const redirectUrl = response.login_url;
+                                alert(redirectUrl);
+                                window.location.href = redirectUrl;
+                            }, 2000);
+                        } else {
+                            // Show error
+                            $button.html(originalText).prop('disabled', false);
+                            showAlert(response.message || 'Failed to connect', 'danger');
+                        }
+                    },
+                    error: function(xhr) {
+                        // Restore button
+                        $button.html(originalText).prop('disabled', false);
+                        
+                        // Show error
+                        let errorMessage = 'Failed to connect to WiFi';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+                        showAlert(errorMessage, 'danger');
+                    }
+                });
+            });
             
             // Function to show alerts
             function showAlert(message, type) {
@@ -401,12 +359,12 @@
                 }
                 
                 // Set welcome message from full design data, fallback to settings
-                const welcomeMessage = design.welcome_message || settings.welcome_message || 'Connect to our WiFi network using your Facebook account.';
+                const welcomeMessage = design.welcome_message || settings.welcome_message;
                 if (welcomeMessage) {
                     $('#welcome-text').text(welcomeMessage);
                     
                     // Add login instructions if available
-                    const loginInstructions = design.login_instructions || '';
+                    const loginInstructions = design.login_instructions || 'Please enter the password to connect to our WiFi network.';
                     if (loginInstructions) {
                         $('#welcome-text').append(`<p class="mt-2">${loginInstructions}</p>`);
                     }
@@ -440,36 +398,14 @@
             
             // Helper function to get parameter from URL path
             function getPathParameter(param) {
-                const path = window.location.pathname;
-                const pathParts = path.split('/');
+                const pathParts = window.location.pathname.split('/');
                 
-                console.log('URL path:', path);
-                console.log('Path parts:', pathParts);
-                
-                // Check for social-login/facebook pattern
-                if (path.includes('social-login/facebook')) {
-                    if (param === 'location') {
-                        // URL pattern: /social-login/facebook/{location_id}/{mac_address}
-                        return pathParts[3] || '';
-                    } else if (param === 'mac_address') {
-                        // URL pattern: /social-login/facebook/{location_id}/{mac_address}
-                        return pathParts[4] || '';
-                    }
-                } else if (path.includes('facebook-login')) {
-                    if (param === 'location') {
-                        // Assuming URL pattern like /facebook-login/{location}/{mac_address}
-                        return pathParts[2] || '';
-                    } else if (param === 'mac_address') {
-                        // Assuming URL pattern like /facebook-login/{location}/{mac_address}
-                        return pathParts[3] || '';
-                    }
-                } else {
-                    // Handle other route patterns
-                    if (param === 'location') {
-                        return pathParts[2] || '';
-                    } else if (param === 'mac_address') {
-                        return pathParts[3] || '';
-                    }
+                if (param === 'location') {
+                    // Assuming URL pattern like /password-login/{location}/{mac_address}
+                    return pathParts[2] || '';
+                } else if (param === 'mac_address') {
+                    // Assuming URL pattern like /password-login/{location}/{mac_address}
+                    return pathParts[3] || '';
                 }
                 
                 return '';
