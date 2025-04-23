@@ -999,6 +999,25 @@
         </div>
     </div>
 
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteDesignModal" tabindex="-1" aria-labelledby="deleteDesignModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteDesignModalLabel">Confirm Deletion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this design? This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- BEGIN: Vendor JS-->
     <!-- Make sure jQuery is loaded first -->
     <script src="{{ asset('app-assets/vendors/js/jquery/jquery.min.js') }}"></script>
@@ -1404,7 +1423,8 @@
                 $('.portal-preview').css({
                     'background-image': `url(${bgPreview.attr('src')})`,
                     'background-size': 'cover',
-                    'background-position': 'center'
+                    'background-position': 'center',
+                    'background-repeat': 'no-repeat'
                 });
             }
             
@@ -1778,6 +1798,80 @@
             $('#preview-terms-container').show();
             $('#preview-logo').attr('src', '').hide();
         }
+
+        // Function to delete a captive portal design
+        function deleteDesign(designId) {
+            if (!designId) {
+                toastr.error('Invalid design ID');
+                return;
+            }
+
+            // Store the design ID in the modal for reference
+            $('#deleteDesignModal').data('designId', designId);
+            
+            // Show the modal
+            $('#deleteDesignModal').modal('show');
+        }
+
+        // Set up the delete confirmation button
+        $(document).ready(function() {
+            $('#confirmDeleteBtn').on('click', function() {
+                // Get the design ID from the modal's data
+                const designId = $('#deleteDesignModal').data('designId');
+                
+                // Hide the modal
+                $('#deleteDesignModal').modal('hide');
+                
+                // Show loading state on the design card
+                const designCard = $(`.edit-design[data-id="${designId}"]`).closest('.design-card');
+                designCard.addClass('opacity-50');
+                designCard.append(`
+                    <div class="position-absolute w-100 h-100 d-flex justify-content-center align-items-center" style="top: 0; left: 0; background: rgba(255,255,255,0.7); z-index: 5;">
+                        <div class="spinner-border spinner-border-sm text-primary" role="status">
+                            <span class="sr-only">Deleting...</span>
+                        </div>
+                    </div>
+                `);
+
+                // Create form data with method spoofing for Laravel
+                const formData = new FormData();
+                formData.append('_method', 'DELETE');
+                formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
+
+                // Send delete request to the API
+                $.ajax({
+                    url: `/api/captive-portal-designs/${designId}`,
+                    method: 'DELETE', // Always use POST with _method field for Laravel
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    },
+                    success: function(response) {
+                        console.log('Delete response:', response);
+                        toastr.success('Design deleted successfully');
+                        
+                        // Refresh the designs list
+                        fetchDesigns();
+                    },
+                    error: function(xhr) {
+                        console.error('Error deleting design:', xhr.responseText);
+                        
+                        try {
+                            const responseObj = JSON.parse(xhr.responseText);
+                            toastr.error(responseObj.message || 'Failed to delete design. Please try again.');
+                        } catch (e) {
+                            toastr.error('Failed to delete design. Please try again.');
+                        }
+                        
+                        // Remove loading state
+                        designCard.removeClass('opacity-50');
+                        designCard.find('.position-absolute').remove();
+                    }
+                });
+            });
+        });
     </script>
 </body>
 </html>

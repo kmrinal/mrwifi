@@ -266,8 +266,11 @@ class CaptivePortalDesignController extends Controller
      * @param  \App\Models\CaptivePortalDesign  $design
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(CaptivePortalDesign $design)
+    public function destroy( $design_id)
     {
+        $design = CaptivePortalDesign::find($design_id);
+        Log::info('Design to delete: ' . $design_id);
+        Log::info($design);
         // Check if the user owns this design or is an admin
         if (auth()->user()->id !== $design->user_id && auth()->user()->role !== 'admin') {
             return response()->json([
