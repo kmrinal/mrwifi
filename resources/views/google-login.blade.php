@@ -259,6 +259,49 @@
         </div>
     </div>
 
+    <!-- Modals for Terms and Privacy -->
+    <div class="modal fade" id="termsModal" tabindex="-1" role="dialog" aria-labelledby="termsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="termsModalLabel">Terms of Service</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="terms-content">
+                        
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="privacyModal" tabindex="-1" role="dialog" aria-labelledby="privacyModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="privacyModalLabel">Privacy Policy</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="privacy-content">
+                        
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="/app-assets/vendors/js/jquery/jquery.min.js"></script>
 
     <!-- Bootstrap JS -->
@@ -285,6 +328,8 @@
             const designData = locationData.design || {};
             console.log('Location data:', locationData);
             console.log('Design data:', designData);
+            $('#terms-content').html(designData.terms_content);
+            $('#privacy-content').html(designData.privacy_content);
             
             // Get URL parameters (for mac address, etc.)
             const urlParams = new URLSearchParams(window.location.search);
@@ -424,7 +469,16 @@
                 // Set terms visibility from full design data, fallback to settings
                 const showTerms = design.show_terms || settings.terms_enabled;
                 if (showTerms) {
-                    $('#terms-text').html('By connecting, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>');
+                    $('#terms-text').html('By connecting, you agree to our <a href="#" data-toggle="modal" data-target="#termsModal">Terms of Service</a> and <a href="#" data-toggle="modal" data-target="#privacyModal">Privacy Policy</a>');
+                }
+                
+                // Set custom terms and privacy content if available
+                if (design.terms_of_service) {
+                    $('#terms-content').html(design.terms_of_service);
+                }
+                
+                if (design.privacy_policy) {
+                    $('#privacy-content').html(design.privacy_policy);
                 }
             }
             

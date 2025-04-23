@@ -94,7 +94,7 @@ function processLocationData(location, mac_address, challenge, nas_ip) {
 
     // Determine login method from captive_auth_method
     const authMethod = settings.captive_auth_method;
-    alert(authMethod);
+    // alert(authMethod);
     // Redirect based on auth method
     switch (authMethod) {
         case 'email':
@@ -107,7 +107,7 @@ function processLocationData(location, mac_address, challenge, nas_ip) {
             break;
         case 'social':
             var social_logins = location.settings.captive_social_auth_method
-            alert('social_logins' + social_logins);
+            // alert('social_logins' + social_logins);
             if (social_logins.includes('facebook')) {
                 window.location.href = `/social-login/facebook/${location.id}/${mac_address}`;
             } else if (social_logins.includes('google')) {

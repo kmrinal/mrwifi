@@ -192,7 +192,7 @@
                         </div>
                     </div>
                 </div>
-                <button type="submit" class="login-button" id="connect-button">Connect to WiFi</button>
+                <button type="submit" class="login-button" id="connect-button"></button>
             </form>
         </div>
 
@@ -203,6 +203,49 @@
             </div>
             <div class="terms" id="terms-text">
                 Powered by Mr WiFi
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals for Terms and Privacy -->
+    <div class="modal fade" id="termsModal" tabindex="-1" role="dialog" aria-labelledby="termsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="termsModalLabel">Terms of Service</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="terms-content">
+                        
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="privacyModal" tabindex="-1" role="dialog" aria-labelledby="privacyModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="privacyModalLabel">Privacy Policy</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="privacy-content">
+                        
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
@@ -224,12 +267,17 @@
             const designData = locationData.design || {};
             console.log('Location data:', locationData);
             console.log('Design data:', designData);
+            $('#terms-content').html(designData.terms_content);
+            $('#privacy-content').html(designData.privacy_content);
+            var button_text = designData.button_text || 'Connect to WiFi';
+            $('#connect-button').text(button_text);
             
             // Get URL parameters (for mac address, etc.)
             const urlParams = new URLSearchParams(window.location.search);
             const macAddress = urlParams.get('mac') || getPathParameter('mac_address');
             const locationId = getPathParameter('location');
-            
+            // Set focus to password input
+            $('#password').focus();
             // Apply design settings
             applyDesignSettings(locationSettings, designData);
             
@@ -287,35 +335,60 @@
                     data: login_data,
                     success: function(response) {
                         console.log('Login response:', response);
+                        var orginal_button_color = $button.css('background-color');
                         if (response.success) {
-                            // Show success message
-                            // showAlert('Successfully connected to WiFi', 'success');
-                            // Show message on the button
+                            // Show first success part on button
+                            $button.removeClass('btn-primary').addClass('btn-success')
+                                .html('Password Verified! <i class="fa fa-check"></i>')
+                                .prop('disabled', true);
                             
-                            $button.html('Password Verified!').removeClass('btn-primary').addClass('btn-success');
-                            
-                            // Redirect to success page or Internet after delay
+                            // After a short delay, show the second part
                             setTimeout(function() {
-                                const redirectUrl = response.login_url;
-                                alert(redirectUrl);
-                                window.location.href = redirectUrl;
-                            }, 2000);
+                                $button.html('Connecting to WiFi... <i class="fa fa-wifi"></i>');
+                                
+                                // Redirect after another delay
+                                setTimeout(function() {
+                                    const redirectUrl = response.login_url;
+                                    window.location.href = redirectUrl;
+                                }, 1500);
+                            }, 1500);
                         } else {
-                            // Show error
-                            $button.html(originalText).prop('disabled', false);
-                            showAlert(response.message || 'Failed to connect', 'danger');
+                            // Show first error part on button
+                            $button.removeClass('btn-primary').addClass('btn-danger')
+                                .html('<i class="fa fa-times-circle"></i> Incorrect Password')
+                                .prop('disabled', false);
+                                
+                            // Show error in alert
+                            // showAlert(response.message || 'Failed to connect', 'danger');
+                            
+                            // After a short delay, show the second part
+                            setTimeout(function() {
+                                $button.html(button_text).removeClass('btn-danger').css('background-color', orginal_button_color);
+                            }, 1500);
                         }
                     },
                     error: function(xhr) {
-                        // Restore button
-                        $button.html(originalText).prop('disabled', false);
+                        // Show first error part on button
+                        $button.removeClass('btn-primary').addClass('btn-danger')
+                            .html('<i class="fa fa-exclamation-circle"></i> Verification Failed')
+                            .prop('disabled', false);
                         
-                        // Show error
-                        let errorMessage = 'Failed to connect to WiFi';
+                        // Show detailed error in alert
+                        let errorMessage = 'Verification Failed';
                         if (xhr.responseJSON && xhr.responseJSON.message) {
                             errorMessage = xhr.responseJSON.message;
                         }
-                        showAlert(errorMessage, 'danger');
+                        // showAlert(errorMessage, 'danger');
+                        
+                        // After a short delay, show the second part
+                        setTimeout(function() {
+                            $button.html(button_text).removeClass('btn-danger').css('background-color', orginal_button_color);
+                            
+                            // Set button's href to prelogin
+                            if (ipAddress) {
+                                $button.attr('href', `http://${ipAddress}:3990/prelogin`);
+                            }
+                        }, 1500);
                     }
                 });
             });
@@ -373,7 +446,16 @@
                 // Set terms visibility from full design data, fallback to settings
                 const showTerms = design.show_terms || settings.terms_enabled;
                 if (showTerms) {
-                    $('#terms-text').html('By connecting, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>');
+                    $('#terms-text').html('By connecting, you agree to our <a href="#" data-toggle="modal" data-target="#termsModal">Terms of Service</a> and <a href="#" data-toggle="modal" data-target="#privacyModal">Privacy Policy</a>');
+                }
+                
+                // Set custom terms and privacy content if available
+                if (design.terms_of_service) {
+                    $('#terms-content').html(design.terms_of_service);
+                }
+                
+                if (design.privacy_policy) {
+                    $('#privacy-content').html(design.privacy_policy);
                 }
             }
             

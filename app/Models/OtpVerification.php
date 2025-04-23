@@ -38,8 +38,7 @@ class OtpVerification extends Model
             ->update(['expires_at' => now()]);
 
         // Generate a new 6-digit OTP
-        $otp = (string) random_int(100000, 999999);
-        $otp = '123456';
+        $otp = (string) random_int(1000, 9999);
         
         // Create and return the new OTP record
         return self::create([

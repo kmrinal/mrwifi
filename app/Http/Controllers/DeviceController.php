@@ -147,6 +147,9 @@ class DeviceController extends Controller
             return response()->json(['error' => 'Settings not found'], 404);
         }
 
+        $settings->wifi_name = $settings->password_wifi_ssid;
+        $settings->wifi_password = $settings->password_wifi_password;
+
         $system_settings = SystemSetting::first();
         $radius_settings = [
             'radius_ip' => $system_settings->radius_ip,

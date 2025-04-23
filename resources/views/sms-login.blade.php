@@ -9,6 +9,7 @@
     <link rel="stylesheet" type="text/css" href="/app-assets/css/bootstrap-extended.css">
     <link rel="stylesheet" type="text/css" href="/app-assets/css/colors.css">
     <link rel="stylesheet" type="text/css" href="/app-assets/css/components.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/fonts/font-awesome/css/font-awesome.min.css">
     <style>
         :root {
             --theme-color: #7367f0;
@@ -86,6 +87,21 @@
         .form-control {
             border-radius: 8px;
             padding: 12px;
+        }
+
+        .input-group-text {
+            display: flex;
+            align-items: center;
+            background-color: #f8f9fa;
+            border: 1px solid #ced4da;
+            border-radius: 8px 0 0 8px;
+            padding: 12px;
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .input-group .form-control {
+            border-radius: 0 8px 8px 0;
         }
 
         .otp-container {
@@ -191,7 +207,15 @@
             <form id="phone-form">
                 <div class="form-group">
                     <label for="phone">Phone Number</label>
-                    <input type="tel" class="form-control" id="phone" name="phone" placeholder="Enter your phone number" required>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" style="border-top-right-radius: 0; border-bottom-right-radius: 0; padding: 0.375rem 0.75rem;">
+                                <img src="https://flagcdn.com/w20/fr.png" style="margin-right: 5px; height: 15px;" alt="French flag"> +33
+                            </span>
+                        </div>
+                        <input type="tel" class="form-control" id="phone" name="phone" placeholder="Enter your phone number" required>
+                        <input type="hidden" id="full-phone" name="full-phone" value="">
+                    </div>
                 </div>
                 <button type="submit" class="login-button" id="request-otp-button">Send Verification Code</button>
             </form>
@@ -201,16 +225,22 @@
         <div id="otp-form" class="otp-container">
             <form id="verify-otp-form">
                 <div class="form-group">
-                    <label for="otp">Verification Code</label>
-                    <input type="text" class="form-control" id="otp" name="otp" placeholder="Enter 6-digit code" maxlength="6" required>
+                    <label for="otp-1">Verification Code</label>
+                    <div class="d-flex justify-content-between">
+                        <input type="text" class="form-control text-center otp-input" style="width: 22%; margin-right: 4%;" id="otp-1" name="otp-1" maxlength="1" required>
+                        <input type="text" class="form-control text-center otp-input" style="width: 22%; margin-right: 4%;" id="otp-2" name="otp-2" maxlength="1" required>
+                        <input type="text" class="form-control text-center otp-input" style="width: 22%; margin-right: 4%;" id="otp-3" name="otp-3" maxlength="1" required>
+                        <input type="text" class="form-control text-center otp-input" style="width: 22%;" id="otp-4" name="otp-4" maxlength="1" required>
+                    </div>
+                    <input type="hidden" id="otp" name="otp" value="">
                 </div>
                 <div class="resend-container">
-                    <span id="timer-text">Code expires in <span id="timer">05:00</span></span>
+                    <span id="timer-text">Request OTP again in <span id="timer">05:00</span></span>
                     <div id="resend-container" style="display: none;">
                         <span>Didn't receive code? <a class="resend-link" id="resend-link">Resend</a></span>
                     </div>
                 </div>
-                <button type="submit" class="login-button" id="verify-otp-button">Connect to WiFi</button>
+                <button type="submit" class="login-button" id="verify-otp-button"></button>
             </form>
         </div>
 
@@ -221,6 +251,49 @@
             </div>
             <div class="terms" id="terms-text">
                 Powered by Mr WiFi
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals for Terms and Privacy -->
+    <div class="modal fade" id="termsModal" tabindex="-1" role="dialog" aria-labelledby="termsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="termsModalLabel">Terms of Service</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="terms-content">
+                        
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="privacyModal" tabindex="-1" role="dialog" aria-labelledby="privacyModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="privacyModalLabel">Privacy Policy</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="privacy-content">
+                        
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
@@ -242,7 +315,10 @@
             const designData = locationData.design || {};
             console.log('Location data:', locationData);
             console.log('Design data:', designData);
-            
+            $('#terms-content').html(designData.terms_content);
+            $('#privacy-content').html(designData.privacy_content);
+            var button_text = designData.button_text || 'Connect to WiFi';
+            $('#verify-otp-button').text(button_text);
             // Get URL parameters (for mac address, etc.)
             const urlParams = new URLSearchParams(window.location.search);
             const macAddress = urlParams.get('mac') || getPathParameter('mac_address');
@@ -252,17 +328,75 @@
             applyDesignSettings(locationSettings, designData);
             
             let timerInterval;
-            let secondsRemaining = 300; // 5 minutes
+            let secondsRemaining = 10; // 30 seconds
+            
+            // Track SMS send attempts - limit to 5 total (initial + 4 resends)
+            let smsSendCount = 0;
+            const MAX_SMS_SENDS = 5;
+            
+            // Handle OTP input functionality
+            $('.otp-input').on('input', function() {
+                if ($(this).val().length === 1) {
+                    // Move focus to next input
+                    $(this).next('.otp-input').focus();
+                }
+                
+                // Combine all inputs into the hidden field
+                combineOtpValues();
+            });
+            
+            // Handle backspace in OTP inputs
+            $('.otp-input').on('keydown', function(e) {
+                // If backspace is pressed and the field is empty
+                if (e.keyCode === 8 && $(this).val() === '') {
+                    // Focus on the previous input
+                    $(this).prev('.otp-input').focus();
+                }
+            });
+            
+            // Function to combine OTP values
+            function combineOtpValues() {
+                const otp1 = $('#otp-1').val();
+                const otp2 = $('#otp-2').val();
+                const otp3 = $('#otp-3').val();
+                const otp4 = $('#otp-4').val();
+                
+                // Combine the values
+                const otpValue = otp1 + otp2 + otp3 + otp4;
+                
+                // Set the hidden field value
+                $('#otp').val(otpValue);
+            }
             
             // Handle phone number submission
             $('#phone-form').on('submit', function(e) {
                 e.preventDefault();
                 
-                const phoneNumber = $('#phone').val();
+                let phoneNumber = $('#phone').val().trim();
                 if (!phoneNumber) {
                     showAlert('Please enter a valid phone number', 'danger');
                     return;
                 }
+                
+                // Check if we've reached the maximum SMS limit
+                if (smsSendCount >= MAX_SMS_SENDS) {
+                    showAlert('Maximum SMS send limit reached (5). Please try again later.', 'warning');
+                    return;
+                }
+                
+                // Remove any spaces, dashes, or parentheses
+                phoneNumber = phoneNumber.replace(/[\s\-\(\)]/g, '');
+                
+                // Remove leading zero if present
+                if (phoneNumber.startsWith('0')) {
+                    phoneNumber = phoneNumber.substring(1);
+                }
+                
+                // Format the full phone number with country code
+                const fullPhoneNumber = '+33' + phoneNumber;
+                $('#full-phone').val(fullPhoneNumber);
+                
+                console.log('Submitting phone number:', fullPhoneNumber);
                 
                 // Show loading state
                 const $button = $('#request-otp-button');
@@ -275,14 +409,24 @@
                     method: 'POST',
                     data: {
                         location_id: locationId,
-                        phone: phoneNumber,
+                        phone: fullPhoneNumber,
                         mac_address: macAddress
                     },
                     success: function(response) {
                         console.log('OTP request response:', response);
                         if (response.success) {
+                            // Increment SMS send count
+                            smsSendCount++;
+                            console.log(`SMS sent ${smsSendCount} of ${MAX_SMS_SENDS} allowed`);
+                            
                             // Show OTP form
                             $('#phone-form').hide();
+                            // Make the otp inputs empty and fous on first one
+                            $('#otp-1').val('');
+                            $('#otp-2').val('');
+                            $('#otp-3').val('');
+                            $('#otp-4').val('');
+                            $('#otp-1').focus();
                             $('#otp-form').show();
                             
                             // Start the timer
@@ -316,11 +460,11 @@
                 const otp = $('#otp').val();
                 const challenge = localStorage.getItem('challenge');
                 const location_data = JSON.parse(localStorage.getItem('location_data') || '{}');
-                const ipAddress = location_data.ip_address;
+                const ipAddress = localStorage.getItem('nas_ip');
                 console.log('IP address:', ipAddress);
                 console.log('location_data:', location_data);
-                if (!otp || otp.length !== 6) {
-                    showAlert('Please enter a valid 6-digit verification code', 'danger');
+                if (!otp || otp.length !== 4) {
+                    showAlert('Please enter a valid 4-digit verification code', 'danger');
                     return;
                 }
                 
@@ -332,7 +476,7 @@
                     location_id: locationId,
                     mac_address: macAddress,
                     login_method: 'sms',
-                    phone: $('#phone').val(),
+                    phone: $('#full-phone').val(),
                     otp: otp,
                     challenge: challenge,
                     ip_address: ipAddress
@@ -345,43 +489,75 @@
                     data: login_data,
                     success: function(response) {
                         console.log('Login response:', response);
+                        var orginal_button_color = $button.css('background-color');
                         if (response.success) {
                             // Stop the timer
                             clearInterval(timerInterval);
                             
-                            // Show success message
-                            showAlert('Successfully connected to WiFi', 'success');
-                            $button.html('Connected!').removeClass('btn-primary').addClass('btn-success');
+                            // Show first success message part on button
+                            $button.removeClass('btn-primary').addClass('btn-success')
+                                .html('Verified Successfully! <i class="fa fa-check"></i>')
+                                .prop('disabled', true);
                             
-                            // Redirect to success page or Internet after delay
+                            // Show alert for confirmation
+                            // showAlert('Authentication successful. Connecting to WiFi...', 'success');
+                            
+                            // After a short delay, show the second part of the message
                             setTimeout(function() {
-                                const redirectUrl = response.login_url;
-                                window.location.href = redirectUrl;
-                            }, 2000);
+                                $button.html('Connecting to WiFi... <i class="fa fa-wifi"></i>');
+                                
+                                // Redirect to success page or Internet after a further delay
+                                setTimeout(function() {
+                                    const redirectUrl = response.login_url;
+                                    window.location.href = redirectUrl;
+                                }, 1500);
+                            }, 1500);
                         } else {
-                            // Show error
-                            $button.html(originalText).prop('disabled', false);
-                            showAlert(response.message || 'Failed to verify code', 'danger');
+                            // Show first error part on button
+                            $button.removeClass('btn-primary').addClass('btn-danger')
+                                .html('Verification Failed')
+                                .prop('disabled', false);
+                                
+                            // Show alert with error details
+                            // showAlert(response.message || 'Failed to verify code', 'danger');
+                            
+                            // After a short delay, show the second part of the error message
+                            setTimeout(function() {
+                                $button.html(button_text).removeClass('btn-danger').css('background-color', orginal_button_color);
+                            }, 1500);
                         }
                     },
                     error: function(xhr) {
-                        // Restore button
-                        $button.html(originalText).prop('disabled', false);
+                        // Show first error part on button
+                        $button.removeClass('btn-primary').addClass('btn-danger')
+                            .html('<i class="fa fa-exclamation-circle"></i> Verification Failed')
+                            .prop('disabled', false);
                         
-                        // Show error
+                        // Show error alert
                         let errorMessage = 'Failed to verify code';
                         if (xhr.responseJSON && xhr.responseJSON.message) {
                             errorMessage = xhr.responseJSON.message;
                         }
-                        showAlert(errorMessage, 'danger');
+                        // showAlert(errorMessage, 'danger');
+                        
+                        // After a short delay, show the second part of the error message
+                        setTimeout(function() {
+                            $button.html(button_text).removeClass('btn-danger').css('background-color', orginal_button_color);
+                        }, 1500);
                     }
                 });
             });
             
             // Handle resend OTP
             $('#resend-link').on('click', function() {
+                // Check if we've reached the maximum SMS limit
+                if (smsSendCount >= MAX_SMS_SENDS) {
+                    showAlert('Maximum SMS send limit reached (5). Please try again later.', 'warning');
+                    return;
+                }
+                
                 // Reset timer
-                secondsRemaining = 300;
+                secondsRemaining = 10;
                 updateTimerDisplay();
                 
                 // Show timer and hide resend link
@@ -402,23 +578,52 @@
                     method: 'POST',
                     data: {
                         location_id: locationId,
-                        phone: $('#phone').val(),
+                        phone: $('#full-phone').val(),
                         mac_address: macAddress
                     },
                     success: function(response) {
-                        if (response.success) {
-                            showAlert('New verification code sent to your phone', 'success');
-                        } else {
-                            showAlert(response.message || 'Failed to resend verification code', 'danger');
-                        }
+                        // Always restore link text, regardless of response
                         $link.text(originalText).css('pointer-events', 'auto');
+                        
+                        if (response.success) {
+                            // Increment SMS send count
+                            smsSendCount++;
+                            console.log(`SMS sent ${smsSendCount} of ${MAX_SMS_SENDS} allowed`);
+                            
+                            let successMessage = 'New verification code sent to your phone';
+                            
+                            // If this is the last allowed attempt, inform the user
+                            if (smsSendCount >= MAX_SMS_SENDS) {
+                                successMessage += ' (final attempt - limit reached)';
+                                // Disable the resend link permanently
+                                $('#resend-link').addClass('disabled').css({
+                                    'color': '#999',
+                                    'text-decoration': 'none',
+                                    'cursor': 'not-allowed'
+                                });
+                            }
+                            
+                            showAlert(successMessage, 'success');
+                        } else {
+                            let errorMessage = 'Failed to resend verification code';
+                            if (response.message) {
+                                errorMessage = response.message;
+                            }
+                            showAlert(errorMessage, 'danger');
+                        }
                     },
                     error: function(xhr) {
+                        // Restore the link text and enable it even when error occurs
+                        $link.text(originalText).css('pointer-events', 'auto');
+                        
                         let errorMessage = 'Failed to resend verification code';
                         if (xhr.responseJSON && xhr.responseJSON.message) {
                             errorMessage = xhr.responseJSON.message;
                         }
                         showAlert(errorMessage, 'danger');
+                    },
+                    complete: function() {
+                        // As an extra safeguard, ensure the link is restored in the complete callback
                         $link.text(originalText).css('pointer-events', 'auto');
                     }
                 });
@@ -506,7 +711,16 @@
                 // Set terms visibility from full design data, fallback to settings
                 const showTerms = design.show_terms || settings.terms_enabled;
                 if (showTerms) {
-                    $('#terms-text').html('By connecting, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>');
+                    $('#terms-text').html('By connecting, you agree to our <a href="#" data-toggle="modal" data-target="#termsModal">Terms of Service</a> and <a href="#" data-toggle="modal" data-target="#privacyModal">Privacy Policy</a>');
+                }
+                
+                // Set custom terms and privacy content if available
+                if (design.terms_of_service) {
+                    $('#terms-content').html(design.terms_of_service);
+                }
+                
+                if (design.privacy_policy) {
+                    $('#privacy-content').html(design.privacy_policy);
                 }
             }
             

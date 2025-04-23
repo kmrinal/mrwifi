@@ -73,6 +73,8 @@ class CaptivePortalDesignController extends Controller
             'login_instructions' => 'nullable|string',
             'button_text' => 'required|string|max:100',
             'show_terms' => 'boolean',
+            'terms_content' => 'nullable|string',
+            'privacy_content' => 'nullable|string',
             'location_logo' => 'nullable|image|max:2048',
             'background_image' => 'nullable|image|max:5120',
         ]);
@@ -193,9 +195,14 @@ class CaptivePortalDesignController extends Controller
             'login_instructions' => 'nullable|string',
             'button_text' => 'required|string|max:100',
             'show_terms' => 'boolean',
+            'terms_content' => 'nullable|string',
+            'privacy_content' => 'nullable|string',
             'location_logo' => 'nullable|image|max:2048',
             'background_image' => 'nullable|image|max:5120',
         ]);
+
+        Log::info('terms of service: ' . $validated['terms_content']);
+        Log::info('privacy policy: ' . $validated['privacy_content']);
         
         // Handle file uploads
         if ($request->hasFile('location_logo')) {

@@ -184,6 +184,48 @@
         </div>
     </div>
 
+    <!-- Modals for Terms and Privacy -->
+    <div class="modal fade" id="termsModal" tabindex="-1" role="dialog" aria-labelledby="termsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="termsModalLabel">Terms of Service</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="terms-content">
+                        
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="privacyModal" tabindex="-1" role="dialog" aria-labelledby="privacyModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="privacyModalLabel">Privacy Policy</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="privacy-content">
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="/app-assets/vendors/js/jquery/jquery.min.js"></script>
     <script src="/app-assets/vendors/js/vendors.min.js"></script>
     <script src="/app-assets/js/core/app-menu.js"></script>
@@ -236,6 +278,8 @@
             // Get stored data from localStorage
             const locationData = JSON.parse(localStorage.getItem('location_data') || '{}');
             console.log('Location data:', locationData);
+            $('#terms-content').html(locationData.design.terms_content);
+            $('#privacy-content').html(locationData.design.privacy_content);
             const challenge = localStorage.getItem('challenge');
             const ipAddress = localStorage.getItem('nas_ip');
             
@@ -262,7 +306,7 @@
                     $('.status-icon').html('<i class="fa fa-times-circle text-danger" style="font-size: 48px;"></i>');
                     showAlert(message, 'danger');
                 } else {
-                    $('.status-icon').html('<i class="spinner-border text-primary"></i>');
+                    $('.status-icon').html('<i class="fa fa-check-circle text-success" style="font-size: 48px;"></i>');
                 }
             }
             
@@ -298,28 +342,33 @@
                 success: function(response) {
                     console.log('Login response:', response);
                     if (response.success) {
-                        // Update message to indicate Facebook authentication success
-                        updateStatus('Facebook authentication successful! Connecting to WiFi...');
-                        // Update icon to indicate intermediate state
-                        $('.status-icon').html('<i class="fa fa-wifi text-primary" style="font-size: 48px;"></i>');
+                        // First part: Show initial success verification message
+                        updateStatus('Authentication Successful');
+                        $('.status-icon').html('<i class="fa fa-check-circle text-success" style="font-size: 48px;"></i>');
                         
-                        // Show a temporary alert for facebook auth success
-                        showAlert('Social login successful. Initializing WiFi connection...', 'info');
+                        // Show alert for facebook auth success
+                        showAlert('Authentication successful. Connecting to WiFi...', 'success');
                         
-                        // Redirect to success page or Internet after delay
+                        // After a short delay, show the second part of the message
                         setTimeout(function() {
-                            const redirectUrl = response.login_url;
-                            if (redirectUrl) {
-                                // Update message before redirecting
-                                updateStatus('Redirecting to activate WiFi connection...');
-                                $('.status-icon').html('<i class="spinner-border text-primary"></i>');
-                                
-                                console.log('Redirecting to WiFi authentication URL:', redirectUrl);
-                                window.location.href = redirectUrl;
-                            } else {
-                                updateStatus('Error: Missing WiFi activation URL', true);
-                            }
-                        }, 2000);
+                            // Second part: Update to connection message
+                            updateStatus('Connecting to WiFi Network');
+                            $('.status-icon').html('<i class="fa fa-wifi text-primary" style="font-size: 48px;"></i>');
+                            
+                            // Redirect to success page or Internet after a further delay
+                            setTimeout(function() {
+                                const redirectUrl = response.login_url;
+                                if (redirectUrl) {
+                                    // Final update before redirecting
+                                    updateStatus('Redirecting to WiFi network...');
+                                    
+                                    console.log('Redirecting to WiFi authentication URL:', redirectUrl);
+                                    window.location.href = redirectUrl;
+                                } else {
+                                    updateStatus('Error: Missing WiFi activation URL', true);
+                                }
+                            }, 1500);
+                        }, 1500);
                     } else {
                         updateStatus('Authentication failed: ' + (response.message || 'Unknown error'), true);
                     }
@@ -359,7 +408,16 @@
                 // Set terms visibility from full design data, fallback to settings
                 const showTerms = design.show_terms || settings.terms_enabled;
                 if (showTerms) {
-                    $('#terms-text').html('By connecting, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>');
+                    $('#terms-text').html('By connecting, you agree to our <a href="#" data-toggle="modal" data-target="#termsModal">Terms of Service</a> and <a href="#" data-toggle="modal" data-target="#privacyModal">Privacy Policy</a>');
+                }
+                
+                // Set custom terms and privacy content if available
+                if (design.terms_of_service) {
+                    $('#terms-content').html(design.terms_of_service);
+                }
+                
+                if (design.privacy_policy) {
+                    $('#privacy-content').html(design.privacy_policy);
                 }
             }
             

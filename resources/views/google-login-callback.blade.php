@@ -331,11 +331,11 @@
             
             <!-- Success State (Hidden by Default) -->
             <div id="success-status" class="status-box loading" style="display: none;">
-                <div class="spinner-border mb-3" role="status">
-                    <span class="sr-only">Loading...</span>
+                <div class="success-icon mb-3">
+                    <i class="fa fa-check-circle" style="font-size: 48px; color: #28c76f;"></i>
                 </div>
-                <h4 class="mb-2">Logging in...</h4>
-                <p class="mb-3">Please wait while we connect you to the network.</p>
+                <h4 class="mb-2">Authentication Successful</h4>
+                <p class="mb-3">Your Google login was verified successfully.<br>Connecting to WiFi network...</p>
                 <div id="redirect-container"></div>
             </div>
             
@@ -369,6 +369,52 @@
         </div>
     </div>
 
+    <!-- Modals for Terms and Privacy -->
+    <div class="modal fade" id="termsModal" tabindex="-1" role="dialog" aria-labelledby="termsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="termsModalLabel">Terms of Service</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="terms-content">
+                        By accessing this WiFi service, you agree to comply with all applicable laws and the network's acceptable use policy.
+                        We reserve the right to monitor traffic and content accessed through our network, and to terminate access for violations of these terms.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="privacyModal" tabindex="-1" role="dialog" aria-labelledby="privacyModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="privacyModalLabel">Privacy Policy</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="privacy-content">
+                        We collect limited information when you use our WiFi service, including device identifiers, connection times, and usage data.
+                        This information is used to improve our service, troubleshoot technical issues, and comply with legal requirements.
+                        We do not sell your personal information to third parties.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="/app-assets/vendors/js/jquery/jquery.min.js"></script>
     <script>
         $(document).ready(function() {
@@ -398,7 +444,16 @@
             
             // Apply terms from localStorage if available
             if (locationData.settings && locationData.settings.terms_enabled) {
-                $('#terms-text').html('By connecting, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>');
+                $('#terms-text').html('By connecting, you agree to our <a href="#" data-toggle="modal" data-target="#termsModal">Terms of Service</a> and <a href="#" data-toggle="modal" data-target="#privacyModal">Privacy Policy</a>');
+            }
+            
+            // Set custom terms and privacy content if available
+            if (locationData.design && locationData.design.terms_of_service) {
+                $('#terms-content').html(locationData.design.terms_of_service);
+            }
+            
+            if (locationData.design && locationData.design.privacy_policy) {
+                $('#privacy-content').html(locationData.design.privacy_policy);
             }
             
             // Get URL parameters
@@ -551,25 +606,44 @@
                         $('#api-response').text(JSON.stringify(response));
                         
                         if (response.success) {
-                            // Show success message
-                            showSuccess();
+                            // First part: Show authentication success
+                            $('#loading-status').hide();
+                            $('#error-status').hide();
+                            $('#success-status').show();
                             
-                            // If there's a redirect URL in the response, add button and set auto-redirect
-                            if (response.redirect_url) {
-                                console.log('Redirect URL provided:', response.redirect_url);
+                            // Set initial success message
+                            $('#success-status').find('h4').text('Authentication Successful');
+                            $('#success-status').find('p').text('Your Google login was verified successfully.');
+                            
+                            // After a short delay, show the second part
+                            setTimeout(function() {
+                                // Update to connection message
+                                $('#success-status').find('h4').text('Connecting to WiFi');
+                                $('#success-status').find('p').text('Initializing your connection to the WiFi network...');
                                 
-                                // Add continue button
-                                $('#redirect-container').html(`
-                                    <a href="${response.redirect_url}" class="login-button">
-                                        Continue Browsing
-                                    </a>
-                                `);
+                                // Change icon to WiFi
+                                $('#success-status .success-icon i').removeClass('fa-check-circle').addClass('fa-wifi');
                                 
-                                // Set auto-redirect after 3 seconds
-                                setTimeout(function() {
-                                    window.location.href = response.redirect_url;
-                                }, 3000);
-                            }
+                                // If there's a redirect URL in the response, handle it after another delay
+                                if (response.login_url || response.redirect_url) {
+                                    const redirectUrl = response.login_url || response.redirect_url;
+                                    console.log('Redirect URL provided:', redirectUrl);
+                                    
+                                    // Add continue button if needed
+                                    if (!$('#redirect-container').html()) {
+                                        $('#redirect-container').html(`
+                                            <a href="${redirectUrl}" class="login-button btn-success">
+                                                <i class="fa fa-wifi"></i> Continue to WiFi
+                                            </a>
+                                        `);
+                                    }
+                                    
+                                    // Set auto-redirect
+                                    setTimeout(function() {
+                                        window.location.href = redirectUrl;
+                                    }, 1500);
+                                }
+                            }, 1500);
                         } else {
                             // Show error with the message from the response
                             showError('Connection Failed', response.message || 'There was an error connecting to the WiFi network.');
@@ -596,13 +670,6 @@
                         $('#debug-info').show();
                     }
                 });
-            }
-            
-            // Function to show success state
-            function showSuccess() {
-                $('#loading-status').hide();
-                $('#error-status').hide();
-                $('#success-status').show();
             }
             
             // Function to show error state

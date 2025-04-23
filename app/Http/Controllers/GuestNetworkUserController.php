@@ -146,6 +146,7 @@ class GuestNetworkUserController extends Controller
 
         // Send the OTP via SMS
         $smsService = new SmsService();
+        Log::info("Sending OTP ".$otpVerification->otp." to {$phone}");
         $smsSent = $smsService->sendOtp($phone, $otpVerification->otp);
 
         if (!$smsSent) {
@@ -177,12 +178,14 @@ class GuestNetworkUserController extends Controller
             'email' => 'nullable|email|max:255',
             'phone' => 'nullable|string|max:255',
             'social_platform' => 'nullable|string|max:255',
-            'otp' => 'nullable|string|size:6',
+            'otp' => 'nullable|string|size:4',
             'challenge' => 'required|string|max:255',
             'ip_address' => 'required|string|max:255',
         ]);
 
         if ($validator->fails()) {
+            Log::info("Validation failed");
+            Log::info($validator->errors());
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
@@ -198,7 +201,9 @@ class GuestNetworkUserController extends Controller
                 ], 422);
             }
         } else if ($request['login_method'] == 'sms') {
+            Log::info("Login method is SMS");
             if (!$request['phone'] || !$request['otp']) {
+                Log::info("Phone and OTP are required");
                 return response()->json([
                     'success' => false,
                     'message' => 'Phone and OTP are required'
@@ -207,6 +212,7 @@ class GuestNetworkUserController extends Controller
             
             // Verify OTP
             if (!OtpVerification::verifyOtp($request['phone'], $request['otp'], $request['location_id'])) {
+                Log::info("Invalid or expired OTP");
                 return response()->json([
                     'success' => false,
                     'message' => 'Invalid or expired OTP'
@@ -305,9 +311,10 @@ class GuestNetworkUserController extends Controller
         
         // Get the captive portal IP address from the request
         $ip_address = $request['ip_address']; // This is the captive portal WiFi IP
-        
+        $redirect_url = env('SOLUTION_URL');
+
         // Build the login redirect URL
-        $redirect_url = $location_settings->redirect_url ?? 'https://www.mrwifi.net';
+        $redirect_url = $location_settings->redirect_url ?? $redirect_url;
         $login_redirect_url = 'http://' . $ip_address . ':3990/logon?username=' . $username . '&response=' . $response . '&userurl=' . urlencode($redirect_url);
 
         return response()->json([

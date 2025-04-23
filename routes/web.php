@@ -86,6 +86,8 @@ Route::get('/guest-login', function () {
         return view('guest-login-success');
     } else if ($responseState === 'failed') {
         return view('guest-login-failed');
+    } else if ($responseState === 'already') {
+        return view('already-logged-in');
     } else {
         // Default to 'notyet' state
         return view('guest-login');

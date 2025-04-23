@@ -106,12 +106,16 @@
         .portal-preview {
             background: #fff;
             border-radius: 8px;
-            padding: 20px;
+            padding: 30px;
             box-shadow: 0 4px 24px 0 rgba(34, 41, 47, 0.1);
             max-width: 100%;
             margin: 0 auto;
             position: relative;
             z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 400px;
         }
         
         /* Add a semi-transparent overlay for better text readability when a background image is present */
@@ -125,6 +129,80 @@
             background: rgba(255, 255, 255, 0.7);
             border-radius: 8px;
             z-index: -1;
+        }
+
+        .preview-main {
+            width: 100%;
+            max-width: 320px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .logo-container {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .preview-logo {
+            max-height: 80px;
+            max-width: 200px;
+            object-fit: contain;
+        }
+        
+        #preview-welcome {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        #preview-instructions {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+        
+        .input-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .preview-input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        .preview-button {
+            width: 100%;
+            padding: 12px 20px;
+            background-color: #7367f0;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .preview-terms {
+            font-size: 12px;
+            color: #666;
+            margin-top: 15px;
+            text-align: center;
+        }
+        
+        .preview-terms a {
+            color: #7367f0;
+            text-decoration: none;
         }
         
         .header {
@@ -380,14 +458,30 @@
             background: #fff;
         }
 
+        /* Fix for modals that need to display over fullscreen cards */
+        .modal {
+            z-index: 2100 !important;
+        }
+        
+        .modal-backdrop {
+            z-index: 2050 !important;
+        }
+
         .card-fullscreen .card-body {
             height: calc(100% - 60px); /* Adjust for card header height */
             overflow-y: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
         }
 
         .card-fullscreen .portal-preview {
-            max-width: 500px; /* Or your desired width */
-            margin: 20px auto;
+            max-width: 100%; /* Or your desired width */
+            width: 90%;
+            margin: 0 auto;
+            height: auto;
+            min-height: 500px;
         }
 
         /* Loading overlay styles */
@@ -413,6 +507,43 @@
             justify-content: center;
             padding: 3rem;
             color: #6e6b7b;
+        }
+        
+        /* Responsive styles for preview */
+        @media (max-width: 991px) {
+            .preview-container {
+                margin-top: 2rem;
+            }
+            
+            .portal-preview {
+                min-height: 350px;
+            }
+        }
+        
+        @media (max-width: 767px) {
+            .portal-preview {
+                padding: 20px;
+                min-height: 320px;
+            }
+            
+            #preview-welcome {
+                font-size: 20px;
+            }
+            
+            #preview-instructions {
+                font-size: 14px;
+            }
+            
+            .preview-input, .preview-button {
+                padding: 8px 15px;
+                font-size: 14px;
+            }
+        }
+        
+        @media (max-width: 575px) {
+            .preview-main {
+                max-width: 100%;
+            }
         }
     </style>
 </head>
@@ -881,6 +1012,22 @@
                                                             </div>
                                                         </div>
                                                     </div>
+
+                                                    <div class="col-12 mt-2 mb-1">
+                                                        <h6 class="mb-1">Legal Content</h6>
+                                                    </div>
+                                                    <div class="col-12 mb-1">
+                                                        <div class="form-group">
+                                                            <label for="terms-of-service">Terms of Service Content</label>
+                                                            <textarea class="form-control" id="terms-of-service" rows="3" placeholder="Enter your terms of service content">By accessing this WiFi service, you agree to comply with all applicable laws and the network's acceptable use policy. We reserve the right to monitor traffic and content accessed through our network, and to terminate access for violations of these terms.</textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 mb-1">
+                                                        <div class="form-group">
+                                                            <label for="privacy-policy">Privacy Policy Content</label>
+                                                            <textarea class="form-control" id="privacy-policy" rows="3" placeholder="Enter your privacy policy content">We collect limited information when you use our WiFi service, including device identifiers, connection times, and usage data. This information is used to improve our service, troubleshoot technical issues, and comply with legal requirements. We do not sell your personal information to third parties.</textarea>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </form>
                                         </div>
@@ -948,24 +1095,19 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="portal-preview">
-                                        <div class="header">
-                                            <div class="location-logo" id="preview-location-logo">
-                                                <img src="{{ asset('assets/starbucks.png') }}" alt="Mr WiFi" style="max-height: 60px; width: auto;">
+                                        <div class="preview-main">
+                                            <div class="logo-container">
+                                                <img src="{{ asset('img/wifi-placeholder.png') }}" alt="Location Logo" id="preview-logo" class="preview-logo">
                                             </div>
-                                            <div class="welcome-text" id="preview-welcome">Welcome to our WiFi</div>
-                                        </div>
-                                        <div class="login-placeholder">
-                                            <p id="preview-instructions">Click Below to Login</p>
-                                            <button class="btn btn-primary w-100 mb-2" id="preview-button">Connect to WiFi</button>
-                                            <div class="terms-container" id="preview-terms-container">
-                                                <small class="terms">
-                                                    By connecting, you agree to our <a href="#">Terms & Conditions</a>
-                                                </small>
+                                            <h2 id="preview-welcome">Welcome to our WiFi</h2>
+                                            <p id="preview-instructions">Enter your email to connect to our WiFi network</p>
+                                            <div class="input-container">
+                                                <input type="text" class="preview-input" placeholder="Email Address">
+                                                <button id="preview-button" class="preview-button">Connect to WiFi</button>
                                             </div>
-                                        </div>
-                                        <div class="login-placeholder-footer" style="text-align: center;background-color: #ffffff;border:0px;">
-                                            <p class="mb-0">Powered by</p>
-                                            <img src="{{ asset('app-assets/mrwifi-assets/Mr-Wifi.PNG') }}" alt="Mr WiFi" style="max-height: 40px; width: auto;">
+                                            <div id="preview-terms-container" class="preview-terms">
+                                                <small>By connecting, you agree to our <a href="#" data-toggle="modal" data-target="#previewTermsModal">Terms of Service</a> and <a href="#" data-toggle="modal" data-target="#previewPrivacyModal">Privacy Policy</a>.</small>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -977,6 +1119,45 @@
         </div>
     </div>
     <!-- END: Content-->
+
+    <!-- Preview Modals -->
+    <div class="modal fade" id="previewTermsModal" tabindex="-1" role="dialog" aria-labelledby="termsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="termsModalLabel">Terms of Service</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="preview-terms-content">By accessing this WiFi service, you agree to comply with all applicable laws and the network's acceptable use policy. We reserve the right to monitor traffic and content accessed through our network, and to terminate access for violations of these terms.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="previewPrivacyModal" tabindex="-1" role="dialog" aria-labelledby="privacyModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="privacyModalLabel">Privacy Policy</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="preview-privacy-content">We collect limited information when you use our WiFi service, including device identifiers, connection times, and usage data. This information is used to improve our service, troubleshoot technical issues, and comply with legal requirements. We do not sell your personal information to third parties.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- BEGIN: Vendor JS-->
     <!-- Make sure jQuery is loaded first -->
@@ -1034,21 +1215,62 @@
                 $('.user-name').text(user.name);
                 $('.user-status').text(user.role);
             }
+            
+            // Make sure preview displays properly on initial load
+            initializePreview();
+            
+            // Fix for modal links in the preview to ensure they work in both normal and fullscreen modes
+            $(document).on('click', '.preview-terms a[data-toggle="modal"]', function(e) {
+                e.preventDefault();
+                const modalId = $(this).data('target');
+                $(modalId).modal('show');
+            });
+            
+            // Handle expand preview functionality with fixed modal behavior
+            $('[data-action="expand"]').on('click', function(e) {
+                e.preventDefault();
+                const $previewCard = $(this).closest('.card');
+                
+                if ($previewCard.hasClass('card-fullscreen')) {
+                    // Exit fullscreen
+                    $previewCard.removeClass('card-fullscreen');
+                    $(this).find('i').replaceWith(feather.icons['maximize'].toSvg());
+                } else {
+                    // Enter fullscreen
+                    $previewCard.addClass('card-fullscreen');
+                    $(this).find('i').replaceWith(feather.icons['minimize'].toSvg());
+                    
+                    // Ensure modals are at body level for proper z-index stacking
+                    $('#previewTermsModal, #previewPrivacyModal').appendTo('body');
+                    
+                    // Reinitialize modal links in fullscreen mode
+                    $previewCard.find('.preview-terms a[data-toggle="modal"]').each(function() {
+                        const targetModal = $(this).data('target');
+                        $(this).off('click').on('click', function(e) {
+                            e.preventDefault();
+                            $(targetModal).modal('show');
+                        });
+                    });
+                }
+                
+                // Re-initialize feather icons
+                feather.replace();
+            });
 
             // Live preview updates
             $('#welcome-message').on('input', function() {
-                $('#preview-welcome').text($(this).val());
+                $('#preview-welcome').text($(this).val() || 'Welcome to our WiFi');
             });
 
             $('#login-instructions').on('input', function() {
-                $('#preview-instructions').text($(this).val());
+                $('#preview-instructions').text($(this).val() || 'Enter your email to connect to our WiFi network');
             });
 
             $('#button-text').on('input', function() {
-                $('#preview-button').text($(this).val());
+                $('#preview-button').text($(this).val() || 'Connect to WiFi');
             });
 
-            $('#theme-color').on('input', function() {
+            $('#theme-color').on('change', function() {
                 const color = $(this).val();
                 $('.color-preview').css('background-color', color);
                 $('.color-value').text(color);
@@ -1060,6 +1282,14 @@
 
             $('#show-terms').on('change', function() {
                 $('#preview-terms-container').toggle(this.checked);
+            });
+            
+            $('#terms-of-service').on('input', function() {
+                $('#preview-terms-content').text($(this).val() || 'By accessing this WiFi service, you agree to comply with all applicable laws and the network\'s acceptable use policy. We reserve the right to monitor traffic and content accessed through our network, and to terminate access for violations of these terms.');
+            });
+            
+            $('#privacy-policy').on('input', function() {
+                $('#preview-privacy-content').text($(this).val() || 'We collect limited information when you use our WiFi service, including device identifiers, connection times, and usage data. This information is used to improve our service, troubleshoot technical issues, and comply with legal requirements. We do not sell your personal information to third parties.');
             });
 
             // Update preview when uploading images
@@ -1076,7 +1306,7 @@
                         preview.css('display', 'block');
                         
                         if (previewId === 'location-logo-preview') {
-                            $('#preview-location-logo').html(`<img src="${e.target.result}" alt="Location Logo" style="max-height: 60px; width: auto;">`);
+                            $('#preview-logo').attr('src', e.target.result).show();
                         } else if (previewId === 'background-preview') {
                             // Set the background image of the portal preview container
                             $('.portal-preview').css({
@@ -1120,25 +1350,6 @@
                 readURL(this, 'background-preview');
             });
 
-            // Handle expand preview functionality
-            $('[data-action="expand"]').on('click', function(e) {
-                e.preventDefault();
-                const $previewCard = $(this).closest('.card');
-                
-                if ($previewCard.hasClass('card-fullscreen')) {
-                    // Exit fullscreen
-                    $previewCard.removeClass('card-fullscreen');
-                    $(this).find('i').replaceWith(feather.icons['maximize'].toSvg());
-                } else {
-                    // Enter fullscreen
-                    $previewCard.addClass('card-fullscreen');
-                    $(this).find('i').replaceWith(feather.icons['minimize'].toSvg());
-                }
-                
-                // Re-initialize feather icons
-                feather.replace();
-            });
-            
             // Edit design buttons - now using event delegation for dynamically created elements
             $(document).on('click', '.edit-design', function(e) {
                 e.preventDefault();
@@ -1236,6 +1447,11 @@
                 formData.append('login_instructions', $('#login-instructions').val());
                 formData.append('button_text', buttonText);
                 formData.append('show_terms', $('#show-terms').is(':checked') ? 1 : 0);
+                
+                // Add terms of service and privacy policy content
+                formData.append('terms_content', $('#terms-of-service').val());
+                formData.append('privacy_content', $('#privacy-policy').val());
+                
                 console.log('formData:', formData);
                 // Add files if selected
                 if ($('#location-logo-file')[0].files[0]) {
@@ -1315,6 +1531,49 @@
             setupDragAndDrop('background-upload', 'background-file');
         });
 
+        // Function to initialize the preview with default values
+        function initializePreview() {
+            // Get initial values from form
+            const welcomeText = $('#welcome-message').val() || 'Welcome to our WiFi';
+            const instructions = $('#login-instructions').val() || 'Enter your email to connect to our WiFi network';
+            const buttonText = $('#button-text').val() || 'Connect to WiFi';
+            const themeColor = $('#theme-color').val() || '#7367f0';
+            const showTerms = $('#show-terms').is(':checked');
+            
+            // Update preview elements
+            $('#preview-welcome').text(welcomeText);
+            $('#preview-instructions').text(instructions);
+            $('#preview-button').text(buttonText);
+            $('#preview-button').css({
+                'background-color': themeColor,
+                'border-color': themeColor
+            });
+            $('#preview-terms-container').toggle(showTerms);
+            
+            // Check if we have a logo in preview
+            const logoPreview = $('#location-logo-preview');
+            if (logoPreview.attr('src') && logoPreview.css('display') !== 'none') {
+                $('#preview-logo').attr('src', logoPreview.attr('src')).show();
+            } else {
+                $('#preview-logo').hide();
+            }
+            
+            // Check if we have a background image in preview
+            const bgPreview = $('#background-preview');
+            if (bgPreview.attr('src') && bgPreview.css('display') !== 'none') {
+                $('.portal-preview').css({
+                    'background-image': `url(${bgPreview.attr('src')})`,
+                    'background-size': 'cover',
+                    'background-position': 'center'
+                });
+            }
+            
+            // Move modals to body to ensure they work with proper z-index
+            if ($('#previewTermsModal').parent()[0] !== document.body) {
+                $('#previewTermsModal, #previewPrivacyModal').appendTo('body');
+            }
+        }
+
         // Global variable to store the current design ID being edited
         let currentDesignId = null;
 
@@ -1363,6 +1622,10 @@
                         $('#button-text').val(design.button_text || 'Connect to WiFi');
                         $('#show-terms').prop('checked', design.show_terms === undefined ? true : !!design.show_terms);
                         
+                        // Load terms and privacy content if available
+                        $('#terms-of-service').val(design.terms_content || 'By accessing this WiFi service, you agree to comply with all applicable laws and the network\'s acceptable use policy. We reserve the right to monitor traffic and content accessed through our network, and to terminate access for violations of these terms.');
+                        $('#privacy-policy').val(design.privacy_content || 'We collect limited information when you use our WiFi service, including device identifiers, connection times, and usage data. This information is used to improve our service, troubleshoot technical issues, and comply with legal requirements. We do not sell your personal information to third parties.');
+                        
                         // Update preview values
                         $('#preview-welcome').text(design.welcome_message || 'Welcome to our WiFi');
                         $('#preview-instructions').text(design.login_instructions || 'Enter your email to connect to our WiFi network');
@@ -1373,15 +1636,19 @@
                         });
                         $('#preview-terms-container').toggle(design.show_terms === undefined ? true : !!design.show_terms);
                         
+                        // Update modal content for terms and privacy policy
+                        $('#preview-terms-content').text(design.terms_content || 'By accessing this WiFi service, you agree to comply with all applicable laws and the network\'s acceptable use policy. We reserve the right to monitor traffic and content accessed through our network, and to terminate access for violations of these terms.');
+                        $('#preview-privacy-content').text(design.privacy_content || 'We collect limited information when you use our WiFi service, including device identifiers, connection times, and usage data. This information is used to improve our service, troubleshoot technical issues, and comply with legal requirements. We do not sell your personal information to third parties.');
+                        
                         // Handle logo preview if available
                         if (design.location_logo_url) {
                             const logoUrl = design.location_logo_url;
                             $('#location-logo-preview').attr('src', logoUrl).show();
-                            $('#preview-location-logo').html(`<img src="${logoUrl}" alt="${design.name}" style="max-height: 60px; width: auto;">`);
+                            $('#preview-logo').attr('src', logoUrl).show();
                         } else if (design.location_logo_path) {
                             const logoUrl = `/storage/${design.location_logo_path}`;
                             $('#location-logo-preview').attr('src', logoUrl).show();
-                            $('#preview-location-logo').html(`<img src="${logoUrl}" alt="${design.name}" style="max-height: 60px; width: auto;">`);
+                            $('#preview-logo').attr('src', logoUrl).show();
                         }
                         
                         // Handle background preview if available
@@ -1644,6 +1911,10 @@
             $('#button-text').val('Connect to WiFi');
             $('#show-terms').prop('checked', true);
             
+            // Reset terms and privacy policy to default values
+            $('#terms-of-service').val('By accessing this WiFi service, you agree to comply with all applicable laws and the network\'s acceptable use policy. We reserve the right to monitor traffic and content accessed through our network, and to terminate access for violations of these terms.');
+            $('#privacy-policy').val('We collect limited information when you use our WiFi service, including device identifiers, connection times, and usage data. This information is used to improve our service, troubleshoot technical issues, and comply with legal requirements. We do not sell your personal information to third parties.');
+            
             // Reset file inputs
             $('#location-logo-file').val('');
             $('#background-file').val('');
@@ -1667,7 +1938,7 @@
                 'border-color': '#7367f0'
             });
             $('#preview-terms-container').show();
-            $('#preview-location-logo').html('<img src="{{ asset("app-assets/mrwifi-assets/Mr-Wifi.PNG") }}" alt="Mr WiFi" style="max-height: 60px; width: auto;">');
+            $('#preview-logo').attr('src', '').hide();
         }
     </script>
 </body>

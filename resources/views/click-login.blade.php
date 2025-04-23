@@ -9,6 +9,8 @@
     <link rel="stylesheet" type="text/css" href="/app-assets/css/bootstrap-extended.css">
     <link rel="stylesheet" type="text/css" href="/app-assets/css/colors.css">
     <link rel="stylesheet" type="text/css" href="/app-assets/css/components.css">
+    <link rel="stylesheet" type="text/css" href="/app-assets/fonts/font-awesome/css/font-awesome.min.css">
+    
     <style>
         :root {
             --theme-color: #7367f0;
@@ -186,6 +188,49 @@
         </div>
     </div>
 
+    <!-- Modals for Terms and Privacy -->
+    <div class="modal fade" id="termsModal" tabindex="-1" role="dialog" aria-labelledby="termsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="termsModalLabel">Terms of Service</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="terms-content">
+                        
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="privacyModal" tabindex="-1" role="dialog" aria-labelledby="privacyModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="privacyModalLabel">Privacy Policy</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="privacy-content">
+                        
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="/app-assets/vendors/js/jquery/jquery.min.js"></script>
 
     <!-- Bootstrap JS -->
@@ -208,12 +253,16 @@
             const urlParams = new URLSearchParams(window.location.search);
             const macAddress = urlParams.get('mac') || getPathParameter('mac_address');
             const locationId = getPathParameter('location');
-            
+            $('#terms-content').html(designData.terms_content);
+            $('#privacy-content').html(designData.privacy_content);
+            var button_text = designData.button_text || 'Connect to WiFi';
             // Apply design settings
             applyDesignSettings(locationSettings, designData);
             
             // Connect button functionality
-            $('#connect-button').on('click', function() {
+            $('#connect-button').on('click', function(e) {
+                e.preventDefault();
+                
                 // Show loading state
                 const $button = $(this);
                 const originalText = $button.text();
@@ -221,7 +270,7 @@
                 $button.prop('disabled', true);
                 
                 const challenge = localStorage.getItem('challenge');
-                const ipAddress = locationData.ip_address;
+                const ipAddress = localStorage.getItem('nas_ip');
                 
                 // Call the login API
                 $.ajax({
@@ -237,32 +286,57 @@
                     success: function(response) {
                         console.log('response', response);
                         if (response.success) {
-                            // Show success message
-                            // showAlert('Successfully connected to WiFi', 'success');
-                            $button.html('Processing...').removeClass('btn-primary').addClass('btn-success');
+                            // Show first success part on button
+                            // $button.removeClass('btn-primary').addClass('btn-success')
+                            //     .html('<i class="fa fa-check"></i> Connected!');
+                            $button.html('<i class="fa fa-wifi"></i> Connecting to WiFi...');
                             
-                            // Redirect to login URL
+                            // After a short delay, show the second part
                             setTimeout(function() {
-                                const redirectUrl = response.login_url;
-                                window.location.href = redirectUrl;
-                            }, 2000);
+                                
+                                // Redirect after another delay
+                                setTimeout(function() {
+                                    const redirectUrl = response.login_url;
+                                    window.location.href = redirectUrl;
+                                }, 1500);
+                            }, 1500);
                         } else {
-                            // Show error
-                            $button.html(originalText);
-                            $button.prop('disabled', false);
+                            // Show first error part on button
+                            $button.removeClass('btn-primary').addClass('btn-danger')
+                                .html('<i class="fa fa-times-circle"></i> Connection Failed')
+                                .prop('disabled', false);
+                                
+                            // Show error in alert
                             showAlert('Error connecting to WiFi: ' + (response.message || 'Unknown error'), 'danger');
+                            
+                            // After a short delay, show the second part
+                            setTimeout(function() {
+                                $button.html('<i class="fa fa-refresh"></i> Try Again').removeClass('btn-danger').addClass('btn-primary');
+                            }, 1500);
                         }
                     },
                     error: function(xhr) {
-                        // Restore button on error
-                        $button.html(originalText);
-                        $button.prop('disabled', false);
+                        // Show first error part on button
+                        $button.removeClass('btn-primary').addClass('btn-danger')
+                            .html('<i class="fa fa-exclamation-circle"></i> Connection Error')
+                            .prop('disabled', false);
                         
+                        // Show detailed error in alert
                         let errorMessage = 'Failed to connect to WiFi';
                         if (xhr.responseJSON && xhr.responseJSON.message) {
                             errorMessage = xhr.responseJSON.message;
                         }
                         showAlert(errorMessage, 'danger');
+                        
+                        // After a short delay, show the second part
+                        setTimeout(function() {
+                            $button.html('<i class="fa fa-refresh"></i> Try Again').removeClass('btn-danger').addClass('btn-primary');
+                            
+                            // Set button's href to prelogin
+                            if (ipAddress) {
+                                $button.attr('href', `http://${ipAddress}:3990/prelogin`);
+                            }
+                        }, 1500);
                     }
                 });
             });
@@ -319,13 +393,22 @@
                 
                 // Set button text from full design data
                 if (design.button_text) {
-                    $('#connect-button').text(design.button_text);
+                    $('#connect-button').text(button_text);
                 }
                 
                 // Set terms visibility from full design data, fallback to settings
                 const showTerms = design.show_terms || settings.terms_enabled;
                 if (showTerms) {
-                    $('#terms-text').html('By connecting, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>');
+                    $('#terms-text').html('By connecting, you agree to our <a href="#" data-toggle="modal" data-target="#termsModal">Terms of Service</a> and <a href="#" data-toggle="modal" data-target="#privacyModal">Privacy Policy</a>');
+                }
+                
+                // Set custom terms and privacy content if available
+                if (design.terms_of_service) {
+                    $('#terms-content').html(design.terms_of_service);
+                }
+                
+                if (design.privacy_policy) {
+                    $('#privacy-content').html(design.privacy_policy);
                 }
             }
             

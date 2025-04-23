@@ -20,6 +20,8 @@ class CaptivePortalDesign extends Model
         'login_instructions',
         'button_text',
         'show_terms',
+        'terms_content',
+        'privacy_content',
         'location_logo_path',
         'background_image_path',
         'additional_settings',
