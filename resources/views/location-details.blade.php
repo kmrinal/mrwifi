@@ -612,7 +612,7 @@
                                     <hr>
                                     <div class="d-flex justify-content-between align-items-center mb-1">
                                 <span class="text-muted">Router Model:</span>
-                                <span class="font-weight-bold"><span class="router_model"></span></span>
+                                <span class="font-weight-bold"><span class="router_model_updated"></span></span>
                                     </div>
                                     <div class="d-flex justify-content-between align-items-center mb-1">
                                 <span class="text-muted">Firmware:</span>
@@ -630,13 +630,17 @@
                                 <span class="text-muted">Uptime:</span>
                                 <span class="font-weight-bold"><span class="uptime"></span></span>
                                         </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="text-muted">Reboot Count:</span>
+                                        <span class="font-weight-bold"><span class="reboot_count">0</span></span>
+                                    </div>
                             <hr>
                             <div class="d-flex justify-content-between">
-                                <button class="btn btn-primary btn-sm">
+                                <button class="btn btn-primary btn-sm" id="device-restart-btn">
                                     <i data-feather="refresh-cw" class="mr-50"></i>
                                     <span>Restart</span>
                                 </button>
-                                <button class="btn btn-outline-primary btn-sm">
+                                <button class="btn btn-outline-primary btn-sm" id="update-firmware-btn">
                                     <i data-feather="download" class="mr-50"></i>
                                     <span>Update Firmware</span>
                                 </button>
@@ -645,7 +649,7 @@
                             </div>
                         </div>
 
-                <!-- Usage Card -->
+                        <!-- Usage Card -->
                         <div class="col-lg-4 col-md-6 col-12">
                             <div class="card">
                                 <div class="card-header d-flex justify-content-between align-items-center">
@@ -1695,6 +1699,15 @@
                             <input type="text" class="form-control" id="location-country" placeholder="Country">
                         </div>
                         <div class="form-group">
+                            <label for="router-model-select">Router Model</label>
+                            <select class="form-control" id="router-model-select">
+                                <option value="">Select Router Model</option>
+                                <option value="820AX">820AX</option>
+                                <option value="835AX">835AX</option>
+                            </select>
+                            <small class="text-muted">Choose the router model installed at this location.</small>
+                        </div>
+                        <div class="form-group">
                             <label for="location-manager">Manager Name</label>
                             <input type="text" class="form-control" id="location-manager" placeholder="Manager name">
                         </div>
@@ -2345,6 +2358,197 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         </div>
     </div>
+    
+    <!-- Device Restart Confirmation Modal -->
+    <div class="modal fade" id="restart-confirmation-modal" tabindex="-1" role="dialog" aria-labelledby="restart-confirmation-modal-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="restart-confirmation-modal-title">
+                        <i data-feather="refresh-cw" class="mr-2"></i>Restart Device
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning mb-3">
+                        <div class="alert-body">
+                            <i data-feather="alert-triangle" class="mr-2"></i>
+                            <strong>Warning:</strong> This action will restart the device and temporarily interrupt internet access.
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="avatar bg-light-primary p-50 mr-3">
+                            <div class="avatar-content">
+                                <i data-feather="hard-drive" class="font-medium-4"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">Device Information</h6>
+                            <p class="card-text text-muted mb-0">Location: <span class="location_name font-weight-bold"></span></p>
+                            <p class="card-text text-muted mb-0">Model: <span class="router_model font-weight-bold"></span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-light-secondary p-2 rounded mb-3">
+                        <h6 class="mb-2">What happens during restart:</h6>
+                        <ul class="mb-0 pl-3">
+                            <li>WiFi networks will be temporarily unavailable (2-3 minutes)</li>
+                            <li>Connected users will be disconnected</li>
+    
+                        </ul>
+                    </div>
+                    
+                    <p class="text-muted">Are you sure you want to restart this device?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirm-restart-btn">
+                        <i data-feather="refresh-cw" class="mr-1"></i>
+                        <span>Restart Device</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Firmware Update Modal -->
+    <div class="modal fade" id="firmware-update-modal" tabindex="-1" role="dialog" aria-labelledby="firmware-update-modal-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="firmware-update-modal-title">
+                        <i data-feather="download" class="mr-2"></i>Update Firmware
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info mb-3">
+                        <div class="alert-body">
+                            <i data-feather="info" class="mr-2"></i>
+                            <strong>Important:</strong> Firmware update will restart the device and may take 5-10 minutes to complete.
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="avatar bg-light-primary p-50 mr-3">
+                            <div class="avatar-content">
+                                <i data-feather="hard-drive" class="font-medium-4"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">Current Device Information</h6>
+                            <p class="card-text text-muted mb-0">Model: <span class="router_model font-weight-bold"></span></p>
+                            <p class="card-text text-muted mb-0">Current Firmware: <span class="router_firmware font-weight-bold"></span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="firmware-version-select">Available Firmware Versions</label>
+                        <select class="form-control" id="firmware-version-select">
+                            <option value="">Loading firmware versions...</option>
+                        </select>
+                        <small class="text-muted">Select a firmware version compatible with your device model.</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="firmware-description">Firmware Description</label>
+                        <div class="card">
+                            <div class="card-body p-2">
+                                <div id="firmware-description">
+                                    <p class="text-muted mb-0">Select a firmware version to view details.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-light-warning p-2 rounded mb-3">
+                        <h6 class="mb-2">During firmware update:</h6>
+                        <ul class="mb-0 pl-3">
+                            <li>Device will reboot automatically</li>
+                            <li>WiFi networks will be unavailable for 5-10 minutes</li>
+                            <li>All connected users will be disconnected</li>
+                            <li>Do not power off the device during update</li>
+                        </ul>
+                    </div>
+                    
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="start-firmware-update-btn" disabled>
+                        <i data-feather="download" class="mr-1"></i>
+                        <span>Update Firmware</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Firmware Update Progress Modal -->
+    <div class="modal fade" id="firmware-progress-modal" tabindex="-1" role="dialog" aria-labelledby="firmware-progress-modal-title" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="firmware-progress-modal-title">
+                        <i data-feather="download" class="mr-2"></i>Updating Firmware
+                    </h5>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning mb-3">
+                        <div class="alert-body">
+                            <i data-feather="alert-triangle" class="mr-2"></i>
+                            <strong>Do not close this window or power off the device during update.</strong>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mb-3">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="progress progress-bar-primary mb-2">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%" id="firmware-progress-bar"></div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <h6 id="firmware-progress-status">Preparing firmware update...</h6>
+                        <p class="text-muted mb-0" id="firmware-progress-description">This may take several minutes to complete.</p>
+                    </div>
+                    
+                    <div class="timeline mt-3">
+                        <div class="timeline-item">
+                            <div class="timeline-point-indicator timeline-point-primary" id="step-1-indicator"></div>
+                            <div class="timeline-event">
+                                <h6>Uploading Firmware</h6>
+                                <p class="text-muted mb-0">Transferring firmware to device</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-point-indicator" id="step-2-indicator"></div>
+                            <div class="timeline-event">
+                                <h6>Installing Update</h6>
+                                <p class="text-muted mb-0">Writing firmware to device memory</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-point-indicator" id="step-3-indicator"></div>
+                            <div class="timeline-event">
+                                <h6>Rebooting Device</h6>
+                                <p class="text-muted mb-0">Device will restart with new firmware</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <!-- END: Modals -->
 
     <!-- BEGIN: Vendor JS-->
@@ -2372,7 +2576,745 @@ document.addEventListener('DOMContentLoaded', function() {
     <script src="/assets/js/config.js"></script>
     <script src="/assets/js/location-details.js?time=<?php echo time(); ?>"></script>
     <script>
+        // Firmware Update Modal functionality
+        $(document).ready(function() {
+            // Show firmware update modal when button is clicked
+            $('#update-firmware-btn').on('click', function() {
+                // Check if router model is set
+                const routerModel = $('.router_model_updated').text().trim();
+                if (!routerModel) {
+                    toastr.error('Please set the router model first in Location Details before updating firmware.');
+                    return;
+                }
+                
+                $('#firmware-update-modal').modal('show');
+                loadFirmwareVersions();
+            });
 
+            // Load firmware versions based on router model
+            function loadFirmwareVersions() {
+                // Get router model from the dropdown selection or current device
+                const routerModel = $('#router-model-select').val() || $('.router_model_updated').text();
+                const $select = $('#firmware-version-select');
+                
+                console.log('Loading firmware for model:', routerModel);
+                
+                // Clear existing options
+                $select.html('<option value="">Loading firmware versions...</option>');
+                
+                // Make API call to get firmware versions based on model
+                getFirmwareByModel(routerModel)
+                
+                    .then(function(firmwareVersions) {
+                        console.log('Received firmware versions:', firmwareVersions);
+                        
+                        $select.empty();
+                        if (firmwareVersions.length === 0) {
+                            $select.html('<option value="">No firmware versions available for this model</option>');
+                            $('#firmware-description').html('<div class="alert alert-warning mb-0"><i data-feather="alert-triangle" class="mr-1"></i>This device model (' + routerModel + ') is not supported for firmware updates. Only 820AX and 835AX models are supported.</div>');
+                            return;
+                        }
+                        
+                        $select.append('<option value="">Select firmware version...</option>');
+                        
+                        firmwareVersions.forEach(function(firmware) {
+                            console.log('Processing firmware:', firmware);
+                            const option = `<option value="${firmware.id}" 
+                                            data-name="${firmware.name}"
+                                            data-version="${firmware.version}"
+                                            data-description="${firmware.description}"
+                                            data-release-date="${firmware.release_date}"
+                                            data-file-size="${firmware.file_size}"
+                                            data-changelog="${firmware.changelog}"
+                                            data-model="${firmware.model}"
+                                            data-file-name="${firmware.file_name}"
+                                            data-md5sum="${firmware.md5sum}">
+                                            ${firmware.name}
+                                            ${firmware.is_latest ? ' (Latest)' : ''}
+                                            ${firmware.is_current ? ' (Current)' : ''}
+                                        </option>`;
+                            $select.append(option);
+                        });
+                        
+                        // Pre-select current firmware if device data is available
+                        if (window.currentDeviceData && window.currentDeviceData.firmware_id) {
+                            console.log('Pre-selecting current firmware ID:', window.currentDeviceData.firmware_id);
+                            $select.val(window.currentDeviceData.firmware_id);
+                            $select.trigger('change'); // Trigger change event to show firmware details
+                        } else if (window.currentDeviceData && window.currentDeviceData.firmware_version) {
+                            // If no firmware_id but we have firmware_version, try to match by name
+                            console.log('Trying to pre-select by firmware version name:', window.currentDeviceData.firmware_version);
+                            $select.find('option').each(function() {
+                                if ($(this).data('name') === window.currentDeviceData.firmware_version) {
+                                    $select.val($(this).val());
+                                    $select.trigger('change');
+                                    return false; // Break the loop
+                                }
+                            });
+                        }
+                    })
+                    .catch(function(error) {
+                        console.error('Error loading firmware versions:', error);
+                        $select.html('<option value="">Error loading firmware versions</option>');
+                        $('#firmware-description').html('<div class="alert alert-danger mb-0"><i data-feather="alert-circle" class="mr-1"></i>Failed to load firmware versions. Please try again later.</div>');
+                        toastr.error('Failed to load firmware versions');
+                    });
+            }
+
+            // API call to get firmware by model
+            function getFirmwareByModel(model) {
+
+                console.log('Getting firmware by model:', model);
+                return new Promise(function(resolve, reject) {
+                    // Check if model is supported
+                    if (!model || (model !== '820AX' && model !== '835AX')) {
+                        resolve([]);
+                        return;
+                    }
+
+                    $.ajax({
+                        url: '/api/firmware/model/' + model,
+                        method: 'GET',
+                        headers: {
+                            'Authorization': 'Bearer ' + UserManager.getToken(),
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        success: function(response) {
+                            console.log("firmware response:::::", response);
+                            // Transform API response to match expected format
+                            let firmwareList = [];
+                            
+                            if (response.data && Array.isArray(response.data)) {
+                                firmwareList = response.data.map(function(firmware) {
+                                    return {
+                                        id: firmware.id,
+                                        name: firmware.name || 'Unnamed Firmware',
+                                        version: firmware.version || firmware.name || 'Unknown Version',
+                                        description: firmware.description || 'No description available',
+                                        release_date: firmware.created_at ? firmware.created_at.split('T')[0] : 'Unknown',
+                                        file_size: firmware.file_size ? (firmware.file_size + ' bytes') : 'Unknown',
+                                        changelog: firmware.description || 'No changelog available',
+                                        is_latest: false, // You may need to determine this logic
+                                        is_current: false, // You may need to determine this logic
+                                        model: firmware.model,
+                                        file_name: firmware.file_name,
+                                        md5sum: firmware.md5sum,
+                                        is_enabled: firmware.is_enabled
+                                    };
+                                });
+                            } else if (response && Array.isArray(response)) {
+                                // Handle direct array response
+                                firmwareList = response.map(function(firmware) {
+                                    return {
+                                        id: firmware.id,
+                                        name: firmware.name || 'Unnamed Firmware',
+                                        version: firmware.version || firmware.name || 'Unknown Version',
+                                        description: firmware.description || 'No description available',
+                                        release_date: firmware.created_at ? firmware.created_at.split('T')[0] : 'Unknown',
+                                        file_size: firmware.file_size ? (firmware.file_size + ' bytes') : 'Unknown',
+                                        changelog: firmware.description || 'No changelog available',
+                                        is_latest: false,
+                                        is_current: false,
+                                        model: firmware.model,
+                                        file_name: firmware.file_name,
+                                        md5sum: firmware.md5sum,
+                                        is_enabled: firmware.is_enabled
+                                    };
+                                });
+                            }
+                            
+                            resolve(firmwareList);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('API Error:', xhr.responseText);
+                            reject(error);
+                        }
+                    });
+                });
+            }
+
+            // Handle firmware version selection
+            $('#firmware-version-select').on('change', function() {
+                const selectedOption = $(this).find('option:selected');
+                const $button = $('#start-firmware-update-btn');
+                const $description = $('#firmware-description');
+
+                if (selectedOption.val()) {
+                    // Enable update button
+                    $button.prop('disabled', false);
+                    
+                    // Show firmware details
+                    const details = `
+                        <div class="row">
+                            <div class="col-6">
+                                <strong>Name:</strong> ${selectedOption.data('name')}<br>
+                                <strong>Version:</strong> ${selectedOption.data('version')}<br>
+                                <strong>Release Date:</strong> ${selectedOption.data('release-date')}<br>
+                                <strong>File Size:</strong> ${selectedOption.data('file-size')}
+                            </div>
+                            <div class="col-6">
+                                <strong>Model:</strong> ${selectedOption.data('model')}<br>
+                                <strong>File Name:</strong> ${selectedOption.data('file-name')}<br>
+                                <strong>MD5 Checksum:</strong><br>
+                                <small class="text-muted">${selectedOption.data('md5sum')}</small>
+                            </div>
+                        </div>
+                        <hr class="my-2">
+                        <p class="mb-0">${selectedOption.data('description')}</p>
+                    `;
+                    $description.html(details);
+                } else {
+                    // Disable update button
+                    $button.prop('disabled', true);
+                    $description.html('<p class="text-muted mb-0">Select a firmware version to view details.</p>');
+                }
+            });
+
+            // Handle firmware update start
+            $('#start-firmware-update-btn').on('click', function() {
+                const selectedOption = $('#firmware-version-select option:selected');
+                
+                if (!selectedOption.val()) {
+                    toastr.error('Please select a firmware version to update.');
+                    return;
+                }
+
+                const firmwareId = selectedOption.val();
+                const firmwareName = selectedOption.data('name');
+                const locationId = getLocationId();
+                
+                console.log('Initiating firmware update:', {
+                    locationId: locationId,
+                    firmwareId: firmwareId,
+                    firmwareName: firmwareName
+                });
+                
+                if (!locationId) {
+                    toastr.error('Location ID not found');
+                    return;
+                }
+
+                // Show loading state
+                const $button = $(this);
+                const originalText = $button.html();
+                $button.html('<i data-feather="loader" class="mr-1"></i> Initiating Update...').prop('disabled', true);
+
+                // Make API call to update firmware
+                $.ajax({
+                    url: `/api/locations/${locationId}/update-firmware`,
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + UserManager.getToken(),
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    data: JSON.stringify({
+                        firmware_id: firmwareId,
+                        firmware_version: firmwareName
+                    }),
+                    success: function(response) {
+                        console.log('Firmware update API response:', response);
+                        
+                        // Hide selection modal
+                        $('#firmware-update-modal').modal('hide');
+                        
+                        // Show success message
+                        toastr.success('Firmware update initiated successfully! The device will be upgraded in 5-10 minutes. Please do not power off the device during this time.', 'Firmware Update Started', {
+                            timeOut: 8000,
+                            extendedTimeOut: 3000,
+                            closeButton: true,
+                            progressBar: true
+                        });
+                        
+                        // Update the displayed firmware version
+                        if (response.data && response.data.device && response.data.device.firmware_version) {
+                            $('.router_firmware').text(response.data.device.firmware_version);
+                            // Update the stored device data
+                            if (window.currentDeviceData) {
+                                window.currentDeviceData.firmware_version = response.data.device.firmware_version;
+                                window.currentDeviceData.firmware_id = response.data.device.firmware_id;
+                            }
+                        } else {
+                            // If no firmware version in response, use the firmware name we sent
+                            $('.router_firmware').text(firmwareName);
+                            if (window.currentDeviceData) {
+                                window.currentDeviceData.firmware_version = firmwareName;
+                                window.currentDeviceData.firmware_id = firmwareId;
+                            }
+                        }
+                        
+                        // Reset button state
+                        $button.html(originalText).prop('disabled', false);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Firmware update failed:', xhr.responseText);
+                        
+                        // Reset button state
+                        $button.html(originalText).prop('disabled', false);
+                        
+                        // Handle API error
+                        handleApiError(xhr, status, error, 'updating device firmware');
+                    }
+                });
+            });
+        });
+
+        // Function to get location ID (moved outside of document ready block for global access)
+        function getLocationId() {
+            // Option 1: From URL path (e.g., /locations/123/details or /location-details?id=123)
+            const pathParts = window.location.pathname.split('/');
+            console.log('URL path parts:', pathParts);
+            
+            // Check for locations/ID pattern
+            const locationIndex = pathParts.indexOf('locations');
+            if (locationIndex !== -1 && pathParts[locationIndex + 1]) {
+                const locationId = pathParts[locationIndex + 1];
+                console.log('Found location ID from path:', locationId);
+                return locationId;
+            }
+            
+            // Option 2: From URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const locationId = urlParams.get('location_id') || urlParams.get('id');
+            if (locationId) {
+                console.log('Found location ID from URL params:', locationId);
+                return locationId;
+            }
+            
+            // Option 3: From breadcrumb text (as fallback) - "Location 14"
+            const breadcrumbText = $('.breadcrumb-item.active').text();
+            console.log('Breadcrumb text:', breadcrumbText);
+            const locationMatch = breadcrumbText.match(/Location (\d+)/);
+            if (locationMatch) {
+                const locationId = locationMatch[1];
+                console.log('Found location ID from breadcrumb:', locationId);
+                return locationId;
+            }
+            
+            // Option 4: From data attribute or global variable
+            if (window.currentLocationId) {
+                console.log('Found location ID from global variable:', window.currentLocationId);
+                return window.currentLocationId;
+            }
+            
+            console.log('No location ID found');
+            return null;
+        }
+
+        // Helper function to handle API errors consistently
+        function handleApiError(xhr, status, error, context) {
+            console.error(`API Error in ${context}:`, error);
+            console.error('Status:', status);
+            console.error('Response:', xhr.responseText);
+            
+            if (xhr.status === 401) {
+                console.error('Unauthorized - redirecting to login');
+                toastr.error('Session expired. Please log in again.');
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 2000);
+                return;
+            }
+            
+            let errorMessage = 'An error occurred';
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                errorMessage = xhr.responseJSON.message;
+            } else if (xhr.responseText) {
+                try {
+                    const response = JSON.parse(xhr.responseText);
+                    errorMessage = response.message || response.error || errorMessage;
+                } catch (e) {
+                    errorMessage = error || errorMessage;
+                }
+            }
+            
+            toastr.error(`${context}: ${errorMessage}`);
+        }
+
+        // Router Model Selection functionality
+        $(document).ready(function() {
+            // Check authentication first
+            if (!UserManager.getToken()) {
+                console.error('No authentication token found, redirecting to login');
+                
+                // Debug: Let's see what's actually in localStorage
+                console.log('localStorage contents:');
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    console.log(`${key}: ${localStorage.getItem(key)}`);
+                }
+                
+                console.log('UserManager.getToken():', UserManager.getToken());
+                console.log('Available UserManager methods:', Object.keys(UserManager));
+                
+                // Don't redirect immediately for debugging
+                // window.location.href = '/';
+                // return;
+            } else {
+                console.log('Authentication token found:', UserManager.getToken().substring(0, 20) + '...');
+            }
+
+            // Clear/unset router model on page load
+            console.log('Clearing router model on page load');
+            $('.router_model_updated').text('');
+            $('.router_firmware').text('Unknown');  // Set default text instead of empty
+            $('#router-model-select').val('');
+            
+            // Global variable to store current device data
+            window.currentDeviceData = null;
+
+            // Function to load device data from API
+            function loadDeviceData() {
+                console.log('Loading device data from API');
+                
+                // Get location ID from URL or data attribute
+                const locationId = getLocationId();
+                
+                if (!locationId) {
+                    console.log('No location ID found - cannot load device data');
+                    return;
+                }
+
+                console.log('Making API call to /api/locations/' + locationId);
+
+                $.ajax({
+                    url: '/api/locations/' + locationId,
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + UserManager.getToken(),
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    success: function(response) {
+                        console.log('API Response received:', response);
+                        
+                        // Extract device data from response
+                        let device = null;
+                        if (response.data && response.data.device) {
+                            device = response.data.device;
+                        } else if (response.device) {
+                            device = response.device;
+                        } else if (response.data && response.data.devices && response.data.devices.length > 0) {
+                            device = response.data.devices[0]; // Take first device if multiple
+                        }
+
+                        console.log('Extracted device data:', device);
+
+                        if (device) {
+                            // Store device data globally for use in other functions
+                            window.currentDeviceData = device;
+                            
+                            // Update router model if it exists
+                            if (device.model) {
+                                console.log('Setting router model to:', device.model);
+                                $('.router_model_updated').text(device.model);
+                                $('#router-model-select').val(device.model);
+                            } else {
+                                console.log('No device model found, leaving blank');
+                                $('.router_model_updated').text('');
+                                $('#router-model-select').val('');
+                            }
+
+                            // Update firmware version if it exists
+                            if (device.firmware_version && device.firmware_version.trim() !== '') {
+                                console.log('Setting firmware version to:', device.firmware_version);
+                                $('.router_firmware').text(device.firmware_version);
+                            } else {
+                                console.log('No firmware version found, checking for latest firmware for model:', device.model);
+                                $('.router_firmware').text('Not Set');
+                                
+                                // If device has a model but no firmware, try to get the latest firmware for this model
+                                if (device.model && (device.model === '820AX' || device.model === '835AX')) {
+                                    loadLatestFirmwareForModel(device.model);
+                                }
+                            }
+                            // Update other device fields
+                            if (device.reboot_count !== null && device.reboot_count !== undefined) {
+                                console.log('Setting reboot count to:', device.reboot_count);
+                                $('.reboot_count').text(device.reboot_count);
+                            }
+                        } else {
+                            console.log('No device data found in response, setting defaults');
+                            window.currentDeviceData = null;
+                            $('.router_model_updated').text('');
+                            $('.router_firmware').text('Unknown');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        handleApiError(xhr, status, error, 'loading device data');
+                    }
+                });
+            }
+
+            // Function to load latest firmware for a specific model when current firmware is not set
+            function loadLatestFirmwareForModel(model) {
+                console.log('Loading latest firmware for model:', model);
+                
+                getFirmwareByModel(model)
+                    .then(function(firmwareVersions) {
+                        if (firmwareVersions.length > 0) {
+                            // Find the latest firmware (you can modify this logic based on your needs)
+                            // For now, we'll take the first one or look for one marked as latest
+                            let latestFirmware = firmwareVersions.find(fw => fw.is_latest) || firmwareVersions[0];
+                            
+                            console.log('Found latest firmware:', latestFirmware);
+                            $('.router_firmware').text(latestFirmware.version + ' (Latest Available)');
+                        } else {
+                            console.log('No firmware versions found for model:', model);
+                            $('.router_firmware').text('No Firmware Available');
+                        }
+                    })
+                    .catch(function(error) {
+                        console.error('Error loading latest firmware for model:', error);
+                        $('.router_firmware').text('Error Loading Firmware');
+                    });
+            }
+
+            // Save location information including router model
+            $('#save-location-info').on('click', function() {
+                const locationData = {
+                    name: $('#location-name').val(),
+                    address: $('#location-address').val(),
+                    city: $('#location-city').val(),
+                    state: $('#location-state').val(),
+                    postal_code: $('#location-postal-code').val(),
+                    country: $('#location-country').val(),
+                    router_model: $('#router-model-select').val(),
+                    manager: $('#location-manager').val(),
+                    contact_email: $('#location-contact-email').val(),
+                    contact_phone: $('#location-contact-phone').val(),
+                    status: $('#location-status').val(),
+                    description: $('#location-description').val(),
+                };
+
+                // Validate required fields
+                if (!locationData.name) {
+                    toastr.error('Location name is required.');
+                    return;
+                }
+
+                // Router model is optional now - removed validation
+                // if (!locationData.router_model) {
+                //     toastr.error('Please select a router model.');
+                //     return;
+                // }
+
+                // Show loading state
+                const $button = $(this);
+                const originalText = $button.html();
+                $button.html('<i data-feather="loader" class="mr-1"></i> Saving...').prop('disabled', true);
+
+                // Make real API call to save location information
+                const locationId = getLocationId();
+                if (!locationId) {
+                    toastr.error('Location ID not found');
+                    $button.html(originalText).prop('disabled', false);
+                    return;
+                }
+
+                console.log('Saving location data:', locationData);
+
+                $.ajax({
+                    url: '/api/locations/' + locationId,
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': 'Bearer ' + UserManager.getToken(),
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    data: JSON.stringify(locationData),
+                    success: function(response) {
+                        console.log('Location data saved successfully:', response);
+                        
+                        // Update UI elements with new data
+                        $('.location_name').text(locationData.name);
+                        $('.location_address').text(locationData.address + ', ' + locationData.city + ', ' + locationData.state);
+                        $('.router_model_updated').text(locationData.router_model);
+                        
+                        // Reset button state
+                        $button.html(originalText).prop('disabled', false);
+                        
+                        // Show success message
+                        toastr.success('Location information saved successfully!');
+                        
+                        // Re-initialize feather icons
+                        if (typeof feather !== 'undefined') {
+                            feather.replace();
+                        }
+                        
+                        // Reload device data to verify the update
+                        setTimeout(function() {
+                            loadDeviceData();
+                        }, 1000);
+                    },
+                    error: function(xhr, status, error) {
+                        // Reset button state first
+                        $button.html(originalText).prop('disabled', false);
+                        
+                        // Then handle the API error
+                        handleApiError(xhr, status, error, 'saving location data');
+                    }
+                });
+            });
+
+            // Load existing location data when page loads
+            function loadLocationData() {
+                console.log('loadLocationData called');
+                
+                // In a real application, this would load from your backend
+                // For now, we'll populate with sample data if fields are empty
+                
+                if (!$('#location-name').val()) {
+                    console.log('Loading sample location data');
+                    // Sample data - replace with actual API call
+                    const sampleData = {
+                        name: 'Downtown Coffee Shop',
+                        address: '123 Main Street',
+                        city: 'New York',
+                        state: 'NY',
+                        postal_code: '10001',
+                        country: 'United States',
+                        router_model: '', // Always start with blank
+                        manager: 'John Smith',
+                        contact_email: 'john@coffeeshop.com',
+                        contact_phone: '+1 (555) 123-4567',
+                        status: 'active',
+                        description: 'Main downtown location with high traffic'
+                    };
+                    
+                    // Populate form fields
+                    $('#location-name').val(sampleData.name);
+                    $('#location-address').val(sampleData.address);
+                    $('#location-city').val(sampleData.city);
+                    $('#location-state').val(sampleData.state);
+                    $('#location-postal-code').val(sampleData.postal_code);
+                    $('#location-country').val(sampleData.country);
+                    $('#router-model-select').val(sampleData.router_model);
+                    $('#location-manager').val(sampleData.manager);
+                    $('#location-contact-email').val(sampleData.contact_email);
+                    $('#location-contact-phone').val(sampleData.contact_phone);
+                    $('#location-status').val(sampleData.status);
+                    $('#location-description').val(sampleData.description);
+                    
+                    // Update UI elements
+                    $('.location_name').text(sampleData.name);
+                    $('.location_address').text(sampleData.address + ', ' + sampleData.city + ', ' + sampleData.state);
+                    $('.router_model_updated').text(sampleData.router_model);
+                } else {
+                    console.log('Location data already loaded, skipping');
+                }
+            }
+
+            // Load data when the location settings tab is shown
+            $('a[href="#location-settings"]').on('shown.bs.tab', function() {
+                loadLocationData();
+            });
+
+            // Load data immediately if location settings tab is active
+            if ($('#location-settings').hasClass('active')) {
+                loadLocationData();
+            }
+
+            // Handle router model selection change
+            $('#router-model-select').on('change', function() {
+                const selectedModel = $(this).val();
+                console.log('Router model changed to:', selectedModel);
+                
+                // Update UI immediately
+                $('.router_model_updated').text(selectedModel);
+                
+                // Update device model via API
+                updateDeviceModel(selectedModel);
+                
+                // Show success message
+                if (selectedModel) {
+                    toastr.success('Router model updated to ' + selectedModel);
+                }
+            });
+
+            // Function to update device model via API
+            function updateDeviceModel(model) {
+                const locationId = getLocationId();
+                if (!locationId) {
+                    console.log('No location ID found, cannot update device model');
+                    return;
+                }
+
+                console.log('Updating device model to:', model, 'for location:', locationId);
+
+                $.ajax({
+                    url: '/api/locations/' + locationId,
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': 'Bearer ' + UserManager.getToken(),
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    data: JSON.stringify({
+                        device: {
+                            model: model
+                        }
+                    }),
+                    success: function(response) {
+                        console.log('Device model updated successfully:', response);
+                        toastr.success('Router model updated successfully');
+                        
+                        // Reload device data to verify the update
+                        setTimeout(function() {
+                            loadDeviceData();
+                        }, 1000);
+                    },
+                    error: function(xhr, status, error) {
+                        handleApiError(xhr, status, error, 'updating device model');
+                    }
+                });
+            }
+
+            // Initialize router model on page load
+            setTimeout(function() {
+                const currentRouterModel = $('.router_model').text();
+                console.log('Timeout check - current router model:', currentRouterModel);
+                
+                if (!currentRouterModel || currentRouterModel === '') {
+                    const savedModel = localStorage.getItem('router_model');
+                    if (savedModel) {
+                        console.log('Timeout setting router model to saved:', savedModel);
+                        $('.router_model').text(savedModel);
+                    } else {
+                        console.log('No saved model, leaving blank');
+                    }
+                } else {
+                    console.log('Timeout check - router model already properly set:', currentRouterModel);
+                }
+            }, 100);
+
+            // Load device data when page loads
+            loadDeviceData();
+            
+            // Test API call for debugging
+            console.log('Testing API authentication...');
+            $.ajax({
+                url: '/api/locations',
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + UserManager.getToken(),
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                success: function(response) {
+                    console.log('API Test Success:', response);
+                },
+                error: function(xhr, status, error) {
+                    console.log('API Test Failed:', {
+                        status: xhr.status,
+                        statusText: xhr.statusText,
+                        responseText: xhr.responseText,
+                        error: error
+                    });
+                }
+            });
+        });
     </script>
     </body>
 <!-- END: Body-->

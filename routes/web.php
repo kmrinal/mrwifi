@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CaptivePortalController;
+use App\Http\Controllers\DomainBlockingController;
+use App\Http\Controllers\CategoryController;
 
 // Display the login form
 Route::get('/', function () {
@@ -63,9 +65,27 @@ Route::get('/location-analytics', function () {
     return view('location-analytics');
 })->name('location-analytics');
 
-Route::get('/domain-blocking', function () {
-    return view('domain-blocking');
-})->name('domain-blocking');
+// Domain Blocking Routes
+Route::get('/domain-blocking', [DomainBlockingController::class, 'index'])->name('domain-blocking');
+Route::resource('blocked-domains', DomainBlockingController::class)->except(['create', 'edit']);
+Route::resource('categories', CategoryController::class)->except(['create', 'edit']);
+
+// Additional Domain Blocking API routes
+Route::prefix('api/domain-blocking')->group(function () {
+    Route::post('/bulk-delete', [DomainBlockingController::class, 'bulkDelete'])->name('domain-blocking.bulk-delete');
+    Route::post('/import', [DomainBlockingController::class, 'import'])->name('domain-blocking.import');
+    Route::get('/export', [DomainBlockingController::class, 'export'])->name('domain-blocking.export');
+    Route::post('/categories/{category}/toggle', [DomainBlockingController::class, 'toggleCategory'])->name('domain-blocking.toggle-category');
+    Route::get('/stats', [DomainBlockingController::class, 'stats'])->name('domain-blocking.stats');
+    Route::post('/check-domain', [DomainBlockingController::class, 'checkDomain'])->name('domain-blocking.check-domain');
+});
+
+// Additional Category API routes
+Route::prefix('api/categories')->group(function () {
+    Route::post('/{category}/toggle', [CategoryController::class, 'toggle'])->name('categories.toggle');
+    Route::post('/reorder', [CategoryController::class, 'reorder'])->name('categories.reorder');
+    Route::get('/{category}/stats', [CategoryController::class, 'stats'])->name('categories.stats');
+});
 
 Route::get('/firmware', function () {
     return view('firmware');

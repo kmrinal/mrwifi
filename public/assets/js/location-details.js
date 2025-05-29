@@ -29,18 +29,18 @@ function loadLocationDetails(location_id) {
         url: '/api/locations/' + location_id,
         type: 'GET',
         headers: {
-            'Authorization': 'Bearer ' + localStorage.getItem('mrwifi_auth_token')
+            'Authorization': 'Bearer ' + UserManager.getToken()
         },
         success: function(response) {
-            console.log("response", response);
+            console.log("Location Details Response", response);
             // populate location details
             let captive_portal_designs = [];
-            let location = response.location;
+            let location = response.data;
             $.ajax({
                 url: '/api/captive-portal-designs',
                 type: 'GET',
                 headers: {
-                    'Authorization': 'Bearer ' + localStorage.getItem('mrwifi_auth_token')
+                    'Authorization': 'Bearer ' + UserManager.getToken()
                 },
                 success: function(response) {
                     console.log("captive-portal-designs response", response);
@@ -73,9 +73,9 @@ function populateLocationDetails(location, captive_portal_designs) {
         } else {
             $('.status-badge').removeClass('status-online status-warning').addClass('status-offline').text('Offline');
         }
-        
+        console.log("device:::::", device);
         // Update router details
-        $('.router_model').text(device.model || 'Unknown');
+        $('.router_model_updated').text(device.model || 'Unknown');
         $('.router_firmware').text(device.firmware_version || 'Unknown');
         
         // Calculate and display uptime if last_seen exists
@@ -89,6 +89,9 @@ function populateLocationDetails(location, captive_portal_designs) {
         } else {
             $('.uptime').text('Unknown');
         }
+        
+        // Display reboot count
+        // $('.reboot_count').text(device.reboot_count || '0');
     }
 
     // This isn't printing because the AJAX call is asynchronous - we need to move this log inside the success callback
@@ -393,7 +396,7 @@ $(document).ready(function() {
                 settings: location_info
             },
             headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('mrwifi_auth_token')
+                'Authorization': 'Bearer ' + UserManager.getToken(),
             },
             success: function(response) {
                 console.log("response", response);
@@ -457,7 +460,7 @@ $(document).ready(function() {
                 settings: settings
             },
             headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('mrwifi_auth_token')
+                'Authorization': 'Bearer ' + UserManager.getToken(),
             },
             success: function(response) {
                 console.log("response", response);
@@ -524,7 +527,7 @@ $(document).ready(function() {
                 settings: settings
             },
             headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('mrwifi_auth_token')
+                'Authorization': 'Bearer ' + UserManager.getToken(),
             },
             success: function(response) {
                 console.log("response", response);
@@ -581,7 +584,7 @@ $(document).ready(function() {
             url: '/api/locations/' + location_id,
             type: 'PUT',
             headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('mrwifi_auth_token')
+                'Authorization': 'Bearer ' + UserManager.getToken(),
             },
             data: {
                 settings_type: 'wan',
@@ -641,11 +644,86 @@ $(document).ready(function() {
             });
         }
     });
+
+    // Device restart functionality
+    $(document).on('click', '#device-restart-btn', function() {
+        // Show the restart confirmation modal instead of browser confirm
+        $('#restart-confirmation-modal').modal('show');
+    });
+
+    // Handle the actual restart when confirmed
+    $(document).on('click', '#confirm-restart-btn', function() {
+        const button = $(this);
+        const originalText = button.html();
+        
+        // Show loading state
+        button.html('<i data-feather="loader" class="mr-1 rotating"></i> Restarting...');
+        button.prop('disabled', true);
+        
+        // Get device ID from current location
+        const currentLocationId = location_id;
+        
+        // Get device ID from current location
+        $.ajax({
+            url: `/api/locations/${currentLocationId}`,
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${UserManager.getToken()}`,
+                'Content-Type': 'application/json'
+            },
+            success: function(response) {
+                if (response.location && response.location.device_id) {
+                    // Call device reboot API
+                    $.ajax({
+                        url: `/api/devices/${response.location.device_id}/reboot`,
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${UserManager.getToken()}`,
+                            'Content-Type': 'application/json'
+                        },
+                        success: function(rebootResponse) {
+                            showNotification('success', 'Device restart initiated successfully.');
+                            $('#restart-confirmation-modal').modal('hide');
+                            
+                            // Reload location details after a short delay
+                            setTimeout(() => {
+                                loadLocationDetails(currentLocationId);
+                            }, 2000);
+                        },
+                        error: function(xhr) {
+                            let errorMessage = 'Failed to restart device';
+                            if (xhr.responseJSON && xhr.responseJSON.message) {
+                                errorMessage = xhr.responseJSON.message;
+                            }
+                            showNotification('error', errorMessage);
+                        },
+                        complete: function() {
+                            // Restore button state
+                            button.html(originalText);
+                            button.prop('disabled', false);
+                            
+                            // Re-initialize feather icons
+                            if (typeof feather !== 'undefined') {
+                                feather.replace();
+                            }
+                        }
+                    });
+                } else {
+                    showNotification('error', 'Device information not found');
+                    button.html(originalText);
+                    button.prop('disabled', false);
+                }
+            },
+            error: function() {
+                showNotification('error', 'Failed to get device information');
+                button.html(originalText);
+                button.prop('disabled', false);
+            }
+        });
+    });
 });
 
 // Remove these standalone event handlers since they've been moved to $(document).ready
-// $(".save-password-network").on('click', function(e) { ... });
-// $(".save-captive-portal").on('click', function(e) { ... });
 
 // Helper function to display notifications
 function showNotification(type, message) {

@@ -150,6 +150,7 @@ class LocationController extends Controller
         
         $locationSettings->captive_portal_visible = true;
         $locationSettings->captive_portal_enabled = true;
+        $locationSettings->welcome_message = 'Welcome to MrWiFi Network';
         $locationSettings->save();
 
         // Return JSON response
@@ -170,26 +171,38 @@ class LocationController extends Controller
     public function show($id)
     {
         $location = Location::find($id);
+        
+        if (!$location) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Location not found'
+            ], 404);
+        }
+        
         $device = Device::find($location->device_id);
         $locationSettings = LocationSettings::where('location_id', $id)->first();
+        
         $locationData = $location->toArray();
         $locationData['settings'] = $locationSettings;
         $locationData['device'] = $device;
-        $device->is_online = false;
-        // If device last_seen is older than 90 seconds, set device online to false
-        if ($device->last_seen) {
-            $now = new \DateTime();
-            $lastSeen = new \DateTime($device->last_seen);
-            $interval = $now->getTimestamp() - $lastSeen->getTimestamp();
-            if ($interval <= 90) {
-                $device->is_online = true;
+        
+        if ($device) {
+            $device->is_online = false;
+            // If device last_seen is older than 90 seconds, set device online to false
+            if ($device->last_seen) {
+                $now = new \DateTime();
+                $lastSeen = new \DateTime($device->last_seen);
+                $interval = $now->getTimestamp() - $lastSeen->getTimestamp();
+                if ($interval <= 90) {
+                    $device->is_online = true;
+                }
             }
         }
 
         return response()->json([
             'success' => true,
             'message' => 'Location fetched successfully',
-            'location' => $locationData
+            'data' => $locationData
         ]);
     }
 
@@ -235,6 +248,15 @@ class LocationController extends Controller
                 if (!$locationSettings) {
                     $locationSettings = new LocationSettings();
                     $locationSettings->location_id = $location_id;
+                    
+                    // Set required default values to prevent DB errors
+                    $locationSettings->welcome_message = 'Welcome to MrWiFi Network';
+                    $locationSettings->wifi_name = 'MrWiFi Network';
+                    $locationSettings->wifi_password = 'password123';
+                    $locationSettings->captive_portal_ssid = 'MrWiFi Guest';
+                    $locationSettings->wifi_security_type = 'WPA2';
+                    $locationSettings->captive_portal_visible = true;
+                    $locationSettings->captive_portal_enabled = true;
                 }
                 
                 // Handle different types of settings
@@ -818,11 +840,87 @@ class LocationController extends Controller
             }
         }
         
-        // If it's not a settings update, handle regular location update
+        // Check if it's a device update
+        if ($request->has('device')) {
+            $deviceData = $request->input('device');
+            $location = Location::find($location_id);
+            
+            if (!$location) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Location not found'
+                ], 404);
+            }
+            
+            $device = Device::find($location->device_id);
+            
+            if (!$device) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Device not found for this location'
+                ], 404);
+            }
+            
+            try {
+                // Handle device model update
+                if (isset($deviceData['model'])) {
+                    $newModel = $deviceData['model'];
+                    $oldModel = $device->model;
+                    
+                    // Validate model (only allow 820AX and 835AX)
+                    if (!in_array($newModel, ['820AX', '835AX', ''])) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Invalid device model. Only 820AX and 835AX are supported.'
+                        ], 400);
+                    }
+                    
+                    Log::info("Updating device model from '{$oldModel}' to '{$newModel}' for device: " . $device->id);
+                    
+                    // Update the model
+                    $device->model = $newModel;
+                    
+                    // If model changed, increment configuration version
+                    if ($oldModel !== $newModel) {
+                        $device->configuration_version = $device->configuration_version + 1;
+                        Log::info('Device configuration version incremented to: ' . $device->configuration_version);
+                    }
+                    
+                    $device->save();
+                    
+                    Log::info('Device model updated successfully');
+                    
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Device model updated successfully',
+                        'data' => [
+                            'device' => $device,
+                            'old_model' => $oldModel,
+                            'new_model' => $newModel
+                        ]
+                    ]);
+                }
+                
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No device updates specified'
+                ], 400);
+                
+            } catch (\Exception $e) {
+                Log::error('Error updating device: ' . $e->getMessage());
+                
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Error updating device: ' . $e->getMessage()
+                ], 500);
+            }
+        }
+        
+        // If it's not a settings update or device update, handle regular location update
         // (This part could be implemented later for updating location details)
         return response()->json([
             'success' => false,
-            'message' => 'No settings update detected'
+            'message' => 'No valid update data detected. Expected settings, device, or location data.'
         ]);
     }
 
@@ -901,4 +999,108 @@ class LocationController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Update device firmware for a location
+     */
+    public function updateFirmware(Request $request, $id)
+    {
+        Log::info('Update firmware request received for location: ' . $id);
+        Log::info($request->all());
+        
+        try {
+            $request->validate([
+                'firmware_id' => 'required|exists:firmware,id',
+                'firmware_version' => 'nullable|string'
+            ]);
+            
+            $location = Location::find($id);
+            
+            if (!$location) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Location not found'
+                ], 404);
+            }
+            
+            $device = Device::find($location->device_id);
+            
+            if (!$device) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Device not found for this location'
+                ], 404);
+            }
+            
+            // Get the firmware information
+            $firmware = \App\Models\Firmware::find($request->firmware_id);
+            
+            if (!$firmware) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Firmware not found'
+                ], 404);
+            }
+            
+            if (!$firmware->is_enabled) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Selected firmware is not enabled'
+                ], 400);
+            }
+            
+            // Check if firmware is compatible with device model
+            $deviceModelCompatible = false;
+            if ($firmware->model == '1' || $firmware->model == '820AX') {
+                $deviceModelCompatible = ($device->model == '820AX' || $device->model == '1');
+            } elseif ($firmware->model == '2' || $firmware->model == '835AX') {
+                $deviceModelCompatible = ($device->model == '835AX' || $device->model == '2');
+            }
+            
+            if (!$deviceModelCompatible) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Firmware is not compatible with device model'
+                ], 400);
+            }
+            
+            // Update device firmware version
+            $device->firmware_version = $request->firmware_version ?: $firmware->name;
+            $device->firmware_id = $firmware->id;
+            
+            // Increment configuration version to trigger device update
+            $device->configuration_version = $device->configuration_version + 1;
+            
+            $device->save();
+            
+            Log::info('Device firmware updated successfully for device: ' . $device->id);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Firmware update initiated successfully',
+                'data' => [
+                    'device' => $device,
+                    'firmware' => $firmware
+                ]
+            ]);
+            
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('Error updating device firmware: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating device firmware: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get channel scan data for a location's device
+     */
 }

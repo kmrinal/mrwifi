@@ -17,6 +17,7 @@
     <link rel="stylesheet" type="text/css" href="app-assets/vendors/css/tables/datatable/responsive.bootstrap4.min.css">
     <link rel="stylesheet" type="text/css" href="app-assets/vendors/css/tables/datatable/buttons.bootstrap4.min.css">
     <link rel="stylesheet" type="text/css" href="app-assets/vendors/css/file-uploaders/dropzone.min.css">
+    <link rel="stylesheet" type="text/css" href="app-assets/vendors/css/forms/select/select2.min.css">
     <!-- END: Vendor CSS-->
 
     <!-- BEGIN: Theme CSS-->
@@ -279,7 +280,7 @@
                                         <i data-feather="hard-drive"></i>
                                     </div>
                                 </div>
-                                <h2 class="font-weight-bolder" id="total-firmware">8</h2>
+                                <h2 class="font-weight-bolder firmware-stats total" id="total-firmware">8</h2>
                                 <p class="card-text">Total Firmware Versions</p>
                             </div>
                         </div>
@@ -292,34 +293,34 @@
                                         <i data-feather="check-circle"></i>
                                     </div>
                                 </div>
-                                <h2 class="font-weight-bolder" id="stable-firmware">5</h2>
-                                <p class="card-text">Stable Releases</p>
+                                <h2 class="font-weight-bolder firmware-stats enabled" id="enabled-firmware">0</h2>
+                                <p class="card-text">Enabled Firmware</p>
                             </div>
                         </div>
                     </div>
                     <div class="col-xl-3 col-md-6 col-sm-6">
                         <div class="card text-center">
                             <div class="card-body">
-                                <div class="avatar bg-light-warning p-50 mb-1">
+                                <div class="avatar bg-light-secondary p-50 mb-1">
                                     <div class="avatar-content">
-                                        <i data-feather="alert-triangle"></i>
+                                        <i data-feather="x-circle"></i>
                                     </div>
                                 </div>
-                                <h2 class="font-weight-bolder" id="beta-firmware">2</h2>
-                                <p class="card-text">Beta Releases</p>
+                                <h2 class="font-weight-bolder firmware-stats disabled" id="disabled-firmware">0</h2>
+                                <p class="card-text">Disabled Firmware</p>
                             </div>
                         </div>
                     </div>
                     <div class="col-xl-3 col-md-6 col-sm-6">
                         <div class="card text-center">
                             <div class="card-body">
-                                <div class="avatar bg-light-danger p-50 mb-1">
+                                <div class="avatar bg-light-info p-50 mb-1">
                                     <div class="avatar-content">
-                                        <i data-feather="archive"></i>
+                                        <i data-feather="hard-drive"></i>
                                     </div>
                                 </div>
-                                <h2 class="font-weight-bolder" id="deprecated-firmware">1</h2>
-                                <p class="card-text">Deprecated Versions</p>
+                                <h2 class="font-weight-bolder firmware-stats total" id="total-size">0 MB</h2>
+                                <p class="card-text">Total Size</p>
                             </div>
                         </div>
                     </div>
@@ -338,139 +339,15 @@
                                         <table class="datatables-firmware table">
                                             <thead>
                                                 <tr>
-                                                    <th>Version</th>
+                                                    <th>Name</th>
                                                     <th>Status</th>
                                                     <th>Device Model</th>
-                                                    <th>Release Date</th>
                                                     <th>Size</th>
                                                     <th>Actions</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr>
-                                                    <td>
-                                                        <div class="d-flex align-items-center">
-                                                            <div class="avatar bg-light-primary mr-1 p-25">
-                                                                <div class="avatar-content">
-                                                                    <i data-feather="hard-drive"></i>
-                                                                </div>
-                                                            </div>
-                                                            <div>
-                                                                <div class="font-weight-bold">v2.1.4</div>
-                                                                <div class="small text-truncate text-muted">Security patch</div>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td><span class="badge badge-pill badge-status-stable">Stable</span></td>
-                                                    <td>MR-AP-2000</td>
-                                                    <td>Jan 15, 2025</td>
-                                                    
-                                                    <td>14.8 MB</td>
-                                                    <td>
-                                                        <div class="dropdown">
-                                                            <button type="button" class="btn btn-sm dropdown-toggle hide-arrow" data-toggle="dropdown">
-                                                                <i data-feather="more-vertical"></i>
-                                                            </button>
-                                                            <div class="dropdown-menu">
-                                                                <a class="dropdown-item" href="javascript:void(0);" data-toggle="modal" data-target="#edit-firmware">
-                                                                    <i data-feather="edit-2" class="mr-50"></i>
-                                                                    <span>Edit</span>
-                                                                </a>
-                                                                <a class="dropdown-item" href="javascript:void(0);">
-                                                                    <i data-feather="download" class="mr-50"></i>
-                                                                    <span>Download</span>
-                                                                </a>
-                                                                <a class="dropdown-item" href="javascript:void(0);">
-                                                                    <i data-feather="trash" class="mr-50"></i>
-                                                                    <span>Delete</span>
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div class="d-flex align-items-center">
-                                                            <div class="avatar bg-light-primary mr-1 p-25">
-                                                                <div class="avatar-content">
-                                                                    <i data-feather="hard-drive"></i>
-                                                                </div>
-                                                            </div>
-                                                            <div>
-                                                                <div class="font-weight-bold">v2.1.3</div>
-                                                                <div class="small text-truncate text-muted">Performance improvements</div>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td><span class="badge badge-pill badge-status-stable">Stable</span></td>
-                                                    <td>MR-AP-2000</td>
-                                                    <td>Dec 10, 2024</td>
-                                                    
-                                                    <td>14.5 MB</td>
-                                                    <td>
-                                                        <div class="dropdown">
-                                                            <button type="button" class="btn btn-sm dropdown-toggle hide-arrow" data-toggle="dropdown">
-                                                                <i data-feather="more-vertical"></i>
-                                                            </button>
-                                                            <div class="dropdown-menu">
-                                                                <a class="dropdown-item" href="javascript:void(0);" data-toggle="modal" data-target="#edit-firmware">
-                                                                    <i data-feather="edit-2" class="mr-50"></i>
-                                                                    <span>Edit</span>
-                                                                </a>
-                                                                <a class="dropdown-item" href="javascript:void(0);">
-                                                                    <i data-feather="download" class="mr-50"></i>
-                                                                    <span>Download</span>
-                                                                </a>
-                                                                <a class="dropdown-item" href="javascript:void(0);">
-                                                                    <i data-feather="trash" class="mr-50"></i>
-                                                                    <span>Delete</span>
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div class="d-flex align-items-center">
-                                                            <div class="avatar bg-light-primary mr-1 p-25">
-                                                                <div class="avatar-content">
-                                                                    <i data-feather="hard-drive"></i>
-                                                                </div>
-                                                            </div>
-                                                            <div>
-                                                                <div class="font-weight-bold">v3.0.1-beta</div>
-                                                                <div class="small text-truncate text-muted">New features testing</div>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td><span class="badge badge-pill badge-status-beta">Beta</span></td>
-                                                    <td>MR-AP-3000</td>
-                                                    <td>Feb 2, 2025</td>
-                                                    
-                                                    <td>16.2 MB</td>
-                                                    <td>
-                                                        <div class="dropdown">
-                                                            <button type="button" class="btn btn-sm dropdown-toggle hide-arrow" data-toggle="dropdown">
-                                                                <i data-feather="more-vertical"></i>
-                                                            </button>
-                                                            <div class="dropdown-menu">
-                                                                <a class="dropdown-item" href="javascript:void(0);" data-toggle="modal" data-target="#edit-firmware">
-                                                                    <i data-feather="edit-2" class="mr-50"></i>
-                                                                    <span>Edit</span>
-                                                                </a>
-                                                                <a class="dropdown-item" href="javascript:void(0);">
-                                                                    <i data-feather="download" class="mr-50"></i>
-                                                                    <span>Download</span>
-                                                                </a>
-                                                                <a class="dropdown-item" href="javascript:void(0);">
-                                                                    <i data-feather="trash" class="mr-50"></i>
-                                                                    <span>Delete</span>
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                
+                                                <!-- Table data will be loaded dynamically via JavaScript -->
                                             </tbody>
                                         </table>
                                     </div>
@@ -499,17 +376,16 @@
                         <div class="row">
                             <div class="col-12 col-sm-6">
                                 <div class="form-group">
-                                                <label for="version">Version Number</label>
-                                                <input type="text" class="form-control" id="version" placeholder="e.g. v2.1.5" />
+                                                <label for="firmware-name">Firmware Name</label>
+                                                <input type="text" class="form-control" id="firmware-name" placeholder="e.g. v2.1.5 Security Update" required />
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6">
                                 <div class="form-group">
                                                 <label for="status">Status</label>
-                                                <select class="form-control" id="status">
-                                                    <option value="stable">Stable</option>
-                                                    <option value="beta">Beta</option>
-                                                    <option value="deprecated">Deprecated</option>
+                                                <select class="form-control" id="status" required>
+                                                    <option value="1">Enable</option>
+                                                    <option value="0">Disable</option>
                                                 </select>
                                 </div>
                             </div>
@@ -517,19 +393,13 @@
                                 <div class="form-group">
                                                 <label for="model">Device Model</label>
                                                 <select class="form-control" id="model">
-                                                    <option value="MR-AP-1000">MR-AP-1000</option>
-                                                    <option value="MR-AP-2000">MR-AP-2000</option>
-                                                    <option value="MR-AP-3000">MR-AP-3000</option>
+                                                    <option value="">Select Model</option>
+                                                    <option value="1">820AX</option>
+                                                    <option value="2">835AX</option>
                                                 </select>
                                 </div>
                             </div>
-                            <div class="col-12 col-sm-6">
-                                <div class="form-group">
-                                                <label for="release-date">Release Date</label>
-                                                <input type="date" id="release-date" class="form-control" />
-                                </div>
-                            </div>
-                                        <div class="col-12">
+                            <div class="col-12">
                                 <div class="form-group">
                                                 <label for="description">Description</label>
                                                 <textarea class="form-control" id="description" rows="3" placeholder="Firmware description and changelog"></textarea>
@@ -539,22 +409,12 @@
                                             <div class="form-group">
                                                 <label for="firmware-file">Firmware File</label>
                                                 <div class="custom-file">
-                                                    <input type="file" class="custom-file-input" id="firmware-file">
+                                                    <input type="file" class="custom-file-input" id="firmware-file" accept=".tar.gz,.tgz,.tar" required>
                                                     <label class="custom-file-label" for="firmware-file">Choose file</label>
                                     </div>
-                                                <small class="form-text text-muted">Max file size: 50MB. Accepted formats: .bin, .fw, .img</small>
+                                                <small class="form-text text-muted">Max file size: 100MB. Accepted formats: .tar.gz, .tgz, .tar</small>
                                 </div>
                             </div>
-                                        <div class="col-12">
-                                <div class="form-group">
-                                                <label for="release-notes">Release Notes</label>
-                                                <div class="custom-file">
-                                                    <input type="file" class="custom-file-input" id="release-notes">
-                                                    <label class="custom-file-label" for="release-notes">Choose file</label>
-                                                </div>
-                                                <small class="form-text text-muted">Max file size: 10MB. Accepted formats: .pdf, .txt, .md</small>
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
                                 <div class="modal-footer">
@@ -581,17 +441,16 @@
                                     <div class="row">
                             <div class="col-12 col-sm-6">
                                 <div class="form-group">
-                                                <label for="edit-version">Version Number</label>
-                                                <input type="text" class="form-control" id="edit-version" value="v2.1.4" readonly />
+                                                <label for="edit-firmware-name">Firmware Name</label>
+                                                <input type="text" class="form-control" id="edit-firmware-name" value="v2.1.4 Security patch" />
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6">
                                 <div class="form-group">
                                                 <label for="edit-status">Status</label>
                                                 <select class="form-control" id="edit-status">
-                                                    <option value="stable" selected>Stable</option>
-                                                    <option value="beta">Beta</option>
-                                                    <option value="deprecated">Deprecated</option>
+                                                    <option value="1" selected>Enable</option>
+                                                    <option value="0">Disable</option>
                                                 </select>
                                 </div>
                             </div>
@@ -599,44 +458,28 @@
                                 <div class="form-group">
                                                 <label for="edit-model">Device Model</label>
                                                 <select class="form-control" id="edit-model">
-                                                    <option value="MR-AP-1000">MR-AP-1000</option>
-                                                    <option value="MR-AP-2000" selected>MR-AP-2000</option>
-                                                    <option value="MR-AP-3000">MR-AP-3000</option>
+                                                    <option value="">Select Model</option>
+                                                    <option value="1" selected>820AX</option>
+                                                    <option value="2">835AX</option>
                                                 </select>
                                 </div>
                             </div>
-                            <div class="col-12 col-sm-6">
+                            <div class="col-12">
                                 <div class="form-group">
-                                                <label for="edit-release-date">Release Date</label>
-                                                <input type="date" id="edit-release-date" class="form-control" value="2025-01-15" />
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="form-group">
                                                 <label for="edit-description">Description</label>
                                                 <textarea class="form-control" id="edit-description" rows="3">Security patch addressing vulnerability CVE-2024-12345. Improved stability for high-density deployments.</textarea>
                                             </div>
                                         </div>
                                         <div class="col-12">
                                             <div class="form-group">
-                                                <label>Firmware File</label>
+                                                <label>Firmware File (Optional)</label>
                                                 <div class="custom-file">
-                                                    <input type="file" class="custom-file-input" id="edit-firmware-file" accept=".bin,.fw">
+                                                    <input type="file" class="custom-file-input" id="edit-firmware-file" accept=".tar.gz,.tgz,.tar">
                                                     <label class="custom-file-label" for="edit-firmware-file">Choose firmware file</label>
                                                 </div>
-                                                <small class="form-text text-muted">Accepted formats: .bin, .fw</small>
+                                                <small class="form-text text-muted">Accepted formats: .tar.gz, .tgz, .tar</small>
                                     </div>
                                         </div>
-                                        <div class="col-12">
-                                            <div class="form-group">
-                                                <label>Documentation</label>
-                                                <div class="custom-file">
-                                                    <input type="file" class="custom-file-input" id="edit-firmware-docs" accept=".pdf,.doc,.docx">
-                                                    <label class="custom-file-label" for="edit-firmware-docs">Choose documentation file</label>
-                                                </div>
-                                                <small class="form-text text-muted">Accepted formats: PDF, DOC, DOCX</small>
-                                </div>
-                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -689,6 +532,10 @@
     <script src="assets/js/config.js"></script>
 
     <script>
+        // Global variables
+        let firmwareData = [];
+        let currentEditingId = null;
+
         $(window).on('load', function() {
             if (feather) {
                 feather.replace({
@@ -706,11 +553,11 @@
             }
             
             // Initialize DataTable
-                        $('.datatables-firmware').DataTable({
+            const table = $('.datatables-firmware').DataTable({
                 responsive: true,
                 columnDefs: [
                     {
-                        targets: [6],
+                        targets: [4],
                         orderable: false
                     }
                 ],
@@ -723,42 +570,38 @@
                 }
             });
             
-                        // Initialize status and model select2
-            if ($.fn.select2) {
-                            $('#status, #edit-status, #model, #edit-model').select2({
-                                dropdownParent: $('#status, #edit-status').closest('.modal'),
-                    minimumResultsForSearch: Infinity
-                });
-            }
+            // Initialize Select2 dropdowns
+            initializeSelect2();
             
-                        // Custom file input label
-                        $('.custom-file-input').on('change', function() {
-                            let fileName = $(this).val().split('\\').pop();
-                            $(this).next('.custom-file-label').html(fileName || 'Choose file');
-                        });
-                        
-                        // Handle edit firmware modal data population
-                        $('#edit-firmware').on('show.bs.modal', function (event) {
-                            var button = $(event.relatedTarget);
-                            var row = button.closest('tr');
-                            var version = row.find('.font-weight-bold').text();
-                            var description = row.find('.small.text-muted').text();
-                            var status = row.find('.badge-status-stable, .badge-status-beta, .badge-status-deprecated').text();
-                            var model = row.find('td:nth-child(3)').text();
-                            var date = row.find('td:nth-child(4)').text();
-                            
-                            // Convert date to input format (YYYY-MM-DD)
-                            var dateObj = new Date(date);
-                            var formattedDate = dateObj.toISOString().split('T')[0];
-                            
-                            var modal = $(this);
-                            modal.find('#edit-version').val(version);
-                            modal.find('#edit-description').val(description);
-                            modal.find('#edit-status').val(status.toLowerCase()).trigger('change');
-                            modal.find('#edit-model').val(model).trigger('change');
-                            modal.find('#edit-release-date').val(formattedDate);
+            // Custom file input label
+            $('.custom-file-input').on('change', function() {
+                let fileName = $(this).val().split('\\').pop();
+                $(this).next('.custom-file-label').html(fileName || 'Choose file');
             });
+
+            // Load firmware data
+            loadFirmwareData();
         });
+
+        function initializeSelect2() {
+            // Destroy existing Select2 instances first
+            $('#status, #edit-status, #model, #edit-model').select2('destroy');
+            
+            // Initialize Select2 for all dropdowns
+            $('#status, #edit-status').select2({
+                minimumResultsForSearch: Infinity,
+                placeholder: 'Select status',
+                allowClear: false,
+                width: '100%'
+            });
+            
+            $('#model, #edit-model').select2({
+                minimumResultsForSearch: Infinity,
+                placeholder: 'Select device model',
+                allowClear: false,
+                width: '100%'
+            });
+        }
 
         $(document).ready(function() {
             // Check if user is logged in using UserManager from config.js
@@ -774,7 +617,333 @@
             // Update user display in the top right dropdown
             $('.user-name').text(user.name);
             $('.user-status').text(user.role);
+
+            // Form submissions
+            $('#add-new-firmware form').on('submit', function(e) {
+                e.preventDefault();
+                uploadFirmware();
+            });
+
+            $('#edit-firmware form').on('submit', function(e) {
+                e.preventDefault();
+                updateFirmware();
+            });
+
+            // Reset forms when modals are hidden
+            $('#add-new-firmware').on('hidden.bs.modal', function() {
+                $(this).find('form')[0].reset();
+                $('.custom-file-label').text('Choose file');
+                // Reset Select2 dropdowns
+                $('#status').val('').trigger('change');
+                $('#model').val('').trigger('change');
+            });
+
+            $('#edit-firmware').on('hidden.bs.modal', function() {
+                currentEditingId = null;
+                $(this).find('form')[0].reset();
+                $('.custom-file-label').text('Choose firmware file');
+                // Reset Select2 dropdowns  
+                $('#edit-status').val('').trigger('change');
+                $('#edit-model').val('').trigger('change');
+            });
+
+            // Re-initialize Select2 when modals are shown
+            $('#add-new-firmware, #edit-firmware').on('shown.bs.modal', function() {
+                initializeSelect2();
+            });
         });
+
+        // API Functions
+        function getAuthHeaders() {
+            return {
+                'Authorization': 'Bearer ' + UserManager.getToken(),
+                'Accept': 'application/json'
+            };
+        }
+
+        function loadFirmwareData() {
+            $.ajax({
+                url: '/api/firmware',
+                method: 'GET',
+                headers: getAuthHeaders(),
+                success: function(response) {
+                    if (response.status === 'success') {
+                        firmwareData = response.data;
+                        updateFirmwareTable();
+                        updateStats();
+                    }
+                },
+                error: function(xhr) {
+                    console.error('Error loading firmware:', xhr);
+                    showToast('Error loading firmware data', 'error');
+                }
+            });
+        }
+
+        function updateFirmwareTable() {
+            const table = $('.datatables-firmware').DataTable();
+            table.clear();
+
+            firmwareData.forEach(function(firmware) {
+                const statusBadge = firmware.is_enabled 
+                    ? '<span class="badge badge-pill badge-light-success">Enable</span>'
+                    : '<span class="badge badge-pill badge-light-secondary">Disable</span>';
+                
+                const modelName = getModelName(firmware.model);
+                const fileSize = formatFileSize(firmware.file_size);
+
+                table.row.add([
+                    `<div class="d-flex align-items-center">
+                        <div class="avatar bg-light-primary mr-1 p-25">
+                            <div class="avatar-content">
+                                <i data-feather="hard-drive"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="font-weight-bold">${firmware.name}</div>
+                            <div class="small text-truncate text-muted">${firmware.description || ''}</div>
+                        </div>
+                    </div>`,
+                    statusBadge,
+                    modelName,
+                    fileSize,
+                    `<div class="dropdown">
+                        <button type="button" class="btn btn-sm dropdown-toggle hide-arrow" data-toggle="dropdown">
+                            <i data-feather="more-vertical"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="javascript:void(0);" onclick="editFirmware(${firmware.id})">
+                                <i data-feather="edit-2" class="mr-50"></i>
+                                <span>Edit</span>
+                            </a>
+                            <a class="dropdown-item" href="javascript:void(0);" onclick="downloadFirmware(${firmware.id})">
+                                <i data-feather="download" class="mr-50"></i>
+                                <span>Download</span>
+                            </a>
+                            <a class="dropdown-item" href="javascript:void(0);" onclick="deleteFirmware(${firmware.id})">
+                                <i data-feather="trash" class="mr-50"></i>
+                                <span>Delete</span>
+                            </a>
+                        </div>
+                    </div>`
+                ]);
+            });
+
+            table.draw();
+            feather.replace();
+        }
+
+        function updateStats() {
+            const total = firmwareData.length;
+            const enabled = firmwareData.filter(f => f.is_enabled).length;
+            const disabled = firmwareData.filter(f => !f.is_enabled).length;
+            const totalSize = firmwareData.reduce((sum, f) => sum + (f.file_size || 0), 0);
+
+            // Update stats cards
+            $('#total-firmware').text(total);
+            $('#enabled-firmware').text(enabled);
+            $('#disabled-firmware').text(disabled);
+            $('#total-size').text(formatFileSize(totalSize));
+        }
+
+        function uploadFirmware() {
+            const formData = new FormData();
+            const fileInput = document.getElementById('firmware-file');
+            
+            if (!fileInput.files[0]) {
+                showToast('Please select a firmware file', 'error');
+                return;
+            }
+
+            formData.append('name', $('#firmware-name').val());
+            formData.append('model', $('#model').val());
+            formData.append('description', $('#description').val());
+            formData.append('is_enabled', $('#status').val());
+            formData.append('file', fileInput.files[0]);
+
+            $.ajax({
+                url: '/api/firmware',
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + UserManager.getToken(),
+                    'Accept': 'application/json'
+                },
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    if (response.status === 'success') {
+                        showToast('Firmware uploaded successfully', 'success');
+                        $('#add-new-firmware').modal('hide');
+                        $('#add-new-firmware form')[0].reset();
+                        $('.custom-file-label').text('Choose file');
+                        loadFirmwareData();
+                    }
+                },
+                error: function(xhr) {
+                    console.error('Error uploading firmware:', xhr);
+                    let message = 'Error uploading firmware';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        message = xhr.responseJSON.message;
+                    }
+                    showToast(message, 'error');
+                }
+            });
+        }
+
+        function editFirmware(id) {
+            const firmware = firmwareData.find(f => f.id === id);
+            if (!firmware) return;
+
+            currentEditingId = id;
+            
+            // Show modal first
+            $('#edit-firmware').modal('show');
+            
+            // Use setTimeout to ensure modal is fully rendered before setting values
+            setTimeout(() => {
+                $('#edit-firmware-name').val(firmware.name);
+                $('#edit-description').val(firmware.description || '');
+                
+                // Set Select2 values with proper triggering
+                const statusValue = firmware.is_enabled ? '1' : '0';
+                const modelValue = getModelId(firmware.model);
+                
+                $('#edit-status').val(statusValue).trigger('change.select2');
+                $('#edit-model').val(modelValue).trigger('change.select2');
+                
+                // Clear file input
+                $('#edit-firmware-file').val('');
+                $('.custom-file-label').text('Choose firmware file');
+            }, 300);
+        }
+
+        function updateFirmware() {
+            if (!currentEditingId) return;
+
+            const formData = new FormData();
+            formData.append('name', $('#edit-firmware-name').val());
+            formData.append('model', $('#edit-model').val());
+            formData.append('description', $('#edit-description').val());
+            formData.append('is_enabled', $('#edit-status').val());
+            formData.append('_method', 'PUT');
+
+            const fileInput = document.getElementById('edit-firmware-file');
+            if (fileInput.files[0]) {
+                formData.append('file', fileInput.files[0]);
+            }
+
+            $.ajax({
+                url: `/api/firmware/${currentEditingId}`,
+                method: 'POST', // Laravel handles PUT via _method
+                headers: {
+                    'Authorization': 'Bearer ' + UserManager.getToken(),
+                    'Accept': 'application/json'
+                },
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    if (response.status === 'success') {
+                        showToast('Firmware updated successfully', 'success');
+                        $('#edit-firmware').modal('hide');
+                        loadFirmwareData();
+                        currentEditingId = null;
+                    }
+                },
+                error: function(xhr) {
+                    console.error('Error updating firmware:', xhr);
+                    let message = 'Error updating firmware';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        message = xhr.responseJSON.message;
+                    }
+                    showToast(message, 'error');
+                }
+            });
+        }
+
+        function deleteFirmware(id) {
+            if (!confirm('Are you sure you want to delete this firmware?')) return;
+
+            $.ajax({
+                url: `/api/firmware/${id}`,
+                method: 'DELETE',
+                headers: getAuthHeaders(),
+                success: function(response) {
+                    if (response.status === 'success') {
+                        showToast('Firmware deleted successfully', 'success');
+                        loadFirmwareData();
+                    }
+                },
+                error: function(xhr) {
+                    console.error('Error deleting firmware:', xhr);
+                    showToast('Error deleting firmware', 'error');
+                }
+            });
+        }
+
+        function downloadFirmware(id) {
+            const firmware = firmwareData.find(f => f.id === id);
+            if (!firmware) return;
+
+            // Create download link
+            const downloadUrl = `/api/firmware/${id}/download?token=${UserManager.getToken()}`;
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.download = firmware.file_name;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Helper functions
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function getModelId(modelName) {
+            // Handle both string and numeric model values
+            if (modelName === '1' || modelName === 1 || modelName === '820AX') {
+                return '1';
+            } else if (modelName === '2' || modelName === 2 || modelName === '835AX') {
+                return '2';
+            }
+            
+            // If no match found, return empty string
+            return '';
+        }
+
+        function getModelName(modelId) {
+            const modelMap = {
+                '1': '820AX',
+                '2': '835AX',
+                1: '820AX',
+                2: '835AX'
+            };
+            return modelMap[modelId] || 'Not specified';
+        }
+
+        function showToast(message, type = 'info') {
+            // Simple toast notification
+            const toast = $(`
+                <div class="alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show" role="alert" style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
+                    ${message}
+                    <button type="button" class="close" data-dismiss="alert">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            `);
+            
+            $('body').append(toast);
+            
+            setTimeout(() => {
+                toast.alert('close');
+            }, 5000);
+        }
     </script>
 </body>
 </html>

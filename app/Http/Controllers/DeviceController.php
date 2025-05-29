@@ -8,6 +8,9 @@ use App\Models\SystemSetting;
 use App\Models\LocationSettings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use App\Models\Firmware;
+use App\Models\Category;
+use App\Models\BlockedDomain;
 
 class DeviceController extends Controller
 {
@@ -149,6 +152,20 @@ class DeviceController extends Controller
 
         $settings->wifi_name = $settings->password_wifi_ssid;
         $settings->wifi_password = $settings->password_wifi_password;
+        
+        // $settings->blocked_domains; is null return all categories
+        if ($settings->blocked_domains == null) {
+            $blocked_domains_categories = Category::all();
+        } else {
+            $blocked_domains_categories = $settings->blocked_domains_categories;
+        }
+
+        // Get all domain from blocked_domains_categories
+        $domain_blocked = BlockedDomain::select('domain')->whereIn('category_id', $blocked_domains_categories->pluck('id'))->get();
+        // Unset blocked_domains_categories
+        unset($settings->blocked_domains_categories);
+        unset($settings->blocked_domains);
+        $settings->blocked_domains = $domain_blocked;
 
         $system_settings = SystemSetting::first();
         $radius_settings = [
@@ -202,6 +219,13 @@ class DeviceController extends Controller
         $device->last_seen = now();
         $device->save();
 
+        $firmware = Firmware::where('model', $device->model)->orderBy('created_at', 'desc')->first();
+        if (!$firmware) {
+            $firmware_version = 0;
+        } else {
+            $firmware_version = $firmware->id;
+        }
+
         $location = Location::where('device_id', $device->id)->first();
         if (!$location) {
             return response()->json(['error' => 'Location not found'], 404);
@@ -209,7 +233,7 @@ class DeviceController extends Controller
 
         $settings = LocationSettings::where('location_id', $location->id)->first();
         
-        return response()->json(['status' => 'success', 'config_version' => $device->configuration_version]);
+        return response()->json(['status' => 'success', 'config_version' => $device->configuration_version, 'reboot_count' => $device->reboot_count, 'firmware_version' => $firmware_version]);
     }
 
     public function verify($mac_address, $verification_code)
@@ -237,5 +261,33 @@ class DeviceController extends Controller
             'device' => $device
         ]);
     }
-    
+
+    /**
+     * Reboot a device and increment the reboot count.
+     *
+     * @param  \App\Models\Device  $device
+     * @return \Illuminate\Http\Response
+     */
+    public function reboot(Device $device)
+    {
+        try {
+            // Increment the reboot count
+            $device->increment('reboot_count');
+            
+            // Update last_seen to current timestamp
+            $device->last_seen = now();
+            $device->save();
+            
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Device restart initiated successfully',
+                'reboot_count' => $device->reboot_count
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to restart device: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

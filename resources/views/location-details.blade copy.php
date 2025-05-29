@@ -629,7 +629,7 @@
                                     <i data-feather="refresh-cw" class="mr-50"></i>
                                     <span>Restart</span>
                                 </button>
-                                <button class="btn btn-outline-primary btn-sm">
+                                <button class="btn btn-outline-primary btn-sm" id="update-firmware-btn" style="position: relative; z-index: 1;">
                                     <i data-feather="download" class="mr-50"></i>
                                     <span>Update Firmware</span>
                                 </button>
@@ -1631,6 +1631,105 @@
     <!-- END: Content -->
 
     <!-- BEGIN: Modals -->
+    <!-- Firmware Update Modal -->
+    <div class="modal fade" id="firmware-update-modal" tabindex="-1" role="dialog" aria-labelledby="firmware-update-modal-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="firmware-update-modal-title">
+                        <i data-feather="download" class="mr-1"></i>
+                        Update Device Firmware
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Current Device Info -->
+                    <div class="alert alert-info mb-3">
+                        <h6 class="alert-heading mb-1">Current Device Information</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <small class="text-muted">Device Model:</small>
+                                <div class="font-weight-bold" id="current-device-model">Loading...</div>
+                            </div>
+                            <div class="col-md-6">
+                                <small class="text-muted">Current Firmware:</small>
+                                <div class="font-weight-bold" id="current-firmware-version">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Firmware Selection -->
+                    <div class="form-group">
+                        <label for="firmware-selection">Select Firmware Version</label>
+                        <select class="form-control" id="firmware-selection">
+                            <option value="">Loading firmware versions...</option>
+                        </select>
+                        <small class="text-muted">Only compatible and enabled firmware versions are shown.</small>
+                    </div>
+
+                    <!-- Firmware Details -->
+                    <div id="firmware-details" style="display: none;">
+                        <h6 class="mb-2">Firmware Details</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Name:</strong></td>
+                                        <td id="firmware-name">-</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Version:</strong></td>
+                                        <td id="firmware-version">-</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Size:</strong></td>
+                                        <td id="firmware-size">-</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Model:</strong></td>
+                                        <td id="firmware-model">-</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Status:</strong></td>
+                                        <td id="firmware-status">-</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>MD5 Checksum:</strong></td>
+                                        <td id="firmware-md5" class="text-break" style="font-family: monospace; font-size: 0.85em;">-</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Description:</strong></td>
+                                        <td id="firmware-description">-</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Warning -->
+                    <div id="firmware-warning" class="alert alert-warning mt-3" style="display: none;">
+                        <h6 class="alert-heading">⚠️ Important Notice</h6>
+                        <ul class="mb-0">
+                            <li>The device will restart automatically after receiving the firmware update</li>
+                            <li>There may be temporary connectivity loss during the update process</li>
+                            <li>Do not power off the device during the firmware update</li>
+                            <li>The update process typically takes 2-5 minutes to complete</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="update-firmware-submit" disabled>
+                        <i data-feather="download" class="mr-1"></i>
+                        Update Firmware
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Enhanced Channel Scan Modal with Results View -->
     <div class="modal fade" id="channel-scan-modal" tabindex="-1" role="dialog" aria-labelledby="channel-scan-modal-title" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
@@ -4161,6 +4260,382 @@ $(document).on('click', '#save-location-info', function() {
                         $button.html(originalText).prop('disabled', false);
                     }
                 });
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            // Load location data when page loads
+            loadLocationData();
+            
+            // Firmware Update Modal functionality
+            let currentDeviceModel = null;
+            let availableFirmwares = [];
+            
+            // Debug: Check if button exists when page loads
+            console.log('Firmware button exists:', $('#update-firmware-btn').length > 0);
+            console.log('Firmware modal exists:', $('#firmware-update-modal').length > 0);
+            console.log('jQuery version:', $.fn.jquery);
+            console.log('Bootstrap modal available:', typeof $.fn.modal !== 'undefined');
+            
+            // Add a global test function for debugging
+            window.testFirmwareModal = function() {
+                console.log('Testing firmware modal...');
+                console.log('Modal element found:', $('#firmware-update-modal').length);
+                
+                // Check modal CSS properties
+                const modal = $('#firmware-update-modal');
+                console.log('Modal display:', modal.css('display'));
+                console.log('Modal z-index:', modal.css('z-index'));
+                console.log('Modal visibility:', modal.css('visibility'));
+                console.log('Modal opacity:', modal.css('opacity'));
+                
+                $('#firmware-update-modal').modal('show');
+                
+                // Check after showing
+                setTimeout(() => {
+                    console.log('After show - Modal display:', modal.css('display'));
+                    console.log('After show - Modal classes:', modal.attr('class'));
+                    console.log('After show - Modal backdrop exists:', $('.modal-backdrop').length);
+                }, 100);
+            };
+            
+            // Show firmware update modal - use document delegation to handle dynamically loaded content
+            $(document).on('click', '#update-firmware-btn', function(e) {
+                e.preventDefault();
+                console.log('Firmware button clicked!');
+                console.log('Modal element:', $('#firmware-update-modal'));
+                console.log('Modal length:', $('#firmware-update-modal').length);
+                
+                // Try to show modal and catch any errors
+                try {
+                    $('#firmware-update-modal').modal('show');
+                    console.log('Modal show command executed');
+                } catch (error) {
+                    console.error('Error showing modal:', error);
+                    
+                    // Try alternative methods
+                    console.log('Trying alternative modal show methods...');
+                    
+                    // Method 1: Direct Bootstrap call
+                    try {
+                        $('#firmware-update-modal').modal({show: true});
+                        console.log('Alternative method 1 executed');
+                    } catch (e) {
+                        console.error('Alternative method 1 failed:', e);
+                    }
+                    
+                    // Method 2: Change display directly
+                    try {
+                        $('#firmware-update-modal').show().addClass('show');
+                        $('.modal-backdrop').remove();
+                        $('body').append('<div class="modal-backdrop fade show"></div>');
+                        console.log('Alternative method 2 executed');
+                    } catch (e) {
+                        console.error('Alternative method 2 failed:', e);
+                    }
+                }
+                
+                // Also try loading firmware options
+                try {
+                    loadFirmwareOptions();
+                    console.log('loadFirmwareOptions called');
+                } catch (error) {
+                    console.error('Error loading firmware options:', error);
+                }
+            });
+            
+            // Load available firmware options based on device model
+            function loadFirmwareOptions() {
+                const locationId = getLocationId();
+                
+                // Reset modal state
+                $('#firmware-selection').html('<option value="">Loading firmware versions...</option>');
+                $('#firmware-details').hide();
+                $('#firmware-warning').hide();
+                $('#update-firmware-submit').prop('disabled', true);
+                
+                // Get current device info from the page
+                const deviceModel = $('.router_model').text().trim() || $('.d-flex:contains("Router Model:")').find('.font-weight-bold').text().trim() || 'Unknown';
+                const currentFirmware = $('.router_firmware').text().trim() || $('.d-flex:contains("Firmware:")').find('.font-weight-bold').text().trim() || 'Unknown';
+                
+                // Set current device info
+                $('#current-device-model').text(deviceModel);
+                $('#current-firmware-version').text(currentFirmware);
+                
+                // Determine model ID for API call
+                let modelFilter = '';
+                if (deviceModel.includes('820AX') || deviceModel === '820AX') {
+                    modelFilter = '1';
+                    currentDeviceModel = '820AX';
+                } else if (deviceModel.includes('835AX') || deviceModel === '835AX') {
+                    modelFilter = '2';
+                    currentDeviceModel = '835AX';
+                }
+                
+                // Fetch available firmware versions
+                $.ajax({
+                    url: '/api/firmware',
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('mrwifi_auth_token'),
+                        'Accept': 'application/json'
+                    },
+                    success: function(response) {
+                        if (response.status === 'success' && response.data) {
+                            availableFirmwares = response.data;
+                            
+                            // Filter firmware by device model and enabled status
+                            const compatibleFirmwares = availableFirmwares.filter(firmware => {
+                                return firmware.is_enabled && 
+                                       (firmware.model == modelFilter || 
+                                        firmware.model === currentDeviceModel);
+                            });
+                            
+                            // Populate firmware dropdown
+                            $('#firmware-selection').empty();
+                            
+                            if (compatibleFirmwares.length === 0) {
+                                $('#firmware-selection').append('<option value="">No compatible firmware versions available</option>');
+                            } else {
+                                $('#firmware-selection').append('<option value="">Select a firmware version...</option>');
+                                
+                                compatibleFirmwares.forEach(firmware => {
+                                    const isCurrentVersion = firmware.name === currentFirmware || 
+                                                           firmware.version === currentFirmware;
+                                    const optionText = `${firmware.name}${firmware.version ? ' (' + firmware.version + ')' : ''}${isCurrentVersion ? ' (Current)' : ''}`;
+                                    
+                                    $('#firmware-selection').append(
+                                        `<option value="${firmware.id}" ${isCurrentVersion ? 'disabled' : ''}>${optionText}</option>`
+                                    );
+                                });
+                            }
+                        } else {
+                            $('#firmware-selection').html('<option value="">Failed to load firmware versions</option>');
+                            showNotification('error', 'Failed to load available firmware versions');
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error('Error loading firmware versions:', xhr);
+                        $('#firmware-selection').html('<option value="">Error loading firmware versions</option>');
+                        showNotification('error', 'Error loading firmware versions');
+                    }
+                });
+            }
+            
+            // Handle firmware selection change
+            $('#firmware-selection').on('change', function() {
+                const selectedFirmwareId = $(this).val();
+                
+                if (selectedFirmwareId) {
+                    const selectedFirmware = availableFirmwares.find(f => f.id == selectedFirmwareId);
+                    
+                    if (selectedFirmware) {
+                        // Show firmware details
+                        $('#firmware-name').text(selectedFirmware.name || 'N/A');
+                        $('#firmware-version').text(selectedFirmware.version || 'N/A');
+                        $('#firmware-size').text(formatFileSize(selectedFirmware.file_size || 0));
+                        $('#firmware-model').text(getModelName(selectedFirmware.model) || 'N/A');
+                        $('#firmware-status').text(selectedFirmware.is_enabled ? 'Enabled' : 'Disabled');
+                        $('#firmware-md5').text(selectedFirmware.md5sum || 'N/A').attr('title', selectedFirmware.md5sum || 'N/A');
+                        $('#firmware-description').text(selectedFirmware.description || 'No description available');
+                        
+                        $('#firmware-details').show();
+                        $('#firmware-warning').show();
+                        $('#update-firmware-submit').prop('disabled', false);
+                    }
+                } else {
+                    $('#firmware-details').hide();
+                    $('#firmware-warning').hide();
+                    $('#update-firmware-submit').prop('disabled', true);
+                }
+            });
+            
+            // Handle firmware update submission
+            $('#update-firmware-submit').on('click', function() {
+                console.log('Firmware update submitted');
+                const selectedFirmwareId = $('#firmware-selection').val();
+                const locationId = getLocationId();
+                
+                if (!selectedFirmwareId || !locationId) {
+                    showNotification('error', 'Please select a firmware version');
+                    return;
+                }
+                
+                const selectedFirmware = availableFirmwares.find(f => f.id == selectedFirmwareId);
+                
+                if (!selectedFirmware) {
+                    showNotification('error', 'Selected firmware not found');
+                    return;
+                }
+                
+                // Confirm firmware update
+                if (!confirm(`Are you sure you want to update the device firmware to "${selectedFirmware.name}"?\n\nThis will restart the device and may cause temporary connectivity loss.`)) {
+                    return;
+                }
+                
+                // Show loading state
+                const $button = $('#update-firmware-submit');
+                const originalHtml = $button.html();
+                $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Updating...').prop('disabled', true);
+                
+                // Update device firmware
+                $.ajax({
+                    url: `/api/locations/${locationId}/update-firmware`,
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('mrwifi_auth_token'),
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    data: JSON.stringify({
+                        firmware_id: selectedFirmwareId,
+                        firmware_version: selectedFirmware.name
+                    }),
+                    success: function(response) {
+                        if (response.success) {
+                            showNotification('success', 'Firmware update initiated successfully');
+                            $('#firmware-update-modal').modal('hide');
+                            
+                            // Update the displayed firmware version on the page
+                            $('.d-flex:contains("Firmware:")').find('.font-weight-bold').text(selectedFirmware.name);
+                            
+                            // Update the displayed firmware version
+                            $('.router_firmware').text(selectedFirmware.name);
+                            
+                            // Reload the page after a short delay to show updated info
+                            setTimeout(function() {
+                                location.reload();
+                            }, 2000);
+                        } else {
+                            showNotification('error', response.message || 'Failed to update firmware');
+                            $button.html(originalHtml).prop('disabled', false);
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error('Error updating firmware:', xhr);
+                        
+                        let errorMessage = 'Failed to update device firmware';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+                        
+                        showNotification('error', errorMessage);
+                        $button.html(originalHtml).prop('disabled', false);
+                    }
+                });
+            });
+            
+            // Helper function to format file size
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+            
+            // Helper function to get model name from model ID
+            function getModelName(modelId) {
+                const modelMap = {
+                    '1': '820AX',
+                    '2': '835AX',
+                    1: '820AX',
+                    2: '835AX',
+                    '820AX': '820AX',
+                    '835AX': '835AX'
+                };
+                return modelMap[modelId] || modelId;
+            }
+
+            // Channel scanning functionality
+            $('#scan-channels-btn').on('click', function() {
+                const locationId = getLocationId();
+                
+                // Show the scanning modal
+                $('#channel-scan-modal').modal('show');
+                
+                // Hide results view, show progress view
+                $('#pre-scan-view').hide();
+                $('#scan-results-view').hide();
+                $('#scan-in-progress-view').show();
+                
+                // Start progress bar animation
+                let progress = 0;
+                const progressBar = $('#scan-in-progress-view .progress-bar');
+                
+                // Simulate scanning progress
+                const progressInterval = setInterval(function() {
+                    progress += 5;
+                    progressBar.css('width', progress + '%').attr('aria-valuenow', progress);
+                    
+                    // Update timeline indicators based on progress
+                    if (progress >= 30) {
+                        $('#scan-in-progress-view .timeline-item:nth-child(1) .timeline-point-indicator').addClass('timeline-point-primary');
+                    }
+                    if (progress >= 60) {
+                        $('#scan-in-progress-view .timeline-item:nth-child(2) .timeline-point-indicator').addClass('timeline-point-primary');
+                    }
+                    if (progress >= 90) {
+                        $('#scan-in-progress-view .timeline-item:nth-child(3) .timeline-point-indicator').addClass('timeline-point-primary');
+                    }
+                    
+                    if (progress >= 100) {
+                        clearInterval(progressInterval);
+                        
+                        // Make AJAX request to get scan results
+                        $.ajax({
+                            url: `/api/locations/${locationId}/channel-scan`,
+                            method: 'GET',
+                            headers: {
+                                'Authorization': 'Bearer ' + localStorage.getItem('token')
+                            },
+                            success: function(response) {
+                                // Show scan results
+                                $('#scan-in-progress-view').hide();
+                                $('#scan-results-view').show();
+                                
+                                if (response && response.data) {
+                                    const results = response.data;
+                                    
+                                    // Update result displays
+                                    $('#result-channel-2g').text(results.recommended_channel_2g || '6');
+                                    $('#result-channel-5g').text(results.recommended_channel_5g || '36');
+                                    
+                                    // Update nearby networks table if available
+                                    if (results.nearby_networks) {
+                                        // Clear existing rows
+                                        $('#scan-results-view table tbody').empty();
+                                        
+                                        results.nearby_networks.forEach(network => {
+                                            $('#scan-results-view table tbody').append(`
+                                                <tr>
+                                                    <td>${network.band}</td>
+                                                    <td>${network.channel}</td>
+                                                    <td>${network.count}</td>
+                                                </tr>
+                                            `);
+                                        });
+                                    }
+                                } else {
+                                    // Show default results if no data available
+                                    $('#result-channel-2g').text('6');
+                                    $('#result-channel-5g').text('36');
+                                }
+                            },
+                            error: function(xhr) {
+                                // Hide scanning progress, show default results
+                                $('#scan-in-progress-view').hide();
+                                $('#scan-results-view').show();
+                                
+                                console.error('Error getting scan results:', xhr);
+                                showNotification('error', 'Failed to get channel scan results');
+                            }
+                        });
+                    }
+                }, 200);
             });
         });
     </script>

@@ -2,6 +2,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0,minimal-ui">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="description" content="monsieur-wifi - Domain blocking management for network administrators">
     <meta name="keywords" content="wifi, network, domain blocking, content filtering, dashboard, administrator, monsieur-wifi">
     <meta name="author" content="monsieur-wifi">
@@ -457,166 +458,7 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr>
-                                                    <td>
-                                                        <div class="d-flex align-items-center">
-                                                            <div class="avatar bg-light-danger mr-1 p-25">
-                                                                <div class="avatar-content">
-                                                                    <i data-feather="globe"></i>
-                                                                </div>
-                                                            </div>
-                                                            <span>adultsite.example.com</span>
-                                                        </div>
-                                                    </td>
-                                                    <td><span class="badge badge-pill badge-category-adult">Adult Content</span></td>
-                                                    <td>Jan 15, 2025</td>
-                                                    <td>Jan 15, 2025</td>
-                                                    <td>
-                                                        <div class="dropdown">
-                                                            <button type="button" class="btn btn-sm dropdown-toggle hide-arrow" data-toggle="dropdown">
-                                                                <i data-feather="more-vertical"></i>
-                                                            </button>
-                                                            <div class="dropdown-menu">
-                                                                <a class="dropdown-item" href="javascript:void(0);" data-toggle="modal" data-target="#edit-domain">
-                                                                    <i data-feather="edit-2" class="mr-50"></i>
-                                                                    <span>Edit</span>
-                                                                </a>
-                                                                <a class="dropdown-item" href="javascript:void(0);">
-                                                                    <i data-feather="trash" class="mr-50"></i>
-                                                                    <span>Delete</span>
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div class="d-flex align-items-center">
-                                                            <div class="avatar bg-light-warning mr-1 p-25">
-                                                                <div class="avatar-content">
-                                                                    <i data-feather="globe"></i>
-                                                                </div>
-                                                            </div>
-                                                            <span>casino.example.com</span>
-                                                        </div>
-                                                    </td>
-                                                    <td><span class="badge badge-pill badge-category-gambling">Gambling</span></td>
-                                                    <td>Dec 10, 2024</td>
-                                                    <td>Jan 02, 2025</td>
-                                                    <td>
-                                                        <div class="dropdown">
-                                                            <button type="button" class="btn btn-sm dropdown-toggle hide-arrow" data-toggle="dropdown">
-                                                                <i data-feather="more-vertical"></i>
-                                                            </button>
-                                                            <div class="dropdown-menu">
-                                                                <a class="dropdown-item" href="javascript:void(0);" data-toggle="modal" data-target="#edit-domain">
-                                                                    <i data-feather="edit-2" class="mr-50"></i>
-                                                                    <span>Edit</span>
-                                                                </a>
-                                                                <a class="dropdown-item" href="javascript:void(0);">
-                                                                    <i data-feather="trash" class="mr-50"></i>
-                                                                    <span>Delete</span>
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div class="d-flex align-items-center">
-                                                            <div class="avatar bg-light-primary mr-1 p-25">
-                                                                <div class="avatar-content">
-                                                                    <i data-feather="globe"></i>
-                                                                </div>
-                                                            </div>
-                                                            <span>malware.example.com</span>
-                                                        </div>
-                                                    </td>
-                                                    <td><span class="badge badge-pill badge-category-malware">Malware</span></td>
-                                                    <td>Feb 5, 2025</td>
-                                                    <td>Feb 5, 2025</td>
-                                                    <td>
-                                                        <div class="dropdown">
-                                                            <button type="button" class="btn btn-sm dropdown-toggle hide-arrow" data-toggle="dropdown">
-                                                                <i data-feather="more-vertical"></i>
-                                                            </button>
-                                                            <div class="dropdown-menu">
-                                                                <a class="dropdown-item" href="javascript:void(0);" data-toggle="modal" data-target="#edit-domain">
-                                                                    <i data-feather="edit-2" class="mr-50"></i>
-                                                                    <span>Edit</span>
-                                                                </a>
-                                                                <a class="dropdown-item" href="javascript:void(0);">
-                                                                    <i data-feather="trash" class="mr-50"></i>
-                                                                    <span>Delete</span>
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div class="d-flex align-items-center">
-                                                            <div class="avatar bg-light-info mr-1 p-25">
-                                                                <div class="avatar-content">
-                                                                    <i data-feather="globe"></i>
-                                                                </div>
-                                                            </div>
-                                                            <span>social.example.com</span>
-                                                        </div>
-                                                    </td>
-                                                    <td><span class="badge badge-pill badge-category-social">Social Media</span></td>
-                                                    <td>Jan 20, 2025</td>
-                                                    <td>Jan 20, 2025</td>
-                                                    <td>
-                                                        <div class="dropdown">
-                                                            <button type="button" class="btn btn-sm dropdown-toggle hide-arrow" data-toggle="dropdown">
-                                                                <i data-feather="more-vertical"></i>
-                                                            </button>
-                                                            <div class="dropdown-menu">
-                                                                <a class="dropdown-item" href="javascript:void(0);" data-toggle="modal" data-target="#edit-domain">
-                                                                    <i data-feather="edit-2" class="mr-50"></i>
-                                                                    <span>Edit</span>
-                                                                </a>
-                                                                <a class="dropdown-item" href="javascript:void(0);">
-                                                                    <i data-feather="trash" class="mr-50"></i>
-                                                                    <span>Delete</span>
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div class="d-flex align-items-center">
-                                                            <div class="avatar bg-light-secondary mr-1 p-25">
-                                                                <div class="avatar-content">
-                                                                    <i data-feather="globe"></i>
-                                                                </div>
-                                                            </div>
-                                                            <span>custom-block.example.com</span>
-                                                        </div>
-                                                    </td>
-                                                    <td><span class="badge badge-pill badge-category-custom">Custom List</span></td>
-                                                    <td>Feb 15, 2025</td>
-                                                    <td>Feb 15, 2025</td>
-                                                    <td>
-                                                        <div class="dropdown">
-                                                            <button type="button" class="btn btn-sm dropdown-toggle hide-arrow" data-toggle="dropdown">
-                                                                <i data-feather="more-vertical"></i>
-                                                            </button>
-                                                            <div class="dropdown-menu">
-                                                                <a class="dropdown-item" href="javascript:void(0);" data-toggle="modal" data-target="#edit-domain">
-                                                                    <i data-feather="edit-2" class="mr-50"></i>
-                                                                    <span>Edit</span>
-                                                                </a>
-                                                                <a class="dropdown-item" href="javascript:void(0);">
-                                                                    <i data-feather="trash" class="mr-50"></i>
-                                                                    <span>Delete</span>
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
+                                                <!-- Data will be loaded via AJAX -->
                                             </tbody>
                                         </table>
                                     </div>
@@ -711,12 +553,12 @@
                         <div class="form-group">
                             <label for="domain-category">Category</label>
                             <select class="form-control" id="domain-category">
-                                <option value="adult">Adult Content</option>
-                                <option value="gambling">Gambling</option>
-                                <option value="malware">Malware</option>
-                                <option value="social">Social Media</option>
-                                <option value="streaming">Streaming</option>
-                                <option value="custom">Custom List</option>
+                                <option value="1">Adult Content</option>
+                                <option value="2">Gambling</option>
+                                <option value="3">Malware</option>
+                                <option value="4">Social Media</option>
+                                <option value="5">Streaming</option>
+                                <option value="6">Custom List</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -758,12 +600,12 @@
                         <div class="form-group">
                             <label for="edit-domain-category">Category</label>
                             <select class="form-control" id="edit-domain-category">
-                                <option value="adult" selected>Adult Content</option>
-                                <option value="gambling">Gambling</option>
-                                <option value="malware">Malware</option>
-                                <option value="social">Social Media</option>
-                                <option value="streaming">Streaming</option>
-                                <option value="custom">Custom List</option>
+                                <option value="1">Adult Content</option>
+                                <option value="2">Gambling</option>
+                                <option value="3">Malware</option>
+                                <option value="4">Social Media</option>
+                                <option value="5">Streaming</option>
+                                <option value="6">Custom List</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -801,12 +643,12 @@
                         <div class="form-group">
                             <label for="import-category">Category</label>
                             <select class="form-control" id="import-category">
-                                <option value="adult">Adult Content</option>
-                                <option value="gambling">Gambling</option>
-                                <option value="malware">Malware</option>
-                                <option value="social">Social Media</option>
-                                <option value="streaming">Streaming</option>
-                                <option value="custom">Custom List</option>
+                                <option value="1">Adult Content</option>
+                                <option value="2">Gambling</option>
+                                <option value="3">Malware</option>
+                                <option value="4">Social Media</option>
+                                <option value="5">Streaming</option>
+                                <option value="6">Custom List</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -899,8 +741,92 @@
                 });
             }
             
-            // Initialize DataTable
-            $('.datatables-domains').DataTable({
+            // Load categories and update counters
+            loadCategoriesData();
+            
+            // Initialize DataTable with server-side data
+            var domainsTable = $('.datatables-domains').DataTable({
+                processing: true,
+                serverSide: false,
+                ajax: {
+                    url: '/blocked-domains',
+                    type: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    },
+                    dataSrc: function(json) {
+                        console.log("blocked-domains", json);
+                        return json.data;
+                    }
+                },
+                columns: [
+                    { 
+                        data: 'domain',
+                        render: function(data, type, row) {
+                            var avatarClass = getCategoryAvatarClass(row.category.slug);
+                            return `
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar ${avatarClass} mr-1 p-25">
+                                        <div class="avatar-content">
+                                            <i data-feather="globe"></i>
+                                        </div>
+                                    </div>
+                                    <span>${data}</span>
+                                </div>
+                            `;
+                        }
+                    },
+                    { 
+                        data: 'category',
+                        render: function(data, type, row) {
+                            var badgeClass = getCategoryBadgeClass(data.slug);
+                            return `<span class="badge badge-pill ${badgeClass}">${data.name}</span>`;
+                        }
+                    },
+                    { 
+                        data: 'created_at',
+                        render: function(data) {
+                            return new Date(data).toLocaleDateString('en-US', { 
+                                month: 'short', 
+                                day: 'numeric', 
+                                year: 'numeric' 
+                            });
+                        }
+                    },
+                    { 
+                        data: 'updated_at',
+                        render: function(data) {
+                            return new Date(data).toLocaleDateString('en-US', { 
+                                month: 'short', 
+                                day: 'numeric', 
+                                year: 'numeric' 
+                            });
+                        }
+                    },
+                    {
+                        data: 'id',
+                        orderable: false,
+                        render: function(data, type, row) {
+                            return `
+                                <div class="dropdown">
+                                    <button type="button" class="btn btn-sm dropdown-toggle hide-arrow" data-toggle="dropdown">
+                                        <i data-feather="more-vertical"></i>
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item edit-domain-btn" href="javascript:void(0);" data-id="${data}">
+                                            <i data-feather="edit-2" class="mr-50"></i>
+                                            <span>Edit</span>
+                                        </a>
+                                        <a class="dropdown-item delete-domain-btn" href="javascript:void(0);" data-id="${data}">
+                                            <i data-feather="trash" class="mr-50"></i>
+                                            <span>Delete</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    }
+                ],
                 responsive: true,
                 columnDefs: [
                     {
@@ -914,8 +840,82 @@
                         previous: '&nbsp;',
                         next: '&nbsp;'
                     }
+                },
+                drawCallback: function() {
+                    // Re-initialize feather icons after each draw
+                    feather.replace({
+                        width: 14,
+                        height: 14
+                    });
                 }
             });
+            
+            // Helper functions for category styling
+            function getCategoryBadgeClass(slug) {
+                switch(slug) {
+                    case 'adult-content': return 'badge-category-adult';
+                    case 'gambling': return 'badge-category-gambling';
+                    case 'malware': return 'badge-category-malware';
+                    case 'social-media': return 'badge-category-social';
+                    case 'streaming': return 'badge-category-streaming';
+                    case 'custom-list': return 'badge-category-custom';
+                    default: return 'badge-category-custom';
+                }
+            }
+            
+            function getCategoryAvatarClass(slug) {
+                switch(slug) {
+                    case 'adult-content': return 'bg-light-danger';
+                    case 'gambling': return 'bg-light-warning';
+                    case 'malware': return 'bg-light-primary';
+                    case 'social-media': return 'bg-light-info';
+                    case 'streaming': return 'bg-light-success';
+                    case 'custom-list': return 'bg-light-secondary';
+                    default: return 'bg-light-secondary';
+                }
+            }
+            
+            // Load categories data and update counters
+            function loadCategoriesData() {
+                $.ajax({
+                    url: '/categories',
+                    type: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    },
+                    success: function(response) {
+                        updateCategoryCounters(response.data || response);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Failed to load categories:', error);
+                    }
+                });
+            }
+            
+            // Update category counters
+            function updateCategoryCounters(categories) {
+                console.log("categories", categories);
+                categories = categories.categories;
+                categories.forEach(function(category) {
+                    var categoryCard = $(`.card h4:contains("${category.name}")`).closest('.card');
+                    if (categoryCard.length) {
+                        // alert(category.blocked_domains_count);
+                        console.log("category", category);
+                        categoryCard.find('span:first').text(`${category.blocked_domains_count || 0} domains`);
+                        
+                        // Update checkbox state
+                        var checkbox = categoryCard.find('.custom-control-input');
+                        checkbox.prop('checked', category.is_enabled);
+                        
+                        // Update border
+                        if (category.is_enabled) {
+                            categoryCard.addClass('border-primary');
+                        } else {
+                            categoryCard.removeClass('border-primary');
+                        }
+                    }
+                });
+            }
             
             // Initialize select2
             if ($.fn.select2) {
@@ -934,148 +934,205 @@
             // Handle category toggles
             $('.custom-switch input[type="checkbox"]').on('change', function() {
                 const categoryCard = $(this).closest('.card');
-                if ($(this).is(':checked')) {
+                const categoryName = categoryCard.find('h4').text();
+                const isEnabled = $(this).is(':checked');
+                
+                // Find category ID
+                var categoryId = null;
+                // You might need to store category ID in data attribute
+                
+                if (isEnabled) {
                     categoryCard.addClass('border-primary');
                 } else {
                     categoryCard.removeClass('border-primary');
                 }
+                
+                // TODO: Add API call to toggle category
+                console.log(`Category "${categoryName}" toggled to: ${isEnabled}`);
             });
             
-            // Handle edit domain modal data population
-            $('#edit-domain').on('show.bs.modal', function (event) {
-                var button = $(event.relatedTarget);
-                var row = button.closest('tr');
-                var domain = row.find('.d-flex span').text();
-                var category = row.find('.badge').text().trim().toLowerCase();
-                
-                var categoryValue;
-                switch(category) {
-                    case 'adult content': categoryValue = 'adult'; break;
-                    case 'gambling': categoryValue = 'gambling'; break;
-                    case 'malware': categoryValue = 'malware'; break;
-                    case 'social media': categoryValue = 'social'; break;
-                    case 'streaming': categoryValue = 'streaming'; break;
-                    default: categoryValue = 'custom';
-                }
-                
-                var modal = $(this);
-                modal.find('#edit-domain-name').val(domain);
-                modal.find('#edit-domain-category').val(categoryValue).trigger('change');
-            });
-            
-            // Handle domain addition to categories
+            // Handle domain addition
             $('#add-new-domain form').on('submit', function(e) {
                 e.preventDefault();
                 
-                // In a real implementation, this would save to the backend
                 const domainName = $('#domain-name').val();
-                const category = $('#domain-category').val();
+                const categoryId = $('#domain-category').val();
+                const notes = $('#domain-notes').val();
                 const blockSubdomains = $('#block-subdomains').is(':checked');
                 
-                // Get proper category name and color class
-                let categoryName, badgeClass, avatarClass;
-                switch(category) {
-                    case 'adult': 
-                        categoryName = 'Adult Content'; 
-                        badgeClass = 'badge-category-adult';
-                        avatarClass = 'bg-light-danger';
-                        break;
-                    case 'gambling': 
-                        categoryName = 'Gambling'; 
-                        badgeClass = 'badge-category-gambling';
-                        avatarClass = 'bg-light-warning';
-                        break;
-                    case 'malware': 
-                        categoryName = 'Malware'; 
-                        badgeClass = 'badge-category-malware';
-                        avatarClass = 'bg-light-primary';
-                        break;
-                    case 'social': 
-                        categoryName = 'Social Media'; 
-                        badgeClass = 'badge-category-social';
-                        avatarClass = 'bg-light-info';
-                        break;
-                    case 'streaming': 
-                        categoryName = 'Streaming'; 
-                        badgeClass = 'badge-category-streaming';
-                        avatarClass = 'bg-light-success';
-                        break;
-                    default: 
-                        categoryName = 'Custom List'; 
-                        badgeClass = 'badge-category-custom';
-                        avatarClass = 'bg-light-secondary';
-                }
-                
-                // Get current date formatted
-                const today = new Date();
-                const dateStr = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-                
-                // Create new table row
-                const newRow = `<tr>
-                    <td>
-                        <div class="d-flex align-items-center">
-                            <div class="avatar ${avatarClass} mr-1 p-25">
-                                <div class="avatar-content">
-                                    <i data-feather="globe"></i>
-                                </div>
-                            </div>
-                            <span>${domainName}</span>
-                        </div>
-                    </td>
-                    <td><span class="badge badge-pill ${badgeClass}">${categoryName}</span></td>
-                    <td>${dateStr}</td>
-                    <td>${dateStr}</td>
-                    <td>
-                        <div class="dropdown">
-                            <button type="button" class="btn btn-sm dropdown-toggle hide-arrow" data-toggle="dropdown">
-                                <i data-feather="more-vertical"></i>
-                            </button>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item" href="javascript:void(0);" data-toggle="modal" data-target="#edit-domain">
-                                    <i data-feather="edit-2" class="mr-50"></i>
-                                    <span>Edit</span>
-                                </a>
-                                <a class="dropdown-item delete-domain" href="javascript:void(0);">
-                                    <i data-feather="trash" class="mr-50"></i>
-                                    <span>Delete</span>
-                                </a>
-                            </div>
-                        </div>
-                    </td>
-                </tr>`;
-                
-                // Add the new row to the table and redraw
-                $('.datatables-domains tbody').prepend(newRow);
-                
-                // Refresh feather icons in the new row
-                feather.replace({
-                    width: 14,
-                    height: 14
+                // API call to add domain
+                $.ajax({
+                    url: '/blocked-domains',
+                    type: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    data: JSON.stringify({
+                        domain: domainName,
+                        category_id: categoryId,
+                        notes: notes,
+                        block_subdomains: blockSubdomains
+                    }),
+                    success: function(response) {
+                        if (response.success) {
+                            // Reload the DataTable
+                            domainsTable.ajax.reload();
+                            
+                            // Reset form and close modal
+                            $('#add-new-domain form').trigger('reset');
+                            $('#add-new-domain').modal('hide');
+                            
+                            // Reload categories to update counters
+                            loadCategoriesData();
+                            
+                            // Show success message
+                            if (typeof toastr !== 'undefined') {
+                                toastr.success(response.message);
+                            } else {
+                                alert(response.message);
+                            }
+                        } else {
+                            if (typeof toastr !== 'undefined') {
+                                toastr.error(response.message);
+                            } else {
+                                alert('Error: ' + response.message);
+                            }
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        var errorMessage = 'Failed to add domain';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+                        if (typeof toastr !== 'undefined') {
+                            toastr.error(errorMessage);
+                        } else {
+                            alert('Error: ' + errorMessage);
+                        }
+                    }
                 });
+            });
+            
+            // Handle domain editing
+            $(document).on('click', '.edit-domain-btn', function() {
+                const domainId = $(this).data('id');
                 
-                // Reset form and close modal
-                $(this).trigger('reset');
-                $('#add-new-domain').modal('hide');
+                // Get domain data
+                $.ajax({
+                    url: `/blocked-domains/${domainId}`,
+                    type: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            const domain = response.domain;
+                            
+                            // Populate edit modal
+                            $('#edit-domain-name').val(domain.domain);
+                            $('#edit-domain-category').val(domain.category_id).trigger('change');
+                            $('#edit-domain-notes').val(domain.notes || '');
+                            $('#edit-block-subdomains').prop('checked', domain.block_subdomains);
+                            
+                            // Store domain ID for update
+                            $('#edit-domain').data('domain-id', domainId);
+                            
+                            // Show modal
+                            $('#edit-domain').modal('show');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Failed to load domain data');
+                    }
+                });
+            });
+            
+            // Handle domain update
+            $('#edit-domain form').on('submit', function(e) {
+                e.preventDefault();
                 
-                // Show success message (if toastr is available)
-                if (typeof toastr !== 'undefined') {
-                    toastr.success(`Domain "${domainName}" has been added to the "${categoryName}" category.`);
-                } else {
-                    alert(`Domain "${domainName}" has been added to the "${categoryName}" category.`);
-                }
+                const domainId = $('#edit-domain').data('domain-id');
+                const categoryId = $('#edit-domain-category').val();
+                const notes = $('#edit-domain-notes').val();
+                const blockSubdomains = $('#edit-block-subdomains').is(':checked');
+                
+                $.ajax({
+                    url: `/blocked-domains/${domainId}`,
+                    type: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    data: JSON.stringify({
+                        category_id: categoryId,
+                        notes: notes,
+                        block_subdomains: blockSubdomains
+                    }),
+                    success: function(response) {
+                        if (response.success) {
+                            // Reload the DataTable
+                            domainsTable.ajax.reload();
+                            
+                            // Close modal
+                            $('#edit-domain').modal('hide');
+                            
+                            // Reload categories to update counters
+                            loadCategoriesData();
+                            
+                            // Show success message
+                            if (typeof toastr !== 'undefined') {
+                                toastr.success(response.message);
+                            } else {
+                                alert(response.message);
+                            }
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        var errorMessage = 'Failed to update domain';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+                        alert('Error: ' + errorMessage);
+                    }
+                });
             });
             
             // Handle domain deletion
-            $(document).on('click', '.delete-domain', function() {
+            $(document).on('click', '.delete-domain-btn', function() {
+                const domainId = $(this).data('id');
                 const row = $(this).closest('tr');
-                const domain = row.find('.d-flex span').text();
+                const domain = row.find('td:first span').text();
                 
-                // Simple confirmation
                 if (confirm(`Are you sure you want to delete "${domain}" from the block list?`)) {
-                    // Remove the row with animation
-                    row.fadeOut(400, function() {
-                        // In a real implementation, this would also delete from the backend
-                        row.remove();
+                    $.ajax({
+                        url: `/blocked-domains/${domainId}`,
+                        type: 'DELETE',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                // Reload the DataTable
+                                domainsTable.ajax.reload();
+                                
+                                // Reload categories to update counters
+                                loadCategoriesData();
+                                
+                                // Show success message
+                                if (typeof toastr !== 'undefined') {
+                                    toastr.success(response.message);
+                                } else {
+                                    alert(response.message);
+                                }
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            alert('Failed to delete domain');
+                        }
                     });
                 }
             });
@@ -1094,132 +1151,44 @@
                 $('.card-title:contains("Blocked Domains")').html(`${categoryName} Blocked Domains <span class="text-muted font-small-3">(${categoryCount} domains)</span>`);
                 
                 // Filter the datatable to show only this category
-                const dt = $('.datatables-domains').DataTable();
-                dt.search(categoryName).draw();
+                domainsTable.search(categoryName).draw();
                 
                 // Scroll to the domains section
                 $('html, body').animate({
                     scrollTop: $("#basic-datatable").offset().top - 100
                 }, 500);
                 
-                // Change the add domain button to pre-select this category
-                $('#add-new-domain').on('show.bs.modal', function() {
+                // Store selected category for add domain button
+                window.selectedCategory = categoryName;
+            });
+            
+            // Pre-select category when adding domain
+            $('#add-new-domain').on('show.bs.modal', function() {
+                if (window.selectedCategory) {
                     // Find the category value in the dropdown
                     let categoryValue;
-                    switch(categoryName.toLowerCase()) {
-                        case 'adult content': categoryValue = 'adult'; break;
-                        case 'gambling': categoryValue = 'gambling'; break;
-                        case 'malware': categoryValue = 'malware'; break;
-                        case 'social media': categoryValue = 'social'; break;
-                        case 'streaming': categoryValue = 'streaming'; break;
-                        default: categoryValue = 'custom';
+                    switch(window.selectedCategory.toLowerCase()) {
+                        case 'adult content': categoryValue = '1'; break;
+                        case 'gambling': categoryValue = '2'; break;
+                        case 'malware': categoryValue = '3'; break;
+                        case 'social media': categoryValue = '4'; break;
+                        case 'streaming': categoryValue = '5'; break;
+                        case 'custom list': categoryValue = '6'; break;
                     }
-                    $('#domain-category').val(categoryValue).trigger('change');
-                });
-            });
-            
-            // Add View Category button to the cards
-            $('.card.cursor-pointer').each(function() {
-                $(this).addClass('category-card');
-                const categoryName = $(this).find('h4').text();
-                $(this).find('.card-body').append(`
-                    <div class="mt-1">
-                        <button class="btn btn-sm btn-outline-primary view-category-btn">View Domains</button>
-                        <button class="btn btn-sm btn-outline-secondary edit-category-btn" data-category="${categoryName}">Edit Category</button>
-                    </div>
-                `);
-            });
-            
-            // View category button click
-            $(document).on('click', '.view-category-btn', function(e) {
-                e.stopPropagation();
-                $(this).closest('.category-card').trigger('click');
-            });
-            
-            // Edit category button click
-            $(document).on('click', '.edit-category-btn', function(e) {
-                e.stopPropagation();
-                const categoryName = $(this).data('category');
-                
-                // Show a modal for editing the category
-                $('#edit-category-modal').modal('show');
-                $('#edit-category-name').val(categoryName);
-                
-                // Populate with existing domains from this category
-                const dt = $('.datatables-domains').DataTable();
-                let domainsInCategory = [];
-                dt.rows().every(function() {
-                    const rowData = this.data();
-                    if ($(rowData[1]).text() === categoryName) {
-                        domainsInCategory.push($(rowData[0]).find('span').text());
+                    if (categoryValue) {
+                        $('#domain-category').val(categoryValue).trigger('change');
                     }
-                });
-                
-                // Populate the domains textarea
-                $('#edit-category-domains').val(domainsInCategory.join('\n'));
-            });
-            
-            // Add Edit Category Modal
-            if (!$('#edit-category-modal').length) {
-                $('body').append(`
-                <div class="modal fade text-left" id="edit-category-modal" tabindex="-1" role="dialog" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h4 class="modal-title">Edit Category Domains</h4>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <form id="edit-category-form">
-                                <div class="modal-body">
-                                    <div class="form-group">
-                                        <label for="edit-category-name">Category Name</label>
-                                        <input type="text" class="form-control" id="edit-category-name" readonly />
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="edit-category-domains">Domains (one per line)</label>
-                                        <textarea class="form-control" id="edit-category-domains" rows="15"></textarea>
-                                        <small class="form-text text-muted">Add or remove domains, one domain per line</small>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-                                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>`);
-            }
-            
-            // Handle edit category form submission
-            $(document).on('submit', '#edit-category-form', function(e) {
-                e.preventDefault();
-                
-                const categoryName = $('#edit-category-name').val();
-                const domainsText = $('#edit-category-domains').val();
-                const domains = domainsText.split('\n').filter(domain => domain.trim() !== '');
-                
-                // In a real implementation, this would update the backend
-                
-                // Update domain count on the category card
-                $(`.card h4:contains("${categoryName}")`).closest('.card').find('span:first').text(`${domains.length} domains`);
-                
-                // Close the modal
-                $('#edit-category-modal').modal('hide');
-                
-                // Show success message
-                if (typeof toastr !== 'undefined') {
-                    toastr.success(`Successfully updated domains for "${categoryName}" category.`);
-                } else {
-                    alert(`Successfully updated domains for "${categoryName}" category.`);
                 }
-                
-                // Reload the page or refresh the datatable in a real implementation
             });
             
-            // Initialize all categories to show view/edit buttons
+            // "View All Domains" button click
+            $(document).on('click', '#view-all-domains', function() {
+                $('.card-title:contains("Blocked Domains")').html('All Blocked Domains');
+                domainsTable.search('').draw();
+                window.selectedCategory = null;
+            });
+            
+            // Initialize all category cards
             $('.card.cursor-pointer').addClass('category-card');
             
             // Add the "All Domains" option at the top
@@ -1233,13 +1202,6 @@
                     </button>
                 </div>
             `);
-            
-            // "View All Domains" button click
-            $(document).on('click', '#view-all-domains', function() {
-                $('.card-title:contains("Blocked Domains")').html('All Blocked Domains');
-                const dt = $('.datatables-domains').DataTable();
-                dt.search('').draw();
-            });
             
             // Replace Feather icons in new elements
             feather.replace({

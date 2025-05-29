@@ -20,10 +20,12 @@ class Device extends Model
         'serial_number',
         'mac_address',
         'firmware_version',
+        'firmware_id',
         'last_seen',
         'configuration_version',
         'device_key',
         'device_secret',
+        'reboot_count',
     ];
 
     /**
