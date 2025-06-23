@@ -6,6 +6,7 @@ use App\Models\Device;
 use App\Models\Location;
 use App\Models\SystemSetting;
 use App\Models\LocationSettings;
+use App\Models\ScanResult;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\Firmware;
@@ -232,7 +233,7 @@ class DeviceController extends Controller
 
         $settings = LocationSettings::where('location_id', $location->id)->first();
         
-        return response()->json(['status' => 'success', 'config_version' => $device->configuration_version, 'reboot_count' => $device->reboot_count, 'firmware_version' => $firmware_version]);
+        return response()->json(['status' => 'success', 'config_version' => $device->configuration_version, 'reboot_count' => $device->reboot_count, 'firmware_version' => $firmware_version, 'scan_counter' => $device->scan_counter]);
     }
 
     public function verify($mac_address, $verification_code)
@@ -287,6 +288,288 @@ class DeviceController extends Controller
                 'status' => 'error',
                 'message' => 'Failed to restart device: ' . $e->getMessage()
             ], 500);
+        }
+    }
+
+    /**
+     * Initiate a channel scan for a device
+     */
+    public function initiateScan(Request $request, $locationId)
+    {
+        try {
+            // Find the location and its associated device
+            $location = Location::findOrFail($locationId);
+            $device = $location->device;
+            
+            if (!$device) {
+                return response()->json([
+                    'message' => 'No device found for this location'
+                ], 404);
+            }
+
+            // Increment the scan counter
+            $scanId = $device->incrementScanCounter();
+
+            // Create a new scan result entry
+            $scanResult = ScanResult::create([
+                'device_id' => $device->id,
+                'scan_id' => $scanId,
+                'status' => ScanResult::STATUS_INITIATED,
+            ]);
+
+            // Here you would typically send a command to the device to start scanning
+            // For now, we'll just return the scan result
+            
+            return response()->json([
+                'message' => 'Channel scan initiated successfully',
+                'data' => [
+                    'scan_id' => $scanId,
+                    'scan_result_id' => $scanResult->id,
+                    'status' => $scanResult->status,
+                    'device_id' => $device->id,
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to initiate scan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get the status of a scan
+     */
+    public function getScanStatus($locationId, $scanId)
+    {
+        try {
+            $location = Location::findOrFail($locationId);
+            $device = $location->device;
+            
+            if (!$device) {
+                return response()->json([
+                    'message' => 'No device found for this location'
+                ], 404);
+            }
+
+            $scanResult = ScanResult::where('device_id', $device->id)
+                ->where('scan_id', $scanId)
+                ->first();
+
+            if (!$scanResult) {
+                return response()->json([
+                    'message' => 'Scan not found'
+                ], 404);
+            }
+
+            return response()->json([
+                'data' => [
+                    'scan_id' => $scanResult->scan_id,
+                    'status' => $scanResult->status,
+                    'progress' => $this->getProgressPercentage($scanResult->status),
+                    'scan_results_2g' => $scanResult->scan_results_2g,
+                    'scan_results_5g' => $scanResult->scan_results_5g,
+                    'optimal_channel_2g' => $scanResult->optimal_channel_2g,
+                    'optimal_channel_5g' => $scanResult->optimal_channel_5g,
+                    'nearby_networks_2g' => $scanResult->nearby_networks_2g,
+                    'nearby_networks_5g' => $scanResult->nearby_networks_5g,
+                    'interference_level_2g' => $scanResult->interference_level_2g,
+                    'interference_level_5g' => $scanResult->interference_level_5g,
+                    'error_message' => $scanResult->error_message,
+                    'started_at' => $scanResult->started_at,
+                    'completed_at' => $scanResult->completed_at,
+                    'is_completed' => $scanResult->isCompleted(),
+                    'is_failed' => $scanResult->isFailed(),
+                    'is_in_progress' => $scanResult->isInProgress(),
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to get scan status: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Update scan status to started (called by device)
+     */
+    public function updateScanStarted(Request $request, $device_key, $device_secret, $scan_id)
+    {
+        try {
+            $device = Device::where('device_key', $device_key)
+                ->where('device_secret', $device_secret)
+                ->first();
+
+            if (!$device) {
+                return response()->json(['error' => 'Invalid device credentials'], 401);
+            }
+
+            $scanResult = ScanResult::where('device_id', $device->id)
+                ->where('scan_id', $scan_id)
+                ->first();
+
+            if (!$scanResult) {
+                return response()->json(['error' => 'Scan not found'], 404);
+            }
+
+            $scanResult->markAsStarted();
+
+            return response()->json([
+                'message' => 'Scan status updated to started',
+                'status' => $scanResult->status
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to update scan status: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Update 2.4G scan results (called by device)
+     */
+    public function update2GScanResults(Request $request, $device_key, $device_secret, $scan_id)
+    {
+        try {
+            $device = Device::where('device_key', $device_key)
+                ->where('device_secret', $device_secret)
+                ->first();
+
+            if (!$device) {
+                return response()->json(['error' => 'Invalid device credentials'], 401);
+            }
+
+            $scanResult = ScanResult::where('device_id', $device->id)
+                ->where('scan_id', $scan_id)
+                ->first();
+
+            if (!$scanResult) {
+                return response()->json(['error' => 'Scan not found'], 404);
+            }
+
+            $request->validate([
+                'scan_results' => 'required|array',
+                'optimal_channel' => 'required|integer|min:1|max:14',
+                'nearby_networks' => 'required|integer|min:0',
+                'interference_level' => 'required|in:low,medium,high'
+            ]);
+
+            $scanResult->update2GScanResults($request->all());
+
+            return response()->json([
+                'message' => '2.4G scan results updated successfully',
+                'status' => $scanResult->status
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to update 2.4G scan results: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Update 5G scan results and complete scan (called by device)
+     */
+    public function update5GScanResults(Request $request, $device_key, $device_secret, $scan_id)
+    {
+        try {
+            $device = Device::where('device_key', $device_key)
+                ->where('device_secret', $device_secret)
+                ->first();
+
+            if (!$device) {
+                return response()->json(['error' => 'Invalid device credentials'], 401);
+            }
+
+            $scanResult = ScanResult::where('device_id', $device->id)
+                ->where('scan_id', $scan_id)
+                ->first();
+
+            if (!$scanResult) {
+                return response()->json(['error' => 'Scan not found'], 404);
+            }
+
+            $request->validate([
+                'scan_results' => 'required|array',
+                'optimal_channel' => 'required|integer',
+                'nearby_networks' => 'required|integer|min:0',
+                'interference_level' => 'required|in:low,medium,high'
+            ]);
+
+            $scanResult->update5GScanResults($request->all());
+
+            return response()->json([
+                'message' => '5G scan results updated successfully. Scan completed.',
+                'status' => $scanResult->status
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to update 5G scan results: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Mark scan as failed (called by device)
+     */
+    public function markScanFailed(Request $request, $device_key, $device_secret, $scan_id)
+    {
+        try {
+            $device = Device::where('device_key', $device_key)
+                ->where('device_secret', $device_secret)
+                ->first();
+
+            if (!$device) {
+                return response()->json(['error' => 'Invalid device credentials'], 401);
+            }
+
+            $scanResult = ScanResult::where('device_id', $device->id)
+                ->where('scan_id', $scan_id)
+                ->first();
+
+            if (!$scanResult) {
+                return response()->json(['error' => 'Scan not found'], 404);
+            }
+
+            $errorMessage = $request->input('error_message', 'Scan failed');
+            $scanResult->markAsFailed($errorMessage);
+
+            return response()->json([
+                'message' => 'Scan marked as failed',
+                'status' => $scanResult->status
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to mark scan as failed: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get progress percentage based on status
+     */
+    private function getProgressPercentage($status)
+    {
+        switch ($status) {
+            case ScanResult::STATUS_INITIATED:
+                return 0;
+            case ScanResult::STATUS_STARTED:
+                return 20;
+            case ScanResult::STATUS_SCANNING_2G:
+                return 50;
+            case ScanResult::STATUS_SCANNING_5G:
+                return 80;
+            case ScanResult::STATUS_COMPLETED:
+                return 100;
+            case ScanResult::STATUS_FAILED:
+                return 0;
+            default:
+                return 0;
         }
     }
 }

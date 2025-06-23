@@ -26,6 +26,7 @@ class Device extends Model
         'device_key',
         'device_secret',
         'reboot_count',
+        'scan_counter',
     ];
 
     /**
@@ -34,5 +35,22 @@ class Device extends Model
     public function locations()
     {
         return $this->hasMany(Location::class);
+    }
+
+    /**
+     * Get the scan results associated with the device.
+     */
+    public function scanResults()
+    {
+        return $this->hasMany(ScanResult::class);
+    }
+
+    /**
+     * Increment the scan counter and return the new value.
+     */
+    public function incrementScanCounter()
+    {
+        $this->increment('scan_counter');
+        return $this->scan_counter;
     }
 }

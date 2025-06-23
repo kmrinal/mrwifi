@@ -2053,6 +2053,24 @@
                                     </div>
                                 </div>
                                 
+                                <!-- Device and Scan Counter Info -->
+                                <div class="card bg-light-primary mb-3">
+                                    <div class="card-body p-2">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <h6 class="mb-1">Device Info</h6>
+                                                <p class="mb-0"><strong>Location ID:</strong> <span id="modal-location-id">-</span></p>
+                                                <p class="mb-0"><strong>Device ID:</strong> <span id="modal-device-id">-</span></p>
+                                            </div>
+                                            <div class="col-6">
+                                                <h6 class="mb-1">Scan Counter</h6>
+                                                <p class="mb-0"><strong>Current Counter:</strong> <span id="modal-scan-counter">-</span></p>
+                                                <p class="mb-0"><strong>Next Scan ID:</strong> <span id="modal-next-scan-id">-</span></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
                                 <div class="row">
                                     <div class="col-md-6 col-12">
                                         <h6>Last Scan Results:</h6>
@@ -2103,39 +2121,64 @@
                                     </div>
                                 </div>
                                 
+                                <!-- Current Scan Info -->
+                                <div class="card bg-light-warning mb-2">
+                                    <div class="card-body p-2">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 class="mb-0">Current Scan</h6>
+                                                <small class="text-muted">Use this scan ID for curl testing</small>
+                                            </div>
+                                            <div class="text-right">
+                                                <h4 class="mb-0 text-warning">ID: <span id="current-scan-id">-</span></h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
                                 <div class="progress progress-bar-primary mb-2">
                                     <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%"></div>
                                 </div>
                                 
                                 <div class="timeline">
                                     <div class="timeline-item">
-                                        <div class="timeline-point-indicator timeline-point-primary"></div>
+                                        <div class="timeline-point-indicator" id="step-initiated-indicator"></div>
+                                        <div class="timeline-event">
+                                            <div class="d-flex justify-content-between">
+                                                <h6>Scan Initiated</h6>
+                                                <span class="text-muted">Step 1/4</span>
+                                            </div>
+                                            <p>Preparing device for channel scanning</p>
+                                        </div>
+                                    </div>
+                                    <div class="timeline-item">
+                                        <div class="timeline-point-indicator" id="step-started-indicator"></div>
+                                        <div class="timeline-event">
+                                            <div class="d-flex justify-content-between">
+                                                <h6>Scan Started</h6>
+                                                <span class="text-muted">Step 2/4</span>
+                                            </div>
+                                            <p>Device is ready and beginning frequency analysis</p>
+                                        </div>
+                                    </div>
+                                    <div class="timeline-item">
+                                        <div class="timeline-point-indicator" id="step-2g-indicator"></div>
                                         <div class="timeline-event">
                                             <div class="d-flex justify-content-between">
                                                 <h6>Scanning 2.4 GHz Band</h6>
-                                                <span class="text-muted">Step 1/3</span>
+                                                <span class="text-muted">Step 3/4</span>
                                             </div>
                                             <p>Checking channels 1-11 for signal strength and interference</p>
                                         </div>
                                     </div>
                                     <div class="timeline-item">
-                                        <div class="timeline-point-indicator"></div>
+                                        <div class="timeline-point-indicator" id="step-5g-indicator"></div>
                                         <div class="timeline-event">
                                             <div class="d-flex justify-content-between">
                                                 <h6>Scanning 5 GHz Band</h6>
-                                                <span class="text-muted">Step 2/3</span>
+                                                <span class="text-muted">Step 4/4</span>
                                             </div>
                                             <p>Checking channels 36-165 for signal strength and interference</p>
-                                        </div>
-                                    </div>
-                                    <div class="timeline-item">
-                                        <div class="timeline-point-indicator"></div>
-                                        <div class="timeline-event">
-                                            <div class="d-flex justify-content-between">
-                                                <h6>Analyzing Results</h6>
-                                                <span class="text-muted">Step 3/3</span>
-                                            </div>
-                                            <p>Determining optimal channels based on scan data</p>
                                         </div>
                                     </div>
                                 </div>
@@ -3378,6 +3421,50 @@ document.addEventListener('DOMContentLoaded', function() {
             window.currentDeviceData = null;
 
             // Function to load device data from API
+            // Function to load device info specifically for the modal
+            function loadDeviceInfoForModal(locationId) {
+                console.log('Loading device info for modal');
+                
+                $.ajax({
+                    url: '/api/locations/' + locationId,
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + UserManager.getToken(),
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    success: function(response) {
+                        console.log('Device info loaded for modal:', response);
+                        
+                        // Extract device data from response
+                        let device = null;
+                        if (response.data && response.data.device) {
+                            device = response.data.device;
+                        } else if (response.device) {
+                            device = response.device;
+                        } else if (response.data && response.data.devices && response.data.devices.length > 0) {
+                            device = response.data.devices[0];
+                        }
+                        
+                        if (device) {
+                            $('#modal-device-id').text(device.id || '-');
+                            $('#modal-scan-counter').text(device.scan_counter || 0);
+                            $('#modal-next-scan-id').text((device.scan_counter || 0) + 1);
+                        } else {
+                            $('#modal-device-id').text('-');
+                            $('#modal-scan-counter').text('-');
+                            $('#modal-next-scan-id').text('-');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Failed to load device info for modal:', error);
+                        $('#modal-device-id').text('Error');
+                        $('#modal-scan-counter').text('Error');
+                        $('#modal-next-scan-id').text('Error');
+                    }
+                });
+            }
+
             function loadDeviceData() {
                 console.log('Loading device data from API');
                 
@@ -3716,6 +3803,16 @@ document.addEventListener('DOMContentLoaded', function() {
             // Channel scan button event handler
             $('#scan-channels-btn').on('click', function() {
                 console.log('Channel scan button clicked');
+                
+                // Populate device info in modal
+                const locationId = getLocationId();
+                if (locationId) {
+                    $('#modal-location-id').text(locationId);
+                    
+                    // Get device info and scan counter
+                    loadDeviceInfoForModal(locationId);
+                }
+                
                 $('#channel-scan-modal').modal('show');
             });
 
@@ -3735,9 +3832,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 applyScanResults();
             });
 
+            // Clean up polling when modal is closed
+            $('#channel-scan-modal').on('hidden.bs.modal', function() {
+                console.log('Channel scan modal closed, cleaning up polling');
+                if (window.scanPollingInterval) {
+                    clearInterval(window.scanPollingInterval);
+                    window.scanPollingInterval = null;
+                }
+                
+                // Reset to pre-scan view for next time
+                showPreScanView();
+            });
+
             // Channel scan functions
             function startChannelScan() {
-                console.log('Starting channel scan process');
+                console.log('Starting real channel scan process');
+                
+                const locationId = getLocationId();
+                if (!locationId) {
+                    toastr.error('Location ID not found');
+                    return;
+                }
                 
                 // Hide pre-scan view and show progress view
                 $('#pre-scan-view').hide();
@@ -3748,66 +3863,204 @@ document.addEventListener('DOMContentLoaded', function() {
                 $('.progress-bar').css('width', '0%').attr('aria-valuenow', 0);
                 $('.timeline-point-indicator').removeClass('timeline-point-primary timeline-point-success');
                 
-                // Simulate scan progress
-                simulateChannelScan();
+                // Initialize the first step
+                $('#step-initiated-indicator').addClass('timeline-point-primary');
+                
+                // Initiate scan via API
+                $.ajax({
+                    url: `/api/locations/${locationId}/scan/initiate`,
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + UserManager.getToken(),
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    success: function(response) {
+                        console.log('Scan initiated successfully:', response);
+                        
+                        if (response.data && response.data.scan_id) {
+                            // Store scan ID for polling
+                            window.currentScanId = response.data.scan_id;
+                            
+                            // Display scan ID prominently
+                            $('#current-scan-id').text(response.data.scan_id);
+                            
+                            // Update the next scan ID counter in pre-scan view for future reference
+                            $('#modal-scan-counter').text(response.data.scan_counter || response.data.scan_id);
+                            $('#modal-next-scan-id').text((response.data.scan_counter || response.data.scan_id) + 1);
+                            
+                            // Start polling for scan status
+                            pollScanStatus(locationId, response.data.scan_id);
+                            
+                            toastr.success(`Channel scan initiated! Scan ID: ${response.data.scan_id}`, 'Scan Started', {
+                                timeOut: 5000,
+                                closeButton: true
+                            });
+                        } else {
+                            console.error('Invalid response format:', response);
+                            toastr.error('Failed to initiate scan - invalid response');
+                            showPreScanView();
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Failed to initiate scan:', error);
+                        handleApiError(xhr, status, error, 'initiating channel scan');
+                        showPreScanView();
+                    }
+                });
             }
 
-            function simulateChannelScan() {
-                let progress = 0;
-                const progressInterval = setInterval(function() {
-                    progress += Math.random() * 15; // Random progress increment
-                    if (progress > 100) progress = 100;
-                    
-                    $('.progress-bar').css('width', progress + '%').attr('aria-valuenow', progress);
-                    
-                    // Update timeline indicators based on progress
-                    if (progress > 30) {
-                        $('#step-1-indicator').addClass('timeline-point-primary');
-                    }
-                    if (progress > 60) {
-                        $('#step-2-indicator').addClass('timeline-point-primary');
-                    }
-                    if (progress > 90) {
-                        $('#step-3-indicator').addClass('timeline-point-primary');
-                    }
-                    
-                    if (progress >= 100) {
-                        clearInterval(progressInterval);
-                        // Complete scan and show results
-                        setTimeout(function() {
-                            showScanResults();
-                        }, 1000);
-                    }
-                }, 300);
+            function pollScanStatus(locationId, scanId) {
+                console.log('Polling scan status for scan ID:', scanId);
+                
+                // Clear any existing polling interval
+                if (window.scanPollingInterval) {
+                    clearInterval(window.scanPollingInterval);
+                }
+                
+                window.scanPollingInterval = setInterval(function() {
+                    $.ajax({
+                        url: `/api/locations/${locationId}/scan/${scanId}/status`,
+                        method: 'GET',
+                        headers: {
+                            'Authorization': 'Bearer ' + UserManager.getToken(),
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        success: function(response) {
+                            console.log('Scan status:', response);
+                            
+                            if (response.data) {
+                                const data = response.data;
+                                
+                                // Update progress bar
+                                const progress = data.progress || 0;
+                                $('.progress-bar').css('width', progress + '%').attr('aria-valuenow', progress);
+                                
+                                // Update timeline indicators based on status
+                                updateTimelineIndicators(data.status);
+                                
+                                // Check if scan is completed
+                                if (data.is_completed) {
+                                    clearInterval(window.scanPollingInterval);
+                                    console.log('Scan completed, showing results');
+                                    showScanResults(data);
+                                } else if (data.is_failed) {
+                                    clearInterval(window.scanPollingInterval);
+                                    console.log('Scan failed:', data.error_message);
+                                    toastr.error('Scan failed: ' + (data.error_message || 'Unknown error'));
+                                    showPreScanView();
+                                }
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Failed to get scan status:', error);
+                            clearInterval(window.scanPollingInterval);
+                            handleApiError(xhr, status, error, 'getting scan status');
+                            showPreScanView();
+                        }
+                    });
+                }, 2000); // Poll every 2 seconds
             }
 
-            function showScanResults() {
-                console.log('Showing scan results');
+            function updateTimelineIndicators(status) {
+                // Reset all indicators
+                $('.timeline-point-indicator').removeClass('timeline-point-primary timeline-point-success');
+                
+                switch (status) {
+                    case 'initiated':
+                        $('#step-initiated-indicator').addClass('timeline-point-primary');
+                        break;
+                    case 'started':
+                        $('#step-initiated-indicator').addClass('timeline-point-success');
+                        $('#step-started-indicator').addClass('timeline-point-primary');
+                        break;
+                    case 'scanning_2g':
+                        $('#step-initiated-indicator').addClass('timeline-point-success');
+                        $('#step-started-indicator').addClass('timeline-point-success');
+                        $('#step-2g-indicator').addClass('timeline-point-primary');
+                        break;
+                    case 'scanning_5g':
+                        $('#step-initiated-indicator').addClass('timeline-point-success');
+                        $('#step-started-indicator').addClass('timeline-point-success');
+                        $('#step-2g-indicator').addClass('timeline-point-success');
+                        $('#step-5g-indicator').addClass('timeline-point-primary');
+                        break;
+                    case 'completed':
+                        $('#step-initiated-indicator').addClass('timeline-point-success');
+                        $('#step-started-indicator').addClass('timeline-point-success');
+                        $('#step-2g-indicator').addClass('timeline-point-success');
+                        $('#step-5g-indicator').addClass('timeline-point-success');
+                        break;
+                }
+            }
+
+            function showScanResults(scanData) {
+                console.log('Showing scan results with real data:', scanData);
                 
                 // Hide progress view and show results view
                 $('#scan-in-progress-view').hide();
                 $('#scan-results-view').show();
                 
-                // Update result channels (simulate optimal channels)
-                const optimal2g = Math.floor(Math.random() * 3) === 0 ? 1 : (Math.floor(Math.random() * 2) === 0 ? 6 : 11);
-                const optimal5g = [36, 40, 44, 48, 149, 153][Math.floor(Math.random() * 6)];
-                
-                $('#result-channel-2g').text(optimal2g);
-                $('#result-channel-5g').text(optimal5g);
-                
-                // Update last scan info
-                $('#last-best-channel-2g').text('Channel ' + optimal2g);
-                $('#last-best-channel-5g').text('Channel ' + optimal5g);
-                $('#last-scan-time').text(new Date().toLocaleString());
+                // Update result channels with real data
+                if (scanData) {
+                    const optimal2g = scanData.optimal_channel_2g || 6;
+                    const optimal5g = scanData.optimal_channel_5g || 36;
+                    
+                    $('#result-channel-2g').text(optimal2g);
+                    $('#result-channel-5g').text(optimal5g);
+                    
+                    // Update last scan info
+                    $('#last-best-channel-2g').text('Channel ' + optimal2g);
+                    $('#last-best-channel-5g').text('Channel ' + optimal5g);
+                    
+                    if (scanData.completed_at) {
+                        $('#last-scan-time').text(new Date(scanData.completed_at).toLocaleString());
+                    } else {
+                        $('#last-scan-time').text(new Date().toLocaleString());
+                    }
+                    
+                    // Update nearby networks count
+                    if (scanData.nearby_networks_2g !== undefined) {
+                        $('#nearby-networks-2g').text(scanData.nearby_networks_2g + ' networks');
+                    }
+                    if (scanData.nearby_networks_5g !== undefined) {
+                        $('#nearby-networks-5g').text(scanData.nearby_networks_5g + ' networks');
+                    }
+                    
+                    // Store scan results for apply function
+                    window.lastScanResults = scanData;
+                } else {
+                    // Fallback if no data provided
+                    const optimal2g = 6;
+                    const optimal5g = 36;
+                    
+                    $('#result-channel-2g').text(optimal2g);
+                    $('#result-channel-5g').text(optimal5g);
+                    
+                    $('#last-best-channel-2g').text('Channel ' + optimal2g);
+                    $('#last-best-channel-5g').text('Channel ' + optimal5g);
+                    $('#last-scan-time').text(new Date().toLocaleString());
+                }
             }
 
             function showPreScanView() {
                 console.log('Showing pre-scan view');
                 
+                // Stop any ongoing polling
+                if (window.scanPollingInterval) {
+                    clearInterval(window.scanPollingInterval);
+                    window.scanPollingInterval = null;
+                }
+                
                 // Show pre-scan view and hide others
                 $('#pre-scan-view').show();
                 $('#scan-in-progress-view').hide();
                 $('#scan-results-view').hide();
+                
+                // Reset progress and timeline
+                $('.progress-bar').css('width', '0%').attr('aria-valuenow', 0);
+                $('.timeline-point-indicator').removeClass('timeline-point-primary timeline-point-success');
             }
 
             function applyScanResults() {

@@ -39,6 +39,12 @@ Route::get('/devices/{device_key}/{device_secret}/settings', [DeviceController::
 Route::get('/devices/{device_key}/{device_secret}/heartbeat', [DeviceController::class, 'heartbeat']);
 Route::get('/devices/{device_key}/{device_secret}/firmware', [FirmwareController::class, 'getDeviceFirmware']);
 
+// Device scan update routes (called by devices themselves)
+Route::post('/devices/{device_key}/{device_secret}/scan/{scan_id}/started', [DeviceController::class, 'updateScanStarted']);
+Route::post('/devices/{device_key}/{device_secret}/scan/{scan_id}/2g-results', [DeviceController::class, 'update2GScanResults']);
+Route::post('/devices/{device_key}/{device_secret}/scan/{scan_id}/5g-results', [DeviceController::class, 'update5GScanResults']);
+Route::post('/devices/{device_key}/{device_secret}/scan/{scan_id}/failed', [DeviceController::class, 'markScanFailed']);
+
 // Route::get('/devices/{mac_address}/{verification_code}/info', [DeviceController::class, 'info']);
 
 Route::get('/devices/{mac_address}/{verification_code}/verify', [DeviceController::class, 'verify']);   
@@ -53,7 +59,9 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'locations'], function () 
     // Location settings routes
     Route::get('/{id}/settings', [LocationController::class, 'getSettings']);
     Route::put('/{id}/settings', [LocationController::class, 'updateSettings']);
-    // Channel scan route
+    // Channel scan routes
+    Route::post('/{id}/scan/initiate', [DeviceController::class, 'initiateScan']);
+    Route::get('/{id}/scan/{scan_id}/status', [DeviceController::class, 'getScanStatus']);
     Route::get('/{id}/channel-scan', [LocationController::class, 'channelScan']);
     // Firmware update route
     Route::post('/{id}/update-firmware', [LocationController::class, 'updateFirmware']);
