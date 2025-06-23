@@ -3713,6 +3713,120 @@ document.addEventListener('DOMContentLoaded', function() {
                 saveWebFilterSettings();
             });
 
+            // Channel scan button event handler
+            $('#scan-channels-btn').on('click', function() {
+                console.log('Channel scan button clicked');
+                $('#channel-scan-modal').modal('show');
+            });
+
+            // Channel scan modal event handlers
+            $('#start-scan-btn').on('click', function() {
+                console.log('Starting channel scan');
+                startChannelScan();
+            });
+
+            $('#back-to-scan-btn').on('click', function() {
+                console.log('Back to scan button clicked');
+                showPreScanView();
+            });
+
+            $('#apply-scan-results').on('click', function() {
+                console.log('Applying scan results');
+                applyScanResults();
+            });
+
+            // Channel scan functions
+            function startChannelScan() {
+                console.log('Starting channel scan process');
+                
+                // Hide pre-scan view and show progress view
+                $('#pre-scan-view').hide();
+                $('#scan-in-progress-view').show();
+                $('#scan-results-view').hide();
+                
+                // Reset progress
+                $('.progress-bar').css('width', '0%').attr('aria-valuenow', 0);
+                $('.timeline-point-indicator').removeClass('timeline-point-primary timeline-point-success');
+                
+                // Simulate scan progress
+                simulateChannelScan();
+            }
+
+            function simulateChannelScan() {
+                let progress = 0;
+                const progressInterval = setInterval(function() {
+                    progress += Math.random() * 15; // Random progress increment
+                    if (progress > 100) progress = 100;
+                    
+                    $('.progress-bar').css('width', progress + '%').attr('aria-valuenow', progress);
+                    
+                    // Update timeline indicators based on progress
+                    if (progress > 30) {
+                        $('#step-1-indicator').addClass('timeline-point-primary');
+                    }
+                    if (progress > 60) {
+                        $('#step-2-indicator').addClass('timeline-point-primary');
+                    }
+                    if (progress > 90) {
+                        $('#step-3-indicator').addClass('timeline-point-primary');
+                    }
+                    
+                    if (progress >= 100) {
+                        clearInterval(progressInterval);
+                        // Complete scan and show results
+                        setTimeout(function() {
+                            showScanResults();
+                        }, 1000);
+                    }
+                }, 300);
+            }
+
+            function showScanResults() {
+                console.log('Showing scan results');
+                
+                // Hide progress view and show results view
+                $('#scan-in-progress-view').hide();
+                $('#scan-results-view').show();
+                
+                // Update result channels (simulate optimal channels)
+                const optimal2g = Math.floor(Math.random() * 3) === 0 ? 1 : (Math.floor(Math.random() * 2) === 0 ? 6 : 11);
+                const optimal5g = [36, 40, 44, 48, 149, 153][Math.floor(Math.random() * 6)];
+                
+                $('#result-channel-2g').text(optimal2g);
+                $('#result-channel-5g').text(optimal5g);
+                
+                // Update last scan info
+                $('#last-best-channel-2g').text('Channel ' + optimal2g);
+                $('#last-best-channel-5g').text('Channel ' + optimal5g);
+                $('#last-scan-time').text(new Date().toLocaleString());
+            }
+
+            function showPreScanView() {
+                console.log('Showing pre-scan view');
+                
+                // Show pre-scan view and hide others
+                $('#pre-scan-view').show();
+                $('#scan-in-progress-view').hide();
+                $('#scan-results-view').hide();
+            }
+
+            function applyScanResults() {
+                console.log('Applying scan results');
+                
+                const channel2g = $('#result-channel-2g').text();
+                const channel5g = $('#result-channel-5g').text();
+                
+                // Update the main form with optimal channels
+                $('#channel-2g').val(channel2g);
+                $('#channel-5g').val(channel5g);
+                
+                // Close modal
+                $('#channel-scan-modal').modal('hide');
+                
+                // Show success message
+                toastr.success(`Optimal channels applied: 2.4GHz Channel ${channel2g}, 5GHz Channel ${channel5g}`);
+            }
+
             // Enable/disable category selector based on main switch
             $('#global-web-filter').on('change', function() {
                 const isEnabled = $(this).is(':checked');
