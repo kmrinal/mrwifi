@@ -264,6 +264,29 @@ class CategoryController extends Controller
     }
 
     /**
+     * Get only enabled categories.
+     */
+    public function enabled(Request $request)
+    {
+        try {
+            $categories = Category::enabled()
+                                 ->ordered()
+                                 ->withCount('activeBlockedDomains')
+                                 ->get();
+
+            return response()->json([
+                'success' => true,
+                'data' => $categories
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to get enabled categories: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Get category statistics.
      */
     public function stats(Category $category)

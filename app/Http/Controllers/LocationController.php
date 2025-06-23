@@ -1103,4 +1103,136 @@ class LocationController extends Controller
     /**
      * Get channel scan data for a location's device
      */
+
+    /**
+     * Get location settings
+     */
+    public function getSettings($id)
+    {
+        try {
+            $location = Location::find($id);
+            
+            if (!$location) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Location not found'
+                ], 404);
+            }
+            
+            $settings = LocationSettings::where('location_id', $id)->first();
+            
+            if (!$settings) {
+                // Create default settings if none exist
+                $settings = new LocationSettings([
+                    'location_id' => $id,
+                    'web_filter_enabled' => false,
+                    'web_filter_categories' => [],
+                ]);
+                $settings->save();
+            }
+            
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'settings' => $settings
+                ]
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Error getting location settings: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error getting location settings: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Update location settings
+     */
+    public function updateSettings(Request $request, $id)
+    {
+        Log::info('Update location settings request received for location: ' . $id);
+        Log::info($request->all());
+        
+        try {
+            $location = Location::find($id);
+            
+            if (!$location) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Location not found'
+                ], 404);
+            }
+            
+            $settings = LocationSettings::where('location_id', $id)->first();
+            
+            if (!$settings) {
+                // Create new settings if none exist
+                $settings = new LocationSettings(['location_id' => $id]);
+            }
+            
+            // Update settings with provided data
+            $settingsData = $request->only([
+                'web_filter_enabled',
+                'web_filter_categories',
+                'web_filter_domains',
+                // Add other settings fields as needed
+                'wifi_name',
+                'wifi_password',
+                'wifi_visible',
+                'wifi_security_type',
+                'captive_portal_enabled',
+                'captive_portal_ssid',
+                'captive_portal_visible',
+                'captive_auth_method',
+                'captive_portal_password',
+                'session_timeout',
+                'idle_timeout',
+                'bandwidth_limit',
+                'download_limit',
+                'upload_limit',
+                'country_code',
+                'transmit_power_2g',
+                'transmit_power_5g',
+                'channel_2g',
+                'channel_5g',
+                'channel_width_2g',
+                'channel_width_5g',
+                'mac_filter_mode',
+                'mac_filter_list',
+            ]);
+            
+            // Ensure web_filter_categories is properly handled as JSON
+            if (isset($settingsData['web_filter_categories'])) {
+                if (is_string($settingsData['web_filter_categories'])) {
+                    $settingsData['web_filter_categories'] = json_decode($settingsData['web_filter_categories'], true) ?: [];
+                } elseif (!is_array($settingsData['web_filter_categories'])) {
+                    $settingsData['web_filter_categories'] = [];
+                }
+            }
+            
+            $settings->fill($settingsData);
+            $settings->save();
+            
+            Log::info('Location settings updated successfully for location: ' . $id);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Location settings updated successfully',
+                'data' => [
+                    'settings' => $settings
+                ]
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Error updating location settings: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating location settings: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

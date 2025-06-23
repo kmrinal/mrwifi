@@ -9,6 +9,7 @@ use App\Http\Controllers\SystemSettingController;
 use App\Http\Controllers\GuestNetworkUserController;
 use App\Http\Controllers\CaptivePortalDesignController;
 use App\Http\Controllers\FirmwareController;
+use App\Http\Controllers\CategoryController;
 
 // Public routes (no auth required)
 Route::post('auth/login', [AuthController::class, 'login']);
@@ -49,6 +50,9 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'locations'], function () 
     Route::put('/{id}', [LocationController::class, 'update']);
     Route::delete('/{id}', [LocationController::class, 'destroy']);
     Route::put('/{location_id}/general', [LocationController::class, 'updateGeneral']);
+    // Location settings routes
+    Route::get('/{id}/settings', [LocationController::class, 'getSettings']);
+    Route::put('/{id}/settings', [LocationController::class, 'updateSettings']);
     // Channel scan route
     Route::get('/{id}/channel-scan', [LocationController::class, 'channelScan']);
     // Firmware update route
@@ -84,6 +88,12 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'firmware'], function () {
     Route::get('/{firmware}/download', [FirmwareController::class, 'download']);
     Route::post('/{firmware}/toggle-status', [FirmwareController::class, 'toggleStatus']);
     Route::post('/{firmware}/verify', [FirmwareController::class, 'verify']);
+});
+
+// Category routes (protected with auth)
+Route::group(['middleware' => 'auth:api', 'prefix' => 'categories'], function () {
+    Route::get('/', [CategoryController::class, 'index']);
+    Route::get('/enabled', [CategoryController::class, 'enabled']);
 });
 
 Route::post('/captive-portal/{location_id}/info', [GuestNetworkUserController::class, 'info']);

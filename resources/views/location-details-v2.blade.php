@@ -1357,8 +1357,11 @@
 
                                     <!-- Content Filtering Section -->
                                     <div class="content-section">
-                                        <div class="section-header">
+                                        <div class="section-header d-flex justify-content-between align-items-center">
                                             <h5 class="section-title">Web Content Filtering</h5>
+                                            <button class="btn btn-primary" id="save-web-filter-settings">
+                                                <i data-feather="save" class="mr-2"></i>Save Web Filter Settings
+                                            </button>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6">
@@ -1366,7 +1369,7 @@
                                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                                         <label class="mb-0">Enable Content Filtering</label>
                                                         <div class="custom-control custom-switch custom-control-primary">
-                                                            <input type="checkbox" class="custom-control-input" id="global-web-filter" checked>
+                                                            <input type="checkbox" class="custom-control-input" id="global-web-filter">
                                                             <label class="custom-control-label" for="global-web-filter"></label>
                                                         </div>
                                                     </div>
@@ -1377,15 +1380,9 @@
                                                 <div class="form-group">
                                                     <label for="global-filter-categories">Block Categories</label>
                                                     <select class="select2 form-control" id="global-filter-categories" multiple="multiple">
-                                                        <option value="adult-content" selected>Adult Content</option>
-                                                        <option value="gambling">Gambling</option>
-                                                        <option value="social-media">Social Media</option>
-                                                        <option value="streaming">Streaming Services</option>
-                                                        <option value="malware" selected>Malware & Phishing</option>
-                                                        <option value="gaming">Gaming</option>
-                                                        <option value="file-sharing">File Sharing</option>
-                                                        <option value="advertising">Advertising</option>
+                                                        <!-- Categories will be loaded dynamically from API -->
                                                     </select>
+                                                    <small class="text-muted">Select content categories to block across all networks.</small>
                                                 </div>
                                             </div>
                                         </div>
@@ -3139,6 +3136,143 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
+        // Function to load web filter categories
+        function loadWebFilterCategories() {
+            console.log('Loading web filter categories from API');
+            
+            $.ajax({
+                url: '/api/categories/enabled',
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + UserManager.getToken(),
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                success: function(response) {
+                    console.log('Categories loaded successfully:', response);
+                    
+                    const $select = $('#global-filter-categories');
+                    $select.empty();
+                    
+                    if (response.data && Array.isArray(response.data)) {
+                        response.data.forEach(function(category) {
+                            const option = `<option value="${category.id}" data-name="${category.name}" data-slug="${category.slug}">
+                                ${category.name} (${category.active_blocked_domains_count || 0} domains)
+                            </option>`;
+                            $select.append(option);
+                        });
+                        
+                        // Initialize Select2 if not already initialized
+                        if (!$select.hasClass('select2-hidden-accessible')) {
+                            $select.select2({
+                                placeholder: 'Select categories to block',
+                                allowClear: true,
+                                width: '100%'
+                            });
+                        }
+                        
+                        // Load existing location settings for web filtering
+                        loadLocationWebFilterSettings();
+                    } else {
+                        console.warn('No categories found in response');
+                        $select.append('<option value="">No categories available</option>');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Failed to load categories:', error);
+                    handleApiError(xhr, status, error, 'loading web filter categories');
+                    
+                    // Add fallback categories if API fails
+                    const $select = $('#global-filter-categories');
+                    $select.html(`
+                        <option value="">Failed to load categories</option>
+                        <option value="fallback-adult">Adult Content (Fallback)</option>
+                        <option value="fallback-malware">Malware & Phishing (Fallback)</option>
+                    `);
+                }
+            });
+        }
+
+        // Function to load location web filter settings
+        function loadLocationWebFilterSettings() {
+            const locationId = getLocationId();
+            if (!locationId) {
+                console.log('No location ID found - cannot load web filter settings');
+                return;
+            }
+
+            console.log('Loading web filter settings for location:', locationId);
+            
+            $.ajax({
+                url: '/api/locations/' + locationId + '/settings',
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + UserManager.getToken(),
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                success: function(response) {
+                    console.log('Location settings loaded:', response);
+                    
+                    if (response.data && response.data.settings) {
+                        const settings = response.data.settings;
+                        
+                        // Set web filter enabled status
+                        if (settings.web_filter_enabled !== undefined) {
+                            $('#global-web-filter').prop('checked', settings.web_filter_enabled);
+                        }
+                        
+                        // Set selected categories
+                        if (settings.web_filter_categories && Array.isArray(settings.web_filter_categories)) {
+                            $('#global-filter-categories').val(settings.web_filter_categories).trigger('change');
+                        }
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Failed to load location settings:', error);
+                    // Don't show error to user for settings loading failure
+                }
+            });
+        }
+
+        // Function to save web filter settings
+        function saveWebFilterSettings() {
+            const locationId = getLocationId();
+            if (!locationId) {
+                toastr.error('Location ID not found');
+                return;
+            }
+
+            const webFilterEnabled = $('#global-web-filter').is(':checked');
+            const selectedCategories = $('#global-filter-categories').val() || [];
+
+            console.log('Saving web filter settings:', {
+                web_filter_enabled: webFilterEnabled,
+                web_filter_categories: selectedCategories
+            });
+
+            $.ajax({
+                url: '/api/locations/' + locationId + '/settings',
+                method: 'PUT',
+                headers: {
+                    'Authorization': 'Bearer ' + UserManager.getToken(),
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                data: JSON.stringify({
+                    web_filter_enabled: webFilterEnabled,
+                    web_filter_categories: selectedCategories
+                }),
+                success: function(response) {
+                    console.log('Web filter settings saved successfully:', response);
+                    toastr.success('Web content filtering settings saved successfully!');
+                },
+                error: function(xhr, status, error) {
+                    handleApiError(xhr, status, error, 'saving web filter settings');
+                }
+            });
+        }
+
         // Function to get location ID (moved outside of document ready block for global access)
         function getLocationId() {
             // Option 1: From URL path (e.g., /locations/123/details or /location-details?id=123)
@@ -3570,6 +3704,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Load device data when page loads
             loadDeviceData();
+
+            // Load web filter categories when page loads
+            loadWebFilterCategories();
+
+            // Event handlers for web filter settings
+            $('#save-web-filter-settings').on('click', function() {
+                saveWebFilterSettings();
+            });
+
+            // Enable/disable category selector based on main switch
+            $('#global-web-filter').on('change', function() {
+                const isEnabled = $(this).is(':checked');
+                $('#global-filter-categories').prop('disabled', !isEnabled);
+                
+                if (isEnabled) {
+                    $('#global-filter-categories').select2('enable');
+                } else {
+                    $('#global-filter-categories').select2('disable');
+                }
+            });
             
             // Test API call for debugging
             console.log('Testing API authentication...');

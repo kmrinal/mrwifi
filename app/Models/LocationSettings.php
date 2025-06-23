@@ -53,6 +53,7 @@ class LocationSettings extends Model
         'mac_filter_list',
         'web_filter_enabled',
         'web_filter_domains',
+        'web_filter_categories',
         
         // Network settings
         'password_wifi_enabled',
@@ -137,6 +138,7 @@ class LocationSettings extends Model
         'enabled_social_platforms' => 'json',
         'mac_filter_list' => 'json',
         'web_filter_domains' => 'json',
+        'web_filter_categories' => 'json',
         
         // Integer casts
         'session_timeout' => 'integer',
@@ -210,6 +212,50 @@ class LocationSettings extends Model
         // Here you could implement additional checks based on the location country
         // and applicable privacy laws like GDPR for EU locations, etc.
         return true;
+    }
+
+    /**
+     * Get the web filter categories as a collection.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getWebFilterCategoriesCollection()
+    {
+        if (!$this->web_filter_categories || !is_array($this->web_filter_categories)) {
+            return collect();
+        }
+        
+        return Category::whereIn('id', $this->web_filter_categories)
+                       ->enabled()
+                       ->ordered()
+                       ->get();
+    }
+
+    /**
+     * Get the blocked domains based on selected categories.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getBlockedDomainsFromCategories()
+    {
+        if (!$this->web_filter_enabled || !$this->web_filter_categories) {
+            return collect();
+        }
+        
+        return BlockedDomain::whereIn('category_id', $this->web_filter_categories)
+                           ->active()
+                           ->get();
+    }
+
+    /**
+     * Check if web filtering is active and configured.
+     *
+     * @return bool
+     */
+    public function isWebFilteringActive()
+    {
+        return $this->web_filter_enabled && 
+               ($this->web_filter_categories || $this->web_filter_domains);
     }
 
     /**

@@ -153,18 +153,17 @@ class DeviceController extends Controller
         $settings->wifi_name = $settings->password_wifi_ssid;
         $settings->wifi_password = $settings->password_wifi_password;
         
-        // $settings->blocked_domains; is null return all categories
-        if ($settings->blocked_domains == null) {
-            $blocked_domains_categories = Category::all();
+        // Check if web filtering is enabled
+        if (!$settings->web_filter_enabled || empty($settings->web_filter_categories)) {
+            // Web filtering is disabled or no categories selected, return empty array
+            $domain_blocked = collect();
         } else {
-            $blocked_domains_categories = $settings->blocked_domains_categories;
+            // Web filtering is enabled, get domains for enabled categories
+            $domain_blocked = BlockedDomain::select('domain')->whereIn('category_id', $settings->web_filter_categories)->get();
         }
-
-        // Get all domain from blocked_domains_categories
-        $domain_blocked = BlockedDomain::select('domain')->whereIn('category_id', $blocked_domains_categories->pluck('id'))->get();
-        // Unset blocked_domains_categories
-        unset($settings->blocked_domains_categories);
-        unset($settings->blocked_domains);
+        
+        // Clean up the settings object - remove internal fields
+        unset($settings->web_filter_categories);
         $settings->blocked_domains = $domain_blocked;
 
         $system_settings = SystemSetting::first();
