@@ -672,10 +672,10 @@ $(document).ready(function() {
                 'Content-Type': 'application/json'
             },
             success: function(response) {
-                if (response.location && response.location.device_id) {
+                if (response.data && response.data.device_id) {
                     // Call device reboot API
                     $.ajax({
-                        url: `/api/devices/${response.location.device_id}/reboot`,
+                        url: `/api/devices/${response.data.device_id}/reboot`,
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${UserManager.getToken()}`,

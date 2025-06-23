@@ -329,6 +329,15 @@
                                                         </div>
                                                         <div class="col-md-6 col-12">
                                                             <div class="form-group">
+                                                                <label for="default_guest_essid">Default Guest ESSID</label>
+                                                                <input type="text" id="default_guest_essid" class="form-control" name="default_guest_essid" placeholder="MrWiFi-Guest" value="MrWiFi-Guest" />
+                                                                <small>This ESSID will be used as default for guest networks</small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-6 col-12">
+                                                            <div class="form-group">
                                                                 <label for="default_password">Default Password</label>
                                                                 <div class="input-group input-group-merge form-password-toggle">
                                                                     <input type="password" id="default_password" class="form-control" name="default_password" placeholder="············" value="Welcome123!" />
@@ -338,6 +347,8 @@
                                                                 </div>
                                                                 <small>Default password for new access points (minimum 8 characters)</small>
                                                             </div>
+                                                        </div>
+                                                        <div class="col-md-6 col-12">
                                                         </div>
                                                     </div>
                                                     
@@ -797,6 +808,9 @@
                                                                 'default_essid': {
                                                                     required: true
                                                                 },
+                                                                'default_guest_essid': {
+                                                                    required: true
+                                                                },
                                                                 'default_password': {
                                                                     required: true,
                                                                     minlength: 8
@@ -1090,6 +1104,7 @@ function loadSettings() {
 function populateFormFields(settings) {
     // Captive Portal Tab
     $('#default_essid').val(settings.default_essid);
+    $('#default_guest_essid').val(settings.default_guest_essid);
     $('#default_password').val(settings.default_password);
     $('#portal_timeout').val(settings.portal_timeout);
     $('#idle_timeout').val(settings.idle_timeout);
@@ -1158,6 +1173,7 @@ function setupFormHandlers() {
             switch(tabId) {
                 case 'captive-portal':
                     formData.append('default_essid', $('#default_essid').val());
+                    formData.append('default_guest_essid', $('#default_guest_essid').val());
                     formData.append('default_password', $('#default_password').val());
                     formData.append('portal_timeout', $('#portal_timeout').val());
                     formData.append('idle_timeout', $('#idle_timeout').val());

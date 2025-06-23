@@ -46,7 +46,7 @@ Route::get('/locations', function () {
 })->name('locations');
 
 Route::get('/locations/{location}', function () {
-    return view('location-details');
+    return view('location-details-v2');
 })->name('location-details');
 
 Route::get('/system-settings', function () {
