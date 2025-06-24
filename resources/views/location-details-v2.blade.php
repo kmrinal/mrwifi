@@ -3800,6 +3800,113 @@ document.addEventListener('DOMContentLoaded', function() {
                 saveWebFilterSettings();
             });
 
+            // Event handler for saving radio settings including channels
+            $('#save-radio-settings').on('click', function() {
+                console.log('Save radio settings clicked');
+                
+                const locationId = getLocationId();
+                if (!locationId) {
+                    toastr.error('Location ID not found');
+                    return;
+                }
+                
+                // Get all radio settings from the form
+                const radioSettings = {
+                    wifi_country: $('#wifi-country').val(),
+                    power_level_2g: $('#power-level-2g').val(),
+                    power_level_5g: $('#power-level-5g').val(),
+                    channel_width_2g: $('#channel-width-2g').val(),
+                    channel_width_5g: $('#channel-width-5g').val(),
+                    channel_2g: parseInt($('#channel-2g').val()),
+                    channel_5g: parseInt($('#channel-5g').val())
+                };
+                
+                console.log('Saving radio settings:', radioSettings);
+                
+                // Show loading state
+                const $button = $(this);
+                const originalText = $button.html();
+                $button.html('<i data-feather="loader" class="mr-1"></i> Saving...').prop('disabled', true);
+                
+                // Get current channel settings to check if they changed
+                getCurrentChannelSettings(locationId)
+                    .then(function(currentSettings) {
+                        console.log('Current settings for radio save:', currentSettings);
+                        
+                        const currentChannel2g = currentSettings.channel_2g || null;
+                        const currentChannel5g = currentSettings.channel_5g || null;
+                        
+                        // Check if channels have changed
+                        const channelsChanged = (currentChannel2g != radioSettings.channel_2g) || (currentChannel5g != radioSettings.channel_5g);
+                        
+                        console.log('Radio settings - channels changed:', channelsChanged, {
+                            current2g: currentChannel2g,
+                            new2g: radioSettings.channel_2g,
+                            current5g: currentChannel5g,
+                            new5g: radioSettings.channel_5g
+                        });
+                        
+                        // Add config version increment flag to radio settings
+                        radioSettings.increment_config_version = channelsChanged;
+                        radioSettings.updated_from = 'radio_settings';
+                        
+                        return saveAllRadioSettings(locationId, radioSettings);
+                    })
+                    .then(function(response) {
+                        console.log('Radio settings saved successfully:', response);
+                        
+                        // Reset button state
+                        $button.html(originalText).prop('disabled', false);
+                        
+                        // Show success message
+                        if (response.config_version_incremented) {
+                            toastr.success(`Radio settings saved successfully! Config version incremented to ${response.new_config_version}.`, 'Settings Updated', {
+                                timeOut: 6000,
+                                closeButton: true
+                            });
+                        } else {
+                            toastr.success('Radio settings saved successfully!', 'Settings Saved', {
+                                timeOut: 4000,
+                                closeButton: true
+                            });
+                        }
+                    })
+                    .catch(function(error) {
+                        console.error('Failed to save radio settings:', error);
+                        
+                        // Reset button state
+                        $button.html(originalText).prop('disabled', false);
+                        
+                        toastr.error('Failed to save radio settings. Please try again.');
+                    });
+            });
+            
+            // Function to save all radio settings
+            function saveAllRadioSettings(locationId, settings) {
+                return new Promise(function(resolve, reject) {
+                    console.log('Saving all radio settings:', settings);
+                    
+                    $.ajax({
+                        url: `/api/locations/${locationId}/settings`,
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': 'Bearer ' + UserManager.getToken(),
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        data: JSON.stringify(settings),
+                        success: function(response) {
+                            console.log('All radio settings saved successfully:', response);
+                            resolve(response);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Failed to save radio settings:', xhr.responseText);
+                            reject(error);
+                        }
+                    });
+                });
+            }
+
             // Channel scan button event handler
             $('#scan-channels-btn').on('click', function() {
                 console.log('Channel scan button clicked');
@@ -4066,18 +4173,148 @@ document.addEventListener('DOMContentLoaded', function() {
             function applyScanResults() {
                 console.log('Applying scan results');
                 
-                const channel2g = $('#result-channel-2g').text();
-                const channel5g = $('#result-channel-5g').text();
+                const newChannel2g = $('#result-channel-2g').text();
+                const newChannel5g = $('#result-channel-5g').text();
+                const locationId = getLocationId();
                 
-                // Update the main form with optimal channels
-                $('#channel-2g').val(channel2g);
-                $('#channel-5g').val(channel5g);
+                if (!locationId) {
+                    toastr.error('Location ID not found');
+                    return;
+                }
                 
-                // Close modal
-                $('#channel-scan-modal').modal('hide');
+                // Show loading state
+                const $button = $('#apply-scan-results');
+                const originalText = $button.html();
+                $button.html('<i data-feather="loader" class="mr-1"></i> Applying...').prop('disabled', true);
                 
-                // Show success message
-                toastr.success(`Optimal channels applied: 2.4GHz Channel ${channel2g}, 5GHz Channel ${channel5g}`);
+                // Get current channel settings first
+                getCurrentChannelSettings(locationId)
+                    .then(function(currentSettings) {
+                        console.log('Current channel settings:', currentSettings);
+                        
+                        const currentChannel2g = currentSettings.channel_2g || null;
+                        const currentChannel5g = currentSettings.channel_5g || null;
+                        
+                        // Check if channels have changed
+                        const channelsChanged = (currentChannel2g != newChannel2g) || (currentChannel5g != newChannel5g);
+                        
+                        console.log('Channels changed:', channelsChanged, {
+                            current2g: currentChannel2g,
+                            new2g: newChannel2g,
+                            current5g: currentChannel5g,
+                            new5g: newChannel5g
+                        });
+                        
+                        // Save the new channel settings
+                        return saveChannelSettings(locationId, newChannel2g, newChannel5g, channelsChanged);
+                    })
+                    .then(function(response) {
+                        console.log('Channel settings saved successfully:', response);
+                        
+                        // Update the main form with optimal channels
+                        $('#channel-2g').val(newChannel2g);
+                        $('#channel-5g').val(newChannel5g);
+                        
+                        // Reset button state
+                        $button.html(originalText).prop('disabled', false);
+                        
+                        // Close modal
+                        $('#channel-scan-modal').modal('hide');
+                        
+                        // Show success message
+                        if (response.config_version_incremented) {
+                            toastr.success(`Optimal channels applied and saved: 2.4GHz Channel ${newChannel2g}, 5GHz Channel ${newChannel5g}. Config version incremented to ${response.new_config_version}.`, 'Channels Updated', {
+                                timeOut: 6000,
+                                closeButton: true
+                            });
+                        } else {
+                            toastr.success(`Optimal channels applied: 2.4GHz Channel ${newChannel2g}, 5GHz Channel ${newChannel5g}. No changes detected.`, 'Channels Applied', {
+                                timeOut: 4000,
+                                closeButton: true
+                            });
+                        }
+                    })
+                    .catch(function(error) {
+                        console.error('Failed to apply scan results:', error);
+                        
+                        // Reset button state
+                        $button.html(originalText).prop('disabled', false);
+                        
+                        toastr.error('Failed to save channel settings. Please try again.');
+                    });
+            }
+            
+            // Function to get current channel settings from location_settings
+            function getCurrentChannelSettings(locationId) {
+                return new Promise(function(resolve, reject) {
+                    $.ajax({
+                        url: `/api/locations/${locationId}/settings`,
+                        method: 'GET',
+                        headers: {
+                            'Authorization': 'Bearer ' + UserManager.getToken(),
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        success: function(response) {
+                            console.log('Current location settings response:', response);
+                            
+                            let settings = {};
+                            if (response.data && response.data.settings) {
+                                settings = response.data.settings;
+                            } else if (response.settings) {
+                                settings = response.settings;
+                            }
+                            
+                            resolve({
+                                channel_2g: settings.channel_2g || null,
+                                channel_5g: settings.channel_5g || null,
+                                config_version: settings.config_version || 1
+                            });
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Failed to get current channel settings:', error);
+                            // If we can't get current settings, assume no previous channels
+                            resolve({
+                                channel_2g: null,
+                                channel_5g: null,
+                                config_version: 1
+                            });
+                        }
+                    });
+                });
+            }
+            
+            // Function to save channel settings to location_settings
+            function saveChannelSettings(locationId, channel2g, channel5g, shouldIncrementVersion) {
+                return new Promise(function(resolve, reject) {
+                    const settingsData = {
+                        channel_2g: parseInt(channel2g),
+                        channel_5g: parseInt(channel5g),
+                        increment_config_version: shouldIncrementVersion,
+                        updated_from: 'channel_scan'
+                    };
+                    
+                    console.log('Saving channel settings:', settingsData);
+                    
+                    $.ajax({
+                        url: `/api/locations/${locationId}/settings`,
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': 'Bearer ' + UserManager.getToken(),
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        data: JSON.stringify(settingsData),
+                        success: function(response) {
+                            console.log('Channel settings saved successfully:', response);
+                            resolve(response);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Failed to save channel settings:', xhr.responseText);
+                            reject(error);
+                        }
+                    });
+                });
             }
 
             // Enable/disable category selector based on main switch
