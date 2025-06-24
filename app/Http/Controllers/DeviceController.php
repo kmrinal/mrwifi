@@ -451,7 +451,10 @@ class DeviceController extends Controller
 
             $request->validate([
                 'scan_results' => 'required|array',
-                'optimal_channel' => 'required|integer|min:1|max:14',
+                'scan_results.*.channel' => 'required|integer|min:1|max:14',
+                'scan_results.*.signal' => 'required|integer|max:0',
+                'scan_results.*.bssid' => 'required|string|regex:/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/',
+                'scan_results.*.ssid' => 'present|string',
                 'nearby_networks' => 'required|integer|min:0',
                 'interference_level' => 'required|in:low,medium,high'
             ]);
@@ -494,7 +497,10 @@ class DeviceController extends Controller
 
             $request->validate([
                 'scan_results' => 'required|array',
-                'optimal_channel' => 'required|integer',
+                'scan_results.*.channel' => 'required|integer|in:36,40,44,48,52,56,60,64,100,104,108,112,116,120,124,128,132,136,140,144,149,153,157,161,165',
+                'scan_results.*.signal' => 'required|integer|max:0',
+                'scan_results.*.bssid' => 'required|string|regex:/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/',
+                'scan_results.*.ssid' => 'present|string',
                 'nearby_networks' => 'required|integer|min:0',
                 'interference_level' => 'required|in:low,medium,high'
             ]);
