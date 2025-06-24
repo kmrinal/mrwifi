@@ -463,7 +463,11 @@ class DeviceController extends Controller
 
             return response()->json([
                 'message' => '2.4G scan results updated successfully',
-                'status' => $scanResult->status
+                'status' => $scanResult->status,
+                'scan_results_2g' => $scanResult->scan_results_2g,
+                'optimal_channel_2g' => $scanResult->optimal_channel_2g,
+                'nearby_networks_2g' => $scanResult->nearby_networks_2g,
+                'interference_level_2g' => $scanResult->interference_level_2g,
             ]);
 
         } catch (\Exception $e) {
@@ -509,7 +513,11 @@ class DeviceController extends Controller
 
             return response()->json([
                 'message' => '5G scan results updated successfully. Scan completed.',
-                'status' => $scanResult->status
+                'status' => $scanResult->status,
+                'scan_results_5g' => $scanResult->scan_results_5g,
+                'optimal_channel_5g' => $scanResult->optimal_channel_5g,
+                'nearby_networks_5g' => $scanResult->nearby_networks_5g,
+                'interference_level_5g' => $scanResult->interference_level_5g,
             ]);
 
         } catch (\Exception $e) {
