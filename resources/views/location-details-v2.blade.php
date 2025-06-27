@@ -1297,8 +1297,19 @@
                                                     <label for="channel-2g">2.4 GHz Channel</label>
                                                     <select class="form-control" id="channel-2g">
                                                         <option value="1">Channel 1 (2412 MHz)</option>
+                                                        <option value="2">Channel 2 (2417 MHz)</option>
+                                                        <option value="3">Channel 3 (2422 MHz)</option>
+                                                        <option value="4">Channel 4 (2427 MHz)</option>
+                                                        <option value="5">Channel 5 (2432 MHz)</option>
                                                         <option value="6" selected>Channel 6 (2437 MHz)</option>
+                                                        <option value="7">Channel 7 (2442 MHz)</option>
+                                                        <option value="8">Channel 8 (2447 MHz)</option>
+                                                        <option value="9">Channel 9 (2452 MHz)</option>
+                                                        <option value="10">Channel 10 (2457 MHz)</option>
                                                         <option value="11">Channel 11 (2462 MHz)</option>
+                                                        <option value="12">Channel 12 (2467 MHz)</option>
+                                                        <option value="13">Channel 13 (2472 MHz)</option>
+                                                        <option value="14">Channel 14 (2484 MHz)</option>
                                                     </select>
                                                 </div>
                                                 
@@ -1309,8 +1320,26 @@
                                                         <option value="40">Channel 40 (5200 MHz)</option>
                                                         <option value="44">Channel 44 (5220 MHz)</option>
                                                         <option value="48">Channel 48 (5240 MHz)</option>
+                                                        <option value="52">Channel 52 (5260 MHz)</option>
+                                                        <option value="56">Channel 56 (5280 MHz)</option>
+                                                        <option value="60">Channel 60 (5300 MHz)</option>
+                                                        <option value="64">Channel 64 (5320 MHz)</option>
                                                         <option value="100">Channel 100 (5500 MHz)</option>
+                                                        <option value="104">Channel 104 (5520 MHz)</option>
+                                                        <option value="108">Channel 108 (5540 MHz)</option>
+                                                        <option value="112">Channel 112 (5560 MHz)</option>
+                                                        <option value="116">Channel 116 (5580 MHz)</option>
+                                                        <option value="120">Channel 120 (5600 MHz)</option>
+                                                        <option value="124">Channel 124 (5620 MHz)</option>
+                                                        <option value="128">Channel 128 (5640 MHz)</option>
+                                                        <option value="132">Channel 132 (5660 MHz)</option>
+                                                        <option value="136">Channel 136 (5680 MHz)</option>
+                                                        <option value="140">Channel 140 (5700 MHz)</option>
                                                         <option value="149">Channel 149 (5745 MHz)</option>
+                                                        <option value="153">Channel 153 (5765 MHz)</option>
+                                                        <option value="157">Channel 157 (5785 MHz)</option>
+                                                        <option value="161">Channel 161 (5805 MHz)</option>
+                                                        <option value="165">Channel 165 (5825 MHz)</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -1324,25 +1353,29 @@
                                                     </button>
                                                 </div>
                                                 
-                                                <div class="alert alert-info mb-3">
+                                                <div class="alert alert-info mb-3" id="scan-status-alert">
                                                     <div class="alert-body">
                                                         <i data-feather="info" class="mr-2"></i>
-                                                        <span>Scan for optimal channel settings.</span>
+                                                        <span id="scan-status-text">Click Scan to analyze optimal channels.</span>
                                                     </div>
                                                 </div>
                                                 
                                                 <div class="row text-center mb-3">
                                                     <div class="col-6">
-                                                        <div class="stat-value text-primary">6</div>
+                                                        <div class="stat-value text-primary" id="last-optimal-2g">--</div>
                                                         <div class="stat-label">Best 2.4G</div>
                                                     </div>
                                                     <div class="col-6">
-                                                        <div class="stat-value text-success">36</div>
+                                                        <div class="stat-value text-success" id="last-optimal-5g">--</div>
                                                         <div class="stat-label">Best 5G</div>
                                                     </div>
                                                 </div>
                                                 
-                                                <button class="btn btn-success btn-block btn-sm" id="save-channels-btn">
+                                                <div class="text-center mb-2">
+                                                    <small class="text-muted" id="last-scan-timestamp">No scan performed yet</small>
+                                                </div>
+                                                
+                                                <button class="btn btn-success btn-block btn-sm" id="save-channels-btn" disabled>
                                                     <i data-feather="check" class="mr-1"></i>Apply Optimal
                                                 </button>
                                             </div>
@@ -2219,53 +2252,32 @@
                                     </div>
                                 </div>
                                 
-                                <div class="row">
-                                    <div class="col-12">
-                                        <div class="card">
-                                            <div class="card-header">
-                                                <h5 class="card-title">Nearby Networks</h5>
-                                            </div>
-                                            <div class="table-responsive">
-                                                <table class="table table-hover">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>Band</th>
-                                                            <th>Channel</th>
-                                                            <th>Networks</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr>
-                                                            <td>2.4 GHz</td>
-                                                            <td>1</td>
-                                                            <td>3</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>2.4 GHz</td>
-                                                            <td>6</td>
-                                                            <td>1</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>2.4 GHz</td>
-                                                            <td>11</td>
-                                                            <td>2</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>5 GHz</td>
-                                                            <td>36</td>
-                                                            <td>1</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>5 GHz</td>
-                                                            <td>44</td>
-                                                            <td>2</td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title">Nearby Networks</h5>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover" id="nearby-networks-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Band</th>
+                                            <th>Channel</th>
+                                            <th>Networks</th>
+                                            <th>Signal Strength</th>
+                                            <th>Interference</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="nearby-networks-tbody">
+                                        <!-- Dynamic content will be populated here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                                 
                                 <div class="row">
                                     <div class="col-12 d-flex justify-content-between">
@@ -3794,6 +3806,79 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Load web filter categories when page loads
             loadWebFilterCategories();
+            
+            // Load last scan results when page loads
+            loadLastScanResults();
+            
+            // Load radio settings when page loads
+            loadRadioSettings();
+
+            // Function to load radio settings from database
+            function loadRadioSettings() {
+                const locationId = getLocationId();
+                if (!locationId) {
+                    console.log('No location ID found - cannot load radio settings');
+                    return;
+                }
+
+                console.log('Loading radio settings for location:', locationId);
+                
+                $.ajax({
+                    url: `/api/locations/${locationId}/settings`,
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + UserManager.getToken(),
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    success: function(response) {
+                        console.log('Radio settings loaded:', response);
+                        
+                        if (response.success && response.data && response.data.settings) {
+                            const settings = response.data.settings;
+                            
+                            // Populate Country/Region
+                            if (settings.country_code) {
+                                $('#wifi-country').val(settings.country_code);
+                            }
+                            
+                            // Populate 2.4 GHz Power
+                            if (settings.transmit_power_2g) {
+                                $('#power-level-2g').val(settings.transmit_power_2g);
+                            }
+                            
+                            // Populate 5 GHz Power
+                            if (settings.transmit_power_5g) {
+                                $('#power-level-5g').val(settings.transmit_power_5g);
+                            }
+                            
+                            // Populate Channel Widths
+                            if (settings.channel_width_2g) {
+                                $('#channel-width-2g').val(settings.channel_width_2g);
+                            }
+                            
+                            if (settings.channel_width_5g) {
+                                $('#channel-width-5g').val(settings.channel_width_5g);
+                            }
+                            
+                            // Populate Channels
+                            if (settings.channel_2g) {
+                                $('#channel-2g').val(settings.channel_2g);
+                            }
+                            
+                            if (settings.channel_5g) {
+                                $('#channel-5g').val(settings.channel_5g);
+                            }
+                            
+                            console.log('Radio settings populated successfully');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.log('Failed to load radio settings:', error);
+                        // Don't show error toast as settings might not exist yet
+                    }
+                });
+            }
 
             // Event handlers for web filter settings
             $('#save-web-filter-settings').on('click', function() {
@@ -3859,17 +3944,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         $button.html(originalText).prop('disabled', false);
                         
                         // Show success message
-                        if (response.config_version_incremented) {
-                            toastr.success(`Radio settings saved successfully! Config version incremented to ${response.new_config_version}.`, 'Settings Updated', {
-                                timeOut: 6000,
-                                closeButton: true
-                            });
-                        } else {
-                            toastr.success('Radio settings saved successfully!', 'Settings Saved', {
-                                timeOut: 4000,
-                                closeButton: true
-                            });
-                        }
+                        // The /api/locations/{id} endpoint doesn't return config_version_incremented flag
+                        // but the backend will increment it automatically when radio settings change
+                        toastr.success('Radio settings saved successfully!', 'Settings Saved', {
+                            timeOut: 4000,
+                            closeButton: true
+                        });
                     })
                     .catch(function(error) {
                         console.error('Failed to save radio settings:', error);
@@ -3886,15 +3966,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 return new Promise(function(resolve, reject) {
                     console.log('Saving all radio settings:', settings);
                     
+                    // Prepare the data with settings_type for the backend
+                    const requestData = {
+                        settings_type: 'router',
+                        settings: settings
+                    };
+                    
                     $.ajax({
-                        url: `/api/locations/${locationId}/settings`,
+                        url: `/api/locations/${locationId}`,
                         method: 'PUT',
                         headers: {
                             'Authorization': 'Bearer ' + UserManager.getToken(),
                             'Content-Type': 'application/json',
                             'Accept': 'application/json'
                         },
-                        data: JSON.stringify(settings),
+                        data: JSON.stringify(requestData),
                         success: function(response) {
                             console.log('All radio settings saved successfully:', response);
                             resolve(response);
@@ -3905,6 +3991,37 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     });
                 });
+            }
+
+            // Apply optimal channels (from scan results)
+            $('#save-channels-btn').on('click', function() {
+                applyOptimalChannels();
+            });
+            
+            // Function to apply optimal channels from last scan
+            function applyOptimalChannels() {
+                const scanData = window.lastScanResults;
+                
+                if (!scanData || (!scanData.optimal_channel_2g && !scanData.optimal_channel_5g)) {
+                    toastr.error('No optimal channels available. Please run a scan first.', 'No Scan Data');
+                    return;
+                }
+                
+                console.log('Applying optimal channels from scan:', scanData);
+                
+                const optimal2g = scanData.optimal_channel_2g;
+                const optimal5g = scanData.optimal_channel_5g;
+                
+                // Update form fields to show optimal channels
+                if (optimal2g) {
+                    $('#channel-2g').val(optimal2g);
+                }
+                if (optimal5g) {
+                    $('#channel-5g').val(optimal5g);
+                }
+                
+                // Save channels with scan data
+                saveChannelSettings(optimal2g, optimal5g, true, 'channel_optimization');
             }
 
             // Channel scan button event handler
@@ -4135,6 +4252,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         $('#nearby-networks-5g').text(scanData.nearby_networks_5g + ' networks');
                     }
                     
+                    // Populate nearby networks table with real data
+                    populateNearbyNetworksTable(scanData);
+                    
+                    // Update Channel Optimization display with new scan results
+                    updateChannelOptimizationDisplay(scanData);
+                    
                     // Store scan results for apply function
                     window.lastScanResults = scanData;
                 } else {
@@ -4148,7 +4271,253 @@ document.addEventListener('DOMContentLoaded', function() {
                     $('#last-best-channel-2g').text('Channel ' + optimal2g);
                     $('#last-best-channel-5g').text('Channel ' + optimal5g);
                     $('#last-scan-time').text(new Date().toLocaleString());
+                    
+                    // Show fallback data for nearby networks
+                    populateNearbyNetworksTable(null);
                 }
+            }
+            
+            // Function to populate the nearby networks table with real API data
+            function populateNearbyNetworksTable(scanData) {
+                console.log('Populating nearby networks table with data:', scanData);
+                
+                const $tbody = $('#nearby-networks-tbody');
+                $tbody.empty();
+                
+                if (scanData && (scanData.scan_results_2g || scanData.scan_results_5g)) {
+                    // Process real API data structure
+                    
+                    // Group networks by channel from scan results
+                    const channelMap = {};
+                    
+                    // Process 2.4GHz scan results
+                    if (scanData.scan_results_2g && Array.isArray(scanData.scan_results_2g)) {
+                        scanData.scan_results_2g.forEach(function(network) {
+                            const channel = network.channel;
+                            const key = `2.4GHz-${channel}`;
+                            
+                            if (!channelMap[key]) {
+                                channelMap[key] = {
+                                    band: '2.4 GHz',
+                                    channel: channel,
+                                    networks: [],
+                                    count: 0,
+                                    signals: []
+                                };
+                            }
+                            
+                            channelMap[key].networks.push(network);
+                            channelMap[key].count++;
+                            channelMap[key].signals.push(network.signal);
+                        });
+                    }
+                    
+                    // Process 5GHz scan results
+                    if (scanData.scan_results_5g && Array.isArray(scanData.scan_results_5g)) {
+                        scanData.scan_results_5g.forEach(function(network) {
+                            const channel = network.channel;
+                            const key = `5GHz-${channel}`;
+                            
+                            if (!channelMap[key]) {
+                                channelMap[key] = {
+                                    band: '5 GHz',
+                                    channel: channel,
+                                    networks: [],
+                                    count: 0,
+                                    signals: []
+                                };
+                            }
+                            
+                            channelMap[key].networks.push(network);
+                            channelMap[key].count++;
+                            channelMap[key].signals.push(network.signal);
+                        });
+                    }
+                    
+                    // Add common channels that might not have networks
+                    const common2gChannels = [1, 6, 11];
+                    const common5gChannels = [36, 40, 44, 48, 149, 153, 157, 161];
+                    
+                    common2gChannels.forEach(function(channel) {
+                        const key = `2.4GHz-${channel}`;
+                        if (!channelMap[key]) {
+                            channelMap[key] = {
+                                band: '2.4 GHz',
+                                channel: channel,
+                                networks: [],
+                                count: 0,
+                                signals: []
+                            };
+                        }
+                    });
+                    
+                    common5gChannels.forEach(function(channel) {
+                        const key = `5GHz-${channel}`;
+                        if (!channelMap[key]) {
+                            channelMap[key] = {
+                                band: '5 GHz',
+                                channel: channel,
+                                networks: [],
+                                count: 0,
+                                signals: []
+                            };
+                        }
+                    });
+                    
+                    // Sort channels and create table rows
+                    const sortedChannels = Object.values(channelMap).sort(function(a, b) {
+                        // Sort by band first (2.4GHz then 5GHz), then by channel number
+                        if (a.band !== b.band) {
+                            return a.band === '2.4 GHz' ? -1 : 1;
+                        }
+                        return parseInt(a.channel) - parseInt(b.channel);
+                    });
+                    
+                    sortedChannels.forEach(function(channelData) {
+                        const avgSignal = channelData.signals.length > 0 ? 
+                            Math.round(channelData.signals.reduce((a, b) => a + b, 0) / channelData.signals.length) + ' dBm' : 
+                            'N/A';
+                            
+                        // Determine interference level based on network count and signal strength
+                        let interferenceLevel = 'None';
+                        if (channelData.count === 0) {
+                            interferenceLevel = 'None';
+                        } else if (channelData.count === 1) {
+                            interferenceLevel = 'Low';
+                        } else if (channelData.count <= 3) {
+                            interferenceLevel = 'Medium';
+                        } else {
+                            interferenceLevel = 'High';
+                        }
+                        
+                        // Check if this is the optimal channel
+                        const isOptimal = (channelData.band === '2.4 GHz' && channelData.channel == scanData.optimal_channel_2g) ||
+                                        (channelData.band === '5 GHz' && channelData.channel == scanData.optimal_channel_5g);
+                        
+                        const row = createNetworkTableRow(
+                            channelData.band,
+                            channelData.channel,
+                            channelData.count,
+                            avgSignal,
+                            interferenceLevel,
+                            isOptimal
+                        );
+                        $tbody.append(row);
+                    });
+                    
+                } else {
+                    // Fallback: show sample data structure
+                    console.log('No scan data available, showing sample structure');
+                    
+                    const fallbackData = [
+                        { band: '2.4 GHz', channel: 1, networks: 3, signal: '-45 dBm', interference: 'Medium' },
+                        { band: '2.4 GHz', channel: 6, networks: 1, signal: '-38 dBm', interference: 'Low' },
+                        { band: '2.4 GHz', channel: 11, networks: 2, signal: '-52 dBm', interference: 'Medium' },
+                        { band: '5 GHz', channel: 36, networks: 1, signal: '-41 dBm', interference: 'Low' },
+                        { band: '5 GHz', channel: 44, networks: 2, signal: '-48 dBm', interference: 'Medium' }
+                    ];
+                    
+                    fallbackData.forEach(function(data) {
+                        const row = createNetworkTableRow(
+                            data.band,
+                            data.channel,
+                            data.networks,
+                            data.signal,
+                            data.interference,
+                            false
+                        );
+                        $tbody.append(row);
+                    });
+                }
+                
+                // Show message if no scan data found
+                if ($tbody.children().length === 0) {
+                    $tbody.append(`
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">
+                                <i data-feather="wifi-off" class="mr-2"></i>
+                                No channel scan data available
+                            </td>
+                        </tr>
+                    `);
+                }
+                
+                // Re-initialize feather icons
+                if (typeof feather !== 'undefined') {
+                    feather.replace();
+                }
+            }
+            
+            // Helper function to create a table row for network data
+            function createNetworkTableRow(band, channel, networkCount, signalStrength, interferenceLevel, isOptimal = false) {
+                const interferenceClass = getInterferenceClass(interferenceLevel);
+                const interferenceIcon = getInterferenceIcon(interferenceLevel);
+                const rowClass = isOptimal ? 'table-success' : '';
+                const networkBadgeClass = networkCount === 0 ? 'badge-light-success' : 'badge-light-info';
+                
+                let statusBadge = '';
+                if (isOptimal) {
+                    statusBadge = '<span class="badge badge-success"><i data-feather="star" class="mr-1" style="width: 12px; height: 12px;"></i>Optimal</span>';
+                } else if (networkCount === 0) {
+                    statusBadge = '<span class="badge badge-light-success"><i data-feather="check" class="mr-1" style="width: 12px; height: 12px;"></i>Available</span>';
+                } else if (networkCount >= 4) {
+                    statusBadge = '<span class="badge badge-light-danger"><i data-feather="wifi" class="mr-1" style="width: 12px; height: 12px;"></i>Crowded</span>';
+                } else if (networkCount >= 2) {
+                    statusBadge = '<span class="badge badge-light-warning"><i data-feather="radio" class="mr-1" style="width: 12px; height: 12px;"></i>Busy</span>';
+                } else {
+                    statusBadge = '<span class="badge badge-light-info"><i data-feather="radio" class="mr-1" style="width: 12px; height: 12px;"></i>In Use</span>';
+                }
+                
+                return `
+                    <tr class="${rowClass}">
+                        <td><span class="badge badge-light-${band === '2.4 GHz' ? 'primary' : 'success'}">${band}</span></td>
+                        <td><strong>${channel}</strong></td>
+                        <td>
+                            <span class="badge ${networkBadgeClass}">${networkCount} network${networkCount !== 1 ? 's' : ''}</span>
+                        </td>
+                        <td>${signalStrength}</td>
+                        <td>
+                            <span class="badge badge-${interferenceClass}">
+                                <i data-feather="${interferenceIcon}" class="mr-1" style="width: 12px; height: 12px;"></i>
+                                ${interferenceLevel}
+                            </span>
+                        </td>
+                        <td>${statusBadge}</td>
+                    </tr>
+                `;
+            }
+            
+            // Helper function to get interference badge class
+            function getInterferenceClass(level) {
+                switch (level.toLowerCase()) {
+                    case 'none': return 'light-success';
+                    case 'low': return 'light-success';
+                    case 'medium': return 'light-warning';
+                    case 'high': return 'light-danger';
+                    default: return 'light-secondary';
+                }
+            }
+            
+            // Helper function to get interference icon
+            function getInterferenceIcon(level) {
+                switch (level.toLowerCase()) {
+                    case 'none': return 'check-circle';
+                    case 'low': return 'check-circle';
+                    case 'medium': return 'alert-triangle';
+                    case 'high': return 'x-circle';
+                    default: return 'help-circle';
+                }
+            }
+            
+            // Helper function to calculate interference level from signal strength
+            function calculateInterferenceLevel(signalStrength) {
+                if (typeof signalStrength === 'string') {
+                    const dbm = parseInt(signalStrength.replace(/[^\d-]/g, ''));
+                    if (dbm > -40) return 'High';
+                    if (dbm > -60) return 'Medium';
+                    return 'Low';
+                }
+                return 'Unknown';
             }
 
             function showPreScanView() {
@@ -4329,6 +4698,161 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
             
+            // Function to load last scan results
+            function loadLastScanResults() {
+                const locationId = getLocationId();
+                if (!locationId) {
+                    console.log('No location ID found - cannot load last scan results');
+                    return;
+                }
+
+                console.log('Loading last scan results for location:', locationId);
+                
+                // First try to get the latest scan results directly
+                $.ajax({
+                    url: `/api/locations/${locationId}/scan-results/latest`,
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + UserManager.getToken(),
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    success: function(response) {
+                        console.log('Last scan results loaded:', response);
+                        
+                        if (response.data) {
+                            const scanData = response.data;
+                            updateChannelOptimizationDisplay(scanData);
+                        } else {
+                            console.log('No previous scan results found');
+                            updateChannelOptimizationDisplay(null);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.log('Failed to load last scan results from scan-results endpoint, trying alternative:', error);
+                        
+                        // Fallback: try to get scan history directly
+                        $.ajax({
+                            url: `/api/locations/${locationId}/scans`,
+                            method: 'GET',
+                            headers: {
+                                'Authorization': 'Bearer ' + UserManager.getToken(),
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json'
+                            },
+                            success: function(scansResponse) {
+                                console.log('Scans history loaded:', scansResponse);
+                                
+                                // Look for the most recent completed scan
+                                if (scansResponse.data && scansResponse.data.length > 0) {
+                                    // Find the most recent completed scan
+                                    const completedScans = scansResponse.data.filter(scan => scan.is_completed && !scan.is_failed);
+                                    if (completedScans.length > 0) {
+                                        // Sort by completed_at or created_at descending and take the first
+                                        completedScans.sort((a, b) => {
+                                            const aDate = new Date(a.completed_at || a.created_at);
+                                            const bDate = new Date(b.completed_at || b.created_at);
+                                            return bDate - aDate;
+                                        });
+                                        
+                                        const latestScan = completedScans[0];
+                                        console.log('Found latest completed scan:', latestScan);
+                                        updateChannelOptimizationDisplay(latestScan);
+                                    } else {
+                                        console.log('No completed scans found in scan history');
+                                        updateChannelOptimizationDisplay(null);
+                                    }
+                                } else {
+                                    console.log('No scan history found');
+                                    updateChannelOptimizationDisplay(null);
+                                }
+                            },
+                            error: function(xhr2, status2, error2) {
+                                console.log('Failed to load scan history:', error2);
+                                updateChannelOptimizationDisplay(null);
+                            }
+                        });
+                    }
+                });
+            }
+            
+            // Function to update the Channel Optimization display
+            function updateChannelOptimizationDisplay(scanData) {
+                console.log('Updating channel optimization display with:', scanData);
+                
+                if (scanData && scanData.is_completed && !scanData.is_failed) {
+                    // Update optimal channels
+                    $('#last-optimal-2g').text(scanData.optimal_channel_2g || '--');
+                    $('#last-optimal-5g').text(scanData.optimal_channel_5g || '--');
+                    
+                    // Update timestamp
+                    if (scanData.completed_at) {
+                        const scanDate = new Date(scanData.completed_at);
+                        const timeAgo = getTimeAgo(scanDate);
+                        $('#last-scan-timestamp').text(`Last scan: ${timeAgo}`);
+                    } else {
+                        $('#last-scan-timestamp').text('Scan completed recently');
+                    }
+                    
+                    // Update status alert
+                    $('#scan-status-alert').removeClass('alert-info alert-warning').addClass('alert-success');
+                    $('#scan-status-text').html('Optimal channels available from last scan.');
+                    
+                    // Enable Apply button
+                    $('#save-channels-btn').prop('disabled', false);
+                    
+                    // Update the main channel form fields with optimal values
+                    if (scanData.optimal_channel_2g) {
+                        $('#channel-2g').val(scanData.optimal_channel_2g);
+                    }
+                    if (scanData.optimal_channel_5g) {
+                        $('#channel-5g').val(scanData.optimal_channel_5g);
+                    }
+                    
+                    // Store scan results globally for other functions to use
+                    window.lastScanResults = scanData;
+                    
+                } else if (scanData && scanData.is_failed) {
+                    // Scan failed
+                    $('#last-optimal-2g').text('--');
+                    $('#last-optimal-5g').text('--');
+                    $('#last-scan-timestamp').text('Last scan failed');
+                    $('#scan-status-alert').removeClass('alert-info alert-success').addClass('alert-warning');
+                    $('#scan-status-text').html('<i data-feather="alert-triangle" class="mr-2"></i>Previous scan failed. Try scanning again.');
+                    $('#save-channels-btn').prop('disabled', true);
+                    
+                } else {
+                    // No scan data available
+                    $('#last-optimal-2g').text('--');
+                    $('#last-optimal-5g').text('--');
+                    $('#last-scan-timestamp').text('No scan performed yet');
+                    $('#scan-status-alert').removeClass('alert-success alert-warning').addClass('alert-info');
+                    $('#scan-status-text').html('<i data-feather="info" class="mr-2"></i>Click Scan to analyze optimal channels.');
+                    $('#save-channels-btn').prop('disabled', true);
+                }
+                
+                // Re-initialize feather icons
+                if (typeof feather !== 'undefined') {
+                    feather.replace();
+                }
+            }
+            
+            // Helper function to get time ago string
+            function getTimeAgo(date) {
+                const now = new Date();
+                const diffMs = now - date;
+                const diffMins = Math.floor(diffMs / 60000);
+                const diffHours = Math.floor(diffMs / 3600000);
+                const diffDays = Math.floor(diffMs / 86400000);
+                
+                if (diffMins < 1) return 'just now';
+                if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
+                if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+                if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+                
+                return date.toLocaleDateString() + ' at ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            }
+            
             // Test API call for debugging
             console.log('Testing API authentication...');
             $.ajax({
@@ -4351,6 +4875,63 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                 }
             });
+            
+            // Debug: Test all possible scan endpoints
+            const locationId = getLocationId();
+            if (locationId) {
+                console.log('=== DEBUGGING SCAN ENDPOINTS FOR LOCATION:', locationId, '===');
+                
+                // Test 1: scan-results/latest
+                $.ajax({
+                    url: `/api/locations/${locationId}/scan-results/latest`,
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + UserManager.getToken(),
+                        'Accept': 'application/json'
+                    },
+                    success: function(response) {
+                        console.log('✅ /scan-results/latest SUCCESS:', response);
+                        if (response.data) {
+                            console.log('🎯 Found scan data in latest endpoint, testing update...');
+                            updateChannelOptimizationDisplay(response.data);
+                        }
+                    },
+                    error: function(xhr) {
+                        console.log('❌ /scan-results/latest FAILED:', xhr.status, xhr.responseText);
+                    }
+                });
+                
+                // Test 2: scans endpoint
+                $.ajax({
+                    url: `/api/locations/${locationId}/scans`,
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + UserManager.getToken(),
+                        'Accept': 'application/json'
+                    },
+                    success: function(response) {
+                        console.log('✅ /scans SUCCESS:', response);
+                        if (response.data && response.data.length > 0) {
+                            console.log('🎯 Found scan history, testing with latest completed scan...');
+                            const completedScans = response.data.filter(scan => scan.is_completed && !scan.is_failed);
+                            if (completedScans.length > 0) {
+                                completedScans.sort((a, b) => {
+                                    const aDate = new Date(a.completed_at || a.created_at);
+                                    const bDate = new Date(b.completed_at || b.created_at);
+                                    return bDate - aDate;
+                                });
+                                console.log('📊 Testing with latest scan:', completedScans[0]);
+                                updateChannelOptimizationDisplay(completedScans[0]);
+                            }
+                        }
+                    },
+                    error: function(xhr) {
+                        console.log('❌ /scans FAILED:', xhr.status, xhr.responseText);
+                    }
+                });
+                
+                console.log('=== END DEBUGGING ===');
+            }
         });
     </script>
     </body>

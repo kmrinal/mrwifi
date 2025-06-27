@@ -564,6 +564,107 @@ class DeviceController extends Controller
         }
     }
 
+    public function getLatestScanResults($locationId)
+    {
+        try {
+            $location = Location::findOrFail($locationId);
+            $device = $location->device;
+            
+            if (!$device) {
+                return response()->json([
+                    'message' => 'No device found for this location'
+                ], 404);
+            }
+            
+            // Get the latest completed scan result
+            $scanResult = ScanResult::where('device_id', $device->id)
+                ->where('status', ScanResult::STATUS_COMPLETED)
+                ->orderBy('completed_at', 'desc')
+                ->first();
+                
+            if (!$scanResult) {
+                return response()->json(['error' => 'No scan results found'], 404);
+            }
+
+            return response()->json([
+                'message' => 'Latest scan results retrieved successfully',
+                'data' => [
+                    'scan_id' => $scanResult->scan_id,
+                    'status' => $scanResult->status,
+                    'scan_results_2g' => $scanResult->scan_results_2g,
+                    'scan_results_5g' => $scanResult->scan_results_5g,
+                    'optimal_channel_2g' => $scanResult->optimal_channel_2g,
+                    'optimal_channel_5g' => $scanResult->optimal_channel_5g,
+                    'nearby_networks_2g' => $scanResult->nearby_networks_2g,
+                    'nearby_networks_5g' => $scanResult->nearby_networks_5g,
+                    'interference_level_2g' => $scanResult->interference_level_2g,
+                    'interference_level_5g' => $scanResult->interference_level_5g,
+                    'started_at' => $scanResult->started_at,
+                    'completed_at' => $scanResult->completed_at,
+                    'is_completed' => $scanResult->isCompleted(),
+                    'is_failed' => $scanResult->isFailed(),
+                    'is_in_progress' => $scanResult->isInProgress(),
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to get latest scan results: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get scan history for a location
+     */
+    public function getScanHistory($locationId)
+    {
+        try {
+            $location = Location::findOrFail($locationId);
+            $device = $location->device;
+            
+            if (!$device) {
+                return response()->json([
+                    'message' => 'No device found for this location'
+                ], 404);
+            }
+            
+            // Get all scan results for this device, ordered by most recent first
+            $scanResults = ScanResult::where('device_id', $device->id)
+                ->orderBy('created_at', 'desc')
+                ->get()
+                ->map(function ($scanResult) {
+                    return [
+                        'scan_id' => $scanResult->scan_id,
+                        'status' => $scanResult->status,
+                        'scan_results_2g' => $scanResult->scan_results_2g,
+                        'scan_results_5g' => $scanResult->scan_results_5g,
+                        'optimal_channel_2g' => $scanResult->optimal_channel_2g,
+                        'optimal_channel_5g' => $scanResult->optimal_channel_5g,
+                        'nearby_networks_2g' => $scanResult->nearby_networks_2g,
+                        'nearby_networks_5g' => $scanResult->nearby_networks_5g,
+                        'interference_level_2g' => $scanResult->interference_level_2g,
+                        'interference_level_5g' => $scanResult->interference_level_5g,
+                        'error_message' => $scanResult->error_message,
+                        'started_at' => $scanResult->started_at,
+                        'completed_at' => $scanResult->completed_at,
+                        'created_at' => $scanResult->created_at,
+                        'is_completed' => $scanResult->isCompleted(),
+                        'is_failed' => $scanResult->isFailed(),
+                        'is_in_progress' => $scanResult->isInProgress(),
+                    ];
+                });
+
+            return response()->json([
+                'message' => 'Scan history retrieved successfully',
+                'data' => $scanResults
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to get scan history: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     /**
      * Get progress percentage based on status
      */

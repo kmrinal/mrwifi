@@ -62,6 +62,8 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'locations'], function () 
     // Channel scan routes
     Route::post('/{id}/scan/initiate', [DeviceController::class, 'initiateScan']);
     Route::get('/{id}/scan/{scan_id}/status', [DeviceController::class, 'getScanStatus']);
+    Route::get('/{id}/scan-results/latest', [DeviceController::class, 'getLatestScanResults']);
+    Route::get('/{id}/scans', [DeviceController::class, 'getScanHistory']);
     Route::get('/{id}/channel-scan', [LocationController::class, 'channelScan']);
     // Firmware update route
     Route::post('/{id}/update-firmware', [LocationController::class, 'updateFirmware']);
