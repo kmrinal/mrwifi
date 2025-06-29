@@ -972,7 +972,7 @@
                                     <span class="interface-value router_firmware"></span>
                                 </div>
                                 <div class="interface-detail">
-                                    <span class="interface-label">Connected Users</span>
+                                    <span class="interface-label">Total Users</span>
                                     <span class="interface-value connected_users"></span>
                                 </div>
                             </div>
@@ -1041,7 +1041,7 @@
                                     <div class="stat-value text-info" id="connected-users">
                                         <i class="fas fa-spinner fa-spin" style="font-size: 1rem;"></i>
                                     </div>
-                                    <div class="stat-label">Active Users</div>
+                                    <div class="stat-label">Users / Sessions</div>
                                 </div>
                             </div>
                             <div class="col-6">
@@ -1109,7 +1109,7 @@
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" id="connected-users-tab" data-toggle="tab" href="#connected-users" aria-controls="connected-users" role="tab" aria-selected="false">
-                                        <i data-feather="users" class="mr-50"></i>Connected Users
+                                        <i data-feather="users" class="mr-50"></i>Total Users
                                     </a>
                                 </li>
                                 <!-- Add to your tab navigation -->
@@ -1949,7 +1949,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Connected Users Tab -->
+                                <!-- Total Users Tab -->
                                 <div class="tab-pane" id="connected-users" aria-labelledby="connected-users-tab" role="tabpanel">
                                     <div class="row">
                                         <div class="col-12">

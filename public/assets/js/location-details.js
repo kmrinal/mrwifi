@@ -21,11 +21,6 @@ $(window).on('load', function() {
     loadLocationDetails(location_id);
     loadCurrentUsage(location_id, currentUsagePeriod);
 
-    // Set up auto-refresh for current usage (every 30 seconds)
-    setInterval(function() {
-        loadCurrentUsage(location_id, currentUsagePeriod);
-    }, 30000);
-
     // Handle usage period dropdown
     $('#usage-period-dropdown .dropdown-item').on('click', function(e) {
         e.preventDefault();
@@ -165,18 +160,20 @@ function updateCurrentUsageDisplay(data, period) {
     // Update upload usage (output/upload)  
     $('#upload-usage').html(outputGB + ' GB');
     
-    // Update connected users (current active sessions)
-    $('#connected-users').html(activeSessions.length);
+    // Update total users and sessions during the period
+    const totalUsers = summary.unique_users || 0;
+    const totalSessions = summary.total_sessions || 0;
+    $('#connected-users').html(`${totalUsers} <small class="text-muted">/ ${totalSessions}</small>`);
     
     // Calculate average session time
     const totalSessionHours = summary.total_session_time_hours || 0;
-    const totalSessions = summary.total_sessions || 1; // Avoid division by zero
-    const avgSessionHours = totalSessions > 0 ? (totalSessionHours / totalSessions).toFixed(1) : 0;
+    const sessionCountForAvg = summary.total_sessions || 1; // Avoid division by zero
+    const avgSessionHours = sessionCountForAvg > 0 ? (totalSessionHours / sessionCountForAvg).toFixed(1) : 0;
     
     $('#avg-session-time').html(avgSessionHours + ' hrs');
     
     // Update status colors based on activity
-    updateUsageStatusColors(activeSessions.length, totalGB);
+    updateUsageStatusColors(totalUsers, totalGB);
     
     // Hide loading, show data
     hideCurrentUsageLoading();
@@ -185,25 +182,24 @@ function updateCurrentUsageDisplay(data, period) {
         period: period,
         download: inputGB + ' GB',
         upload: outputGB + ' GB', 
-        users: activeSessions.length,
-        avgSession: avgSessionHours + ' hrs',
-        totalSessions: summary.total_sessions,
-        uniqueUsers: summary.unique_users
+        totalUsers: totalUsers,
+        totalSessions: totalSessions,
+        avgSession: avgSessionHours + ' hrs'
     });
 }
 
-function updateUsageStatusColors(activeUsers, totalGB) {
-    // Update connected users color based on activity
+function updateUsageStatusColors(totalUsers, totalGB) {
+    // Update total users color based on activity level
     const $usersElement = $('#connected-users');
     $usersElement.removeClass('text-primary text-info text-warning text-danger');
     
-    if (activeUsers === 0) {
+    if (totalUsers === 0) {
         $usersElement.addClass('text-muted');
-    } else if (activeUsers <= 5) {
+    } else if (totalUsers <= 5) {
         $usersElement.addClass('text-info');
-    } else if (activeUsers <= 15) {
+    } else if (totalUsers <= 15) {
         $usersElement.addClass('text-primary');
-    } else if (activeUsers <= 25) {
+    } else if (totalUsers <= 25) {
         $usersElement.addClass('text-warning');
     } else {
         $usersElement.addClass('text-danger');

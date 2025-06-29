@@ -63,8 +63,10 @@ class LocationController extends Controller
                 // Add last_seen timestamp to the response
                 $locationData['last_seen'] = $location->device->last_seen;
             }
-            // Get data usage and user statistics from accounting records
-            $dataUsage = Radacct::getLocationDataUsage($location->id);
+            // Get data usage and user statistics from accounting records for today
+            $today = \Carbon\Carbon::now()->startOfDay();
+            $dataUsage = Radacct::getLocationDataUsage($location->id, $today);
+
             $activeSessions = Radacct::getActiveSessions($location->id);
             
             $locationData['users'] = $activeSessions->count();
@@ -272,6 +274,8 @@ class LocationController extends Controller
             
             // Get comprehensive statistics
             $dataUsage = Radacct::getLocationDataUsage($id, $startDate, $endDate);
+            Log::info('Data usage: ');
+            Log::info($dataUsage);
             $activeSessions = Radacct::getActiveSessions($id);
             $recentSessions = Radacct::getRecentSessions($id, 20);
             $dailyStats = Radacct::getSessionStats($id, $startDate, $endDate);

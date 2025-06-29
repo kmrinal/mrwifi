@@ -184,8 +184,11 @@ class Radacct extends Model
             $query->where('acctstarttime', '>=', $startDate);
         }
         
+        // If endDate is null, default to current time to avoid unbounded queries
         if ($endDate) {
-            $query->where('acctstarttime', '<=', $endDate);
+            $query->where('acctstarttime', '<=', $endDate->endOfDay());
+        } else {
+            $query->where('acctstarttime', '<=', Carbon::now()->endOfDay());
         }
         
         $records = $query->get();
