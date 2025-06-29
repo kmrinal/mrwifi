@@ -677,7 +677,7 @@
                                                     </div>
                                                 </div>
                                                 <div>
-                                                    <h4 class="font-weight-bolder mb-0">5.8 GB</h4>
+                                                    <h4 class="font-weight-bolder mb-0" id="download-usage">0 GB</h4>
                                                     <p class="card-text text-muted">Download</p>
                                                 </div>
                                             </div>
@@ -690,7 +690,7 @@
                                                     </div>
                                                 </div>
                                                 <div>
-                                                    <h4 class="font-weight-bolder mb-0">2.4 GB</h4>
+                                                    <h4 class="font-weight-bolder mb-0" id="upload-usage">0 GB</h4>
                                                     <p class="card-text text-muted">Upload</p>
                                                 </div>
                                             </div>
@@ -706,7 +706,7 @@
                                         </div>
                                     </div>
                                                 <div>
-                                                    <h4 class="font-weight-bolder mb-0">24</h4>
+                                                    <h4 class="font-weight-bolder mb-0" id="current-users">0</h4>
                                                     <p class="card-text text-muted">Users Connected</p>
                                         </div>
                                     </div>
@@ -719,7 +719,7 @@
                                                     </div>
                                                 </div>
                                                 <div>
-                                                    <h4 class="font-weight-bolder mb-0">4.2 hrs</h4>
+                                                    <h4 class="font-weight-bolder mb-0" id="avg-session-time">0 hrs</h4>
                                                     <p class="card-text text-muted">Avg. Session Time</p>
                                                 </div>
                                             </div>
@@ -811,37 +811,37 @@
                                                             <div class="wan-static-ip-display_div hidden">
                                                                 <div class="d-flex justify-content-between mb-1">
                                                                     <span class="text-muted">IP Address:</span>
-                                                                    <span class="font-weight-bold" id="wan-ip-display">192.168.1.1</span>
+                                                                    <span class="font-weight-bold" id="wan-ip-display">-</span>
                                                                 </div>
                                                                 <div class="d-flex justify-content-between mb-1">
                                                                     <span class="text-muted">Subnet Mask:</span>
-                                                                    <span class="font-weight-bold" id="wan-subnet-display">255.255.255.0</span>
+                                                                    <span class="font-weight-bold" id="wan-subnet-display">-</span>
                                                                 </div>
                                                                 <div class="d-flex justify-content-between mb-1">
                                                                     <span class="text-muted">Gateway:</span>
-                                                                    <span class="font-weight-bold" id="wan-gateway-display">192.168.1.1</span>
+                                                                    <span class="font-weight-bold" id="wan-gateway-display">-</span>
                                                                 </div>
                                                                 <div class="d-flex justify-content-between mb-1">
                                                                     <span class="text-muted">Primary DNS:</span>
-                                                                    <span class="font-weight-bold" id="wan-dns1-display">8.8.8.8</span>
+                                                                    <span class="font-weight-bold" id="wan-dns1-display">-</span>
                                                                 </div>
                                                                 <div class="d-flex justify-content-between mb-1">
                                                                     <span class="text-muted">Secondary DNS:</span>
-                                                                    <span class="font-weight-bold" id="wan-dns2-display">8.8.4.4</span>
+                                                                    <span class="font-weight-bold" id="wan-dns2-display">-</span>
                                                                 </div>
                                                             </div>
                                                             <div class="wan-pppoe-display_div hidden">
                                                                 <div class="d-flex justify-content-between mb-1">
                                                                     <span class="text-muted">Username:</span>
-                                                                    <span class="font-weight-bold" id="wan-pppoe-username">Username</span>
+                                                                    <span class="font-weight-bold" id="wan-pppoe-username">-</span>
                                                                 </div>
                                                                 <div class="d-flex justify-content-between mb-1">
                                                                     <span class="text-muted">Password:</span>
-                                                                    <span class="font-weight-bold" id="wan-pppoe-password">Password</span>
+                                                                    <span class="font-weight-bold" id="wan-pppoe-password">-</span>
                                                                 </div>
                                                                 <div class="d-flex justify-content-between mb-1">
                                                                     <span class="text-muted">Service Name:</span>
-                                                                    <span class="font-weight-bold" id="wan-pppoe-service-name">Service Name</span>
+                                                                    <span class="font-weight-bold" id="wan-pppoe-service-name">-</span>
                                                                 </div>
                                                             </div>
 
@@ -926,19 +926,19 @@
                                                             <div class="hidden password-ip-assignment-display_div">
                                                                 <div class="d-flex justify-content-between mb-1">
                                                                     <span class="text-muted">IP Address:</span>
-                                                                    <span class="font-weight-bold" id="password-ip-display">192.168.1.1</span>
+                                                                    <span class="font-weight-bold" id="password-ip-display">-</span>
                                                                 </div>
                                                                 <div class="d-flex justify-content-between mb-1">
                                                                     <span class="text-muted">Subnet Mask:</span>
-                                                                    <span class="font-weight-bold" id="password-netmask-display">255.255.255.0</span>
+                                                                    <span class="font-weight-bold" id="password-netmask-display">-</span>
                                                                 </div>
                                                                 <div class="d-flex justify-content-between mb-1">
                                                                     <span class="text-muted">Gateway:</span>
-                                                                    <span class="font-weight-bold" id="password-gateway-display">192.168.1.1</span>
+                                                                    <span class="font-weight-bold" id="password-gateway-display">-</span>
                                                                 </div>
                                                                 <div class="d-flex justify-content-between mb-1">
                                                                     <span class="text-muted">DHCP Server:</span>
-                                                                    <span class="font-weight-bold" id="password-dhcp-status-display">Enabled</span>
+                                                                    <span class="font-weight-bold" id="password-dhcp-status-display">-</span>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -3169,18 +3169,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.log('Loading sample location data');
                     // Sample data - replace with actual API call
                     const sampleData = {
-                        name: 'Downtown Coffee Shop',
-                        address: '123 Main Street',
-                        city: 'New York',
-                        state: 'NY',
-                        postal_code: '10001',
-                        country: 'United States',
+                        name: '',
+                        address: '',
+                        city: '',
+                        state: '',
+                        postal_code: '',
+                        country: '',
                         router_model: '', // Always start with blank
-                        manager: 'John Smith',
-                        contact_email: 'john@coffeeshop.com',
-                        contact_phone: '+1 (555) 123-4567',
+                        manager: '',
+                        contact_email: '',
+                        contact_phone: '',
                         status: 'active',
-                        description: 'Main downtown location with high traffic'
+                        description: ''
                     };
                     
                     // Populate form fields

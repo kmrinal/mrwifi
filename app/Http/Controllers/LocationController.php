@@ -6,6 +6,7 @@ use App\Models\Location;
 use App\Models\Device;
 use App\Models\LocationSettings;
 use App\Models\SystemSetting;
+use App\Services\GeocodingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
@@ -28,6 +29,7 @@ class LocationController extends Controller
         }
     }
 
+   
     /**
      * Display a listing of the locations.
      *
@@ -111,6 +113,35 @@ class LocationController extends Controller
             'serial_number' => 'nullable|string|max:255|unique:devices,serial_number',
         ]);
 
+        // Geocode address if provided and lat/lng not already set
+        if (!$request->latitude && !$request->longitude && 
+            ($request->address || $request->city || $request->state || $request->country || $request->postal_code)) {
+            
+            Log::info('Attempting to geocode address for new location');
+            $geocodingService = new GeocodingService();
+            $geocodeResult = $geocodingService->geocodeAddress(
+                $request->address,
+                $request->city,
+                $request->state,
+                $request->country,
+                $request->postal_code
+            );
+            
+            if ($geocodeResult) {
+                $request->merge([
+                    'latitude' => $geocodeResult['lat'],
+                    'longitude' => $geocodeResult['lng']
+                ]);
+                Log::info('Successfully geocoded address', [
+                    'latitude' => $geocodeResult['lat'],
+                    'longitude' => $geocodeResult['lng'],
+                    'formatted_address' => $geocodeResult['formatted_address']
+                ]);
+            } else {
+                Log::warning('Failed to geocode address for new location');
+            }
+        }
+
         // Create a new device
         $device = new Device();
         // $mac_address = strtoupper($request->mac_address);
@@ -147,6 +178,7 @@ class LocationController extends Controller
         // $locationSettings->wifi_bandwidth = '20MHz';
         // $locationSettings->wifi_channel_width = '20MHz';
         // $locationSettings->wifi_channel_width_5g = '20MHz';
+        
         
         $locationSettings->captive_portal_visible = true;
         $locationSettings->captive_portal_enabled = true;
@@ -813,7 +845,43 @@ class LocationController extends Controller
                         $location->longitude = $settings['longitude'];
                     }
 
+                    // Geocode address if address fields have actually changed and lat/lng not explicitly provided
+                    $addressFields = ['address', 'city', 'state', 'country', 'postal_code'];
+                    $hasAddressChange = false;
+                    foreach ($addressFields as $field) {
+                        if (isset($settings[$field]) && $settings[$field] !== $location->$field) {
+                            $hasAddressChange = true;
+                            Log::info("Address field '{$field}' changed from '{$location->$field}' to '{$settings[$field]}'");
+                            break;
+                        }
+                    }
+                    
+                    if ($hasAddressChange && !isset($settings['latitude']) && !isset($settings['longitude'])) {
+                        Log::info('Address fields updated in location_info, attempting to geocode');
+                        $geocodingService = new GeocodingService();
+                        $geocodeResult = $geocodingService->geocodeAddress(
+                            $settings['address'] ?? $location->address,
+                            $settings['city'] ?? $location->city,
+                            $settings['state'] ?? $location->state,
+                            $settings['country'] ?? $location->country,
+                            $settings['postal_code'] ?? $location->postal_code
+                        );
+                        
+                        if ($geocodeResult) {
+                            $location->latitude = $geocodeResult['lat'];
+                            $location->longitude = $geocodeResult['lng'];
+                            Log::info('Successfully geocoded updated address in location_info', [
+                                'latitude' => $geocodeResult['lat'],
+                                'longitude' => $geocodeResult['lng'],
+                                'formatted_address' => $geocodeResult['formatted_address']
+                            ]);
+                        } else {
+                            Log::warning('Failed to geocode updated address in location_info');
+                        }
+                    }
 
+                    // Save the location with updated info
+                    $location->save();
                 }
                 if ($increment_version == 1) {
                     // $locationSettings->configuration_version = $locationSettings->configuration_version + 1;
@@ -973,6 +1041,42 @@ class LocationController extends Controller
             ]);
             Log::info('Validated data: ');
             Log::info($validated);
+            
+            // Geocode address if address fields have actually changed and lat/lng not provided
+            $addressFields = ['address', 'city', 'state', 'country', 'postal_code'];
+            $hasAddressChange = false;
+            foreach ($addressFields as $field) {
+                if (array_key_exists($field, $validated) && $validated[$field] !== $location->$field) {
+                    $hasAddressChange = true;
+                    Log::info("Address field '{$field}' changed from '{$location->$field}' to '{$validated[$field]}'");
+                    break;
+                }
+            }
+            
+            if ($hasAddressChange && !isset($validated['latitude']) && !isset($validated['longitude'])) {
+                Log::info('Address fields updated, attempting to geocode');
+                $geocodingService = new GeocodingService();
+                $geocodeResult = $geocodingService->geocodeAddress(
+                    $validated['address'] ?? $location->address,
+                    $validated['city'] ?? $location->city,
+                    $validated['state'] ?? $location->state,
+                    $validated['country'] ?? $location->country,
+                    $validated['postal_code'] ?? $location->postal_code
+                );
+                
+                if ($geocodeResult) {
+                    $validated['latitude'] = $geocodeResult['lat'];
+                    $validated['longitude'] = $geocodeResult['lng'];
+                    Log::info('Successfully geocoded updated address', [
+                        'latitude' => $geocodeResult['lat'],
+                        'longitude' => $geocodeResult['lng'],
+                        'formatted_address' => $geocodeResult['formatted_address']
+                    ]);
+                } else {
+                    Log::warning('Failed to geocode updated address');
+                }
+            }
+            
             // Update the location with validated data
             $location->update($validated);
             
@@ -1319,6 +1423,42 @@ class LocationController extends Controller
                 'success' => false,
                 'message' => 'Error updating location settings: ' . $e->getMessage()
             ], 500);
+        }
+    }
+
+    /**
+     * Test geocoding functionality
+     */
+    public function testGeocode(Request $request)
+    {
+        $request->validate([
+            'address' => 'required|string',
+            'city' => 'nullable|string',
+            'state' => 'nullable|string',
+            'country' => 'nullable|string',
+            'postal_code' => 'nullable|string',
+        ]);
+
+        $geocodingService = new GeocodingService();
+        $result = $geocodingService->geocodeAddress(
+            $request->address,
+            $request->city,
+            $request->state,
+            $request->country,
+            $request->postal_code
+        );
+
+        if ($result) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Geocoding successful',
+                'data' => $result
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Geocoding failed'
+            ], 400);
         }
     }
 }

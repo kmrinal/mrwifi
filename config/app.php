@@ -123,4 +123,16 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Google Maps API Key
+    |--------------------------------------------------------------------------
+    |
+    | This key is used for Google Maps services including geocoding.
+    | Set this in your .env file as GOOGLE_MAPS_KEY.
+    |
+    */
+
+    'google_maps_key' => env('GOOGLE_MAPS_KEY'),
+
 ];

@@ -59,6 +59,8 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'locations'], function () 
     // Location settings routes
     Route::get('/{id}/settings', [LocationController::class, 'getSettings']);
     Route::put('/{id}/settings', [LocationController::class, 'updateSettings']);
+    // Geocoding test route
+    Route::post('/test-geocode', [LocationController::class, 'testGeocode']);
     // Channel scan routes
     Route::post('/{id}/scan/initiate', [DeviceController::class, 'initiateScan']);
     Route::get('/{id}/scan/{scan_id}/status', [DeviceController::class, 'getScanStatus']);

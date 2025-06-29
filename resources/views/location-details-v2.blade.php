@@ -955,8 +955,8 @@
                     <div class="stat-card">
                         <div class="d-flex justify-content-between align-items-start mb-3">
                             <div>
-                                <h4 class="text-gradient mb-1"><span class="location_name">Downtown Coffee Shop</span></h4>
-                                <p class="text-muted mb-0"><span class="location_address">123 Main Street, New York, NY</span></p>
+                                <h4 class="text-gradient mb-1"><span class="location_name"></span></h4>
+                                <p class="text-muted mb-0"><span class="location_address"></span></p>
                             </div>
                             <span class="status-badge status-offline">Offline</span>
                         </div>
@@ -965,25 +965,25 @@
                             <div class="col-6">
                                 <div class="interface-detail">
                                     <span class="interface-label">Router Model</span>
-                                    <span class="interface-value router_model_updated">820AX</span>
+                                    <span class="interface-value router_model_updated"></span>
                                 </div>
                                 <div class="interface-detail">
                                     <span class="interface-label">Firmware</span>
-                                    <span class="interface-value router_firmware">v1.2.3</span>
+                                    <span class="interface-value router_firmware"></span>
                                 </div>
                                 <div class="interface-detail">
                                     <span class="interface-label">Connected Users</span>
-                                    <span class="interface-value connected_users">24</span>
+                                    <span class="interface-value connected_users"></span>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="interface-detail">
                                     <span class="interface-label">Daily Usage</span>
-                                    <span class="interface-value daily_usage">8.2 GB</span>
+                                    <span class="interface-value daily_usage"></span>
                                 </div>
                                 <div class="interface-detail">
                                     <span class="interface-label">Uptime</span>
-                                    <span class="interface-value uptime">12d 5h</span>
+                                    <span class="interface-value uptime"></span>
                                 </div>
                                 <div class="interface-detail">
                                     <span class="interface-label">Reboot Count</span>
@@ -1023,21 +1023,21 @@
                         <div class="row text-center">
                             <div class="col-6">
                                 <div class="mb-3">
-                                    <div class="stat-value text-primary">5.8 GB</div>
+                                    <div class="stat-value text-primary" id="download-usage">0 GB</div>
                                     <div class="stat-label">Download</div>
                                 </div>
                                 <div>
-                                    <div class="stat-value text-info">24</div>
+                                    <div class="stat-value text-info" id="connected-users">0</div>
                                     <div class="stat-label">Users</div>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="mb-3">
-                                    <div class="stat-value text-success">2.4 GB</div>
+                                    <div class="stat-value text-success" id="upload-usage">0 GB</div>
                                     <div class="stat-label">Upload</div>
                                 </div>
                                 <div>
-                                    <div class="stat-value text-warning">4.2 hrs</div>
+                                    <div class="stat-value text-warning" id="avg-session-time">0 hrs</div>
                                     <div class="stat-label">Avg. Session</div>
                                 </div>
                             </div>
@@ -1111,25 +1111,25 @@
                                                     <div class="col-md-3">
                                                         <div class="interface-detail">
                                                             <span class="interface-label">IP Address</span>
-                                                            <span class="interface-value" id="wan-ip-display">192.168.1.1</span>
+                                                            <span class="interface-value" id="wan-ip-display">-</span>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-3">
                                                         <div class="interface-detail">
                                                             <span class="interface-label">Subnet Mask</span>
-                                                            <span class="interface-value" id="wan-subnet-display">255.255.255.0</span>
+                                                            <span class="interface-value" id="wan-subnet-display">-</span>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-3">
                                                         <div class="interface-detail">
                                                             <span class="interface-label">Gateway</span>
-                                                            <span class="interface-value" id="wan-gateway-display">192.168.1.1</span>
+                                                            <span class="interface-value" id="wan-gateway-display">-</span>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-3">
                                                         <div class="interface-detail">
                                                             <span class="interface-label">Primary DNS</span>
-                                                            <span class="interface-value" id="wan-dns1-display">8.8.8.8</span>
+                                                            <span class="interface-value" id="wan-dns1-display">-</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1139,13 +1139,13 @@
                                                     <div class="col-md-6">
                                                         <div class="interface-detail">
                                                             <span class="interface-label">Username</span>
-                                                            <span class="interface-value" id="wan-pppoe-username">Username</span>
+                                                            <span class="interface-value" id="wan-pppoe-username">-</span>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6">
                                                         <div class="interface-detail">
                                                             <span class="interface-label">Service Name</span>
-                                                            <span class="interface-value" id="wan-pppoe-service-name">Service Name</span>
+                                                            <span class="interface-value" id="wan-pppoe-service-name">-</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1170,15 +1170,15 @@
                                                     <div class="card-body">
                                                         <div class="interface-detail">
                                                             <span class="interface-label">IP Address</span>
-                                                            <span class="interface-value" id="captive-ip-display">192.168.2.1</span>
+                                                            <span class="interface-value" id="captive-ip-display">-</span>
                                                         </div>
                                                         <div class="interface-detail">
                                                             <span class="interface-label">Subnet Mask</span>
-                                                            <span class="interface-value" id="captive-netmask-display">255.255.255.0</span>
+                                                            <span class="interface-value" id="captive-netmask-display">-</span>
                                                         </div>
                                                         <div class="interface-detail">
                                                             <span class="interface-label">Gateway</span>
-                                                            <span class="interface-value" id="captive-gateway-display">192.168.2.1</span>
+                                                            <span class="interface-value" id="captive-gateway-display">-</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1200,19 +1200,19 @@
                                                         <div class="hidden password-ip-assignment-display_div">
                                                             <div class="interface-detail">
                                                                 <span class="interface-label">IP Address</span>
-                                                                <span class="interface-value" id="password-ip-display">192.168.1.1</span>
+                                                                <span class="interface-value" id="password-ip-display">-</span>
                                                             </div>
                                                             <div class="interface-detail">
                                                                 <span class="interface-label">Subnet Mask</span>
-                                                                <span class="interface-value" id="password-netmask-display">255.255.255.0</span>
+                                                                <span class="interface-value" id="password-netmask-display">-</span>
                                                             </div>
                                                             <div class="interface-detail">
                                                                 <span class="interface-label">Gateway</span>
-                                                                <span class="interface-value" id="password-gateway-display">192.168.1.1</span>
+                                                                <span class="interface-value" id="password-gateway-display">-</span>
                                                             </div>
                                                             <div class="interface-detail">
                                                                 <span class="interface-label">DHCP Server</span>
-                                                                <span class="interface-value" id="password-dhcp-status-display">Enabled</span>
+                                                                <span class="interface-value" id="password-dhcp-status-display">-</span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1950,7 +1950,7 @@
                                                                 <tr>
                                                                     <td>John Doe (iPhone 13)</td>
                                                                     <td>00:1A:2B:3C:4D:5E</td>
-                                                                    <td>192.168.10.101</td>
+                                                                    <td>-</td>
                                                                     <td><span class="badge badge-light-info">Captive Portal</span></td>
                                                                     <td>1h 23m</td>
                                                                     <td>125 MB</td>
