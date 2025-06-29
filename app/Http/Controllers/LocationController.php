@@ -749,6 +749,18 @@ class LocationController extends Controller
                     Log::info('Updating password network settings for location: ' . $location->id);
                 } elseif ($settingsType === 'location_info') {
                     Log::info('Updating location info settings for location: ' . $location->id);
+                    
+                    // Check for address changes BEFORE updating the location fields
+                    $addressFields = ['address', 'city', 'state', 'country', 'postal_code'];
+                    $hasAddressChange = false;
+                    foreach ($addressFields as $field) {
+                        if (isset($settings[$field]) && $settings[$field] !== $location->$field) {
+                            $hasAddressChange = true;
+                            Log::info("Address field '{$field}' changed from '{$location->$field}' to '{$settings[$field]}'");
+                            break;
+                        }
+                    }
+                    
                     if (isset($settings['name'])) {
                         if ($settings['name'] !== $location->name) {
                             // $increment_version = 1;
@@ -846,15 +858,7 @@ class LocationController extends Controller
                     }
 
                     // Geocode address if address fields have actually changed and lat/lng not explicitly provided
-                    $addressFields = ['address', 'city', 'state', 'country', 'postal_code'];
-                    $hasAddressChange = false;
-                    foreach ($addressFields as $field) {
-                        if (isset($settings[$field]) && $settings[$field] !== $location->$field) {
-                            $hasAddressChange = true;
-                            Log::info("Address field '{$field}' changed from '{$location->$field}' to '{$settings[$field]}'");
-                            break;
-                        }
-                    }
+                    Log::info('Geocoding evaluation: hasAddressChange=' . ($hasAddressChange ? 'true' : 'false') . ', hasLatitude=' . (isset($settings['latitude']) ? 'true' : 'false') . ', hasLongitude=' . (isset($settings['longitude']) ? 'true' : 'false'));
                     
                     if ($hasAddressChange && !isset($settings['latitude']) && !isset($settings['longitude'])) {
                         Log::info('Address fields updated in location_info, attempting to geocode');

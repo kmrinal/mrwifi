@@ -1046,7 +1046,10 @@
 
                     <!-- Location Map Card -->
                     <div class="stat-card">
-                        <h5 class="card-title mb-3">Location</h5>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="card-title mb-0">Location</h5>
+                            <small class="text-muted" id="map-coordinates" style="display: none;"></small>
+                        </div>
                         <div id="location-map" class="location-map"></div>
                     </div>
                 </div>
@@ -3501,6 +3504,63 @@ document.addEventListener('DOMContentLoaded', function() {
                     success: function(response) {
                         console.log('API Response received:', response);
                         
+                        // Extract location data from response
+                        let location = null;
+                        if (response.data) {
+                            location = response.data;
+                        } else if (response.location) {
+                            location = response.location;
+                        }
+
+                        console.log('Extracted location data:', location);
+
+                        // Store location data globally for use in other functions
+                        window.currentLocationData = location;
+
+                        // Initialize map if location has coordinates
+                        if (location && location.latitude && location.longitude) {
+                            // Convert coordinates to ensure they're numbers
+                            const lat = parseFloat(location.latitude);
+                            const lng = parseFloat(location.longitude);
+                            
+                            if (!isNaN(lat) && !isNaN(lng)) {
+                                // Delay map initialization to ensure DOM is ready
+                                setTimeout(function() {
+                                    initializeLocationMap(lat, lng, location.name, location.address);
+                                }, 300);
+                            } else {
+                                console.error('Invalid coordinates from API:', location.latitude, location.longitude);
+                                $('#location-map').html(`
+                                    <div class="d-flex align-items-center justify-content-center h-100">
+                                        <div class="text-center text-warning">
+                                            <i data-feather="alert-circle" class="mb-2"></i>
+                                            <p class="mb-0">Invalid coordinates from server</p>
+                                            <small>Please check location data</small>
+                                        </div>
+                                    </div>
+                                `);
+                                if (typeof feather !== 'undefined') {
+                                    feather.replace();
+                                }
+                            }
+                        } else {
+                            console.log('No coordinates found for location, map not initialized');
+                            // Show a message in the map container
+                            $('#location-map').html(`
+                                <div class="d-flex align-items-center justify-content-center h-100">
+                                    <div class="text-center text-muted">
+                                        <i data-feather="map-pin" class="mb-2"></i>
+                                        <p class="mb-0">No coordinates available</p>
+                                        <small>Add address information to see location on map</small>
+                                    </div>
+                                </div>
+                            `);
+                            $('#map-coordinates').hide();
+                            if (typeof feather !== 'undefined') {
+                                feather.replace();
+                            }
+                        }
+                        
                         // Extract device data from response
                         let device = null;
                         if (response.data && response.data.device) {
@@ -3557,6 +3617,174 @@ document.addEventListener('DOMContentLoaded', function() {
                         handleApiError(xhr, status, error, 'loading device data');
                     }
                 });
+            }
+
+            // Function to initialize location map with coordinates
+            function initializeLocationMap(latitude, longitude, locationName, locationAddress) {
+                console.log('Initializing location map with coordinates:', latitude, longitude);
+                console.log('Coordinate types:', typeof latitude, typeof longitude);
+                
+                // Convert to numbers and validate coordinates
+                const lat = parseFloat(latitude);
+                const lng = parseFloat(longitude);
+                
+                if (isNaN(lat) || isNaN(lng)) {
+                    console.error('Invalid coordinates provided:', { latitude, longitude });
+                    $('#location-map').html(`
+                        <div class="d-flex align-items-center justify-content-center h-100">
+                            <div class="text-center text-warning">
+                                <i data-feather="alert-circle" class="mb-2"></i>
+                                <p class="mb-0">Invalid coordinates</p>
+                                <small>Latitude: ${latitude}, Longitude: ${longitude}</small>
+                            </div>
+                        </div>
+                    `);
+                    $('#map-coordinates').hide();
+                    if (typeof feather !== 'undefined') {
+                        feather.replace();
+                    }
+                    return;
+                }
+                
+                // Check if map container exists and is visible
+                const mapContainer = document.getElementById('location-map');
+                if (!mapContainer) {
+                    console.error('Map container not found');
+                    return;
+                }
+                
+                // Clear existing map if any
+                if (window.locationMap) {
+                    try {
+                        window.locationMap.remove();
+                        window.locationMap = null;
+                    } catch (e) {
+                        console.log('Error removing existing map:', e);
+                    }
+                }
+                
+                $('#location-map').empty();
+                
+                // Wait a bit to ensure container is properly rendered
+                setTimeout(function() {
+                    try {
+                        // Check if Leaflet is loaded
+                        if (typeof L === 'undefined') {
+                            console.error('Leaflet library not loaded');
+                            $('#location-map').html(`
+                                <div class="d-flex align-items-center justify-content-center h-100">
+                                    <div class="text-center text-warning">
+                                        <i data-feather="alert-circle" class="mb-2"></i>
+                                        <p class="mb-0">Map library loading...</p>
+                                        <small>Please wait a moment</small>
+                                    </div>
+                                </div>
+                            `);
+                            if (typeof feather !== 'undefined') {
+                                feather.replace();
+                            }
+                                                         // Retry after Leaflet loads
+                             setTimeout(function() {
+                                 initializeLocationMap(lat, lng, locationName, locationAddress);
+                             }, 1000);
+                            return;
+                        }
+                        
+                        // Check again that container exists and has dimensions
+                        if (!isMapContainerReady()) {
+                            console.log('Map container not ready, waiting...');
+                                                         // Try again after a longer delay
+                             setTimeout(function() {
+                                 initializeLocationMap(lat, lng, locationName, locationAddress);
+                             }, 500);
+                            return;
+                        }
+                        
+                        // Initialize the map
+                        const map = L.map('location-map').setView([lat, lng], 15);
+                    
+                    // Add OpenStreetMap tile layer
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                        maxZoom: 19
+                    }).addTo(map);
+                    
+                    // Create popup content
+                    let popupContent = `<strong>${locationName || 'Location'}</strong>`;
+                    if (locationAddress) {
+                        popupContent += `<br><small>${locationAddress}</small>`;
+                    }
+                    popupContent += `<br><small>Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}</small>`;
+                    
+                    // Add marker with popup
+                    const marker = L.marker([lat, lng]).addTo(map);
+                    marker.bindPopup(popupContent).openPopup();
+                    
+                        // Store map reference globally for potential future use
+                        window.locationMap = map;
+                        
+                        // Show coordinates in the header
+                        $('#map-coordinates').text(`${lat.toFixed(6)}, ${lng.toFixed(6)}`).show();
+                        
+                        console.log('Location map initialized successfully');
+                    } catch (error) {
+                        console.error('Error initializing location map:', error);
+                        $('#location-map').html(`
+                            <div class="d-flex align-items-center justify-content-center h-100">
+                                <div class="text-center text-danger">
+                                    <i data-feather="alert-triangle" class="mb-2"></i>
+                                    <p class="mb-0">Error loading map</p>
+                                    <small>Please try refreshing the page</small>
+                                </div>
+                            </div>
+                        `);
+                        $('#map-coordinates').hide();
+                        if (typeof feather !== 'undefined') {
+                            feather.replace();
+                        }
+                    }
+                }, 100); // End of setTimeout
+            }
+
+            // Function to check if map container is ready
+            function isMapContainerReady() {
+                const container = document.getElementById('location-map');
+                if (!container) {
+                    return false;
+                }
+                
+                // Check if container is visible and has dimensions
+                const rect = container.getBoundingClientRect();
+                return rect.width > 0 && rect.height > 0;
+            }
+
+            // Function to update location map with new coordinates
+            function updateLocationMap(location) {
+                if (!location || !location.latitude || !location.longitude) {
+                    console.log('No location coordinates to update map');
+                    return;
+                }
+                
+                // Convert coordinates to ensure they're numbers
+                const lat = parseFloat(location.latitude);
+                const lng = parseFloat(location.longitude);
+                
+                if (isNaN(lat) || isNaN(lng)) {
+                    console.error('Invalid coordinates in location data:', location.latitude, location.longitude);
+                    return;
+                }
+                
+                console.log('Updating location map with new coordinates:', lat, lng);
+                
+                // Check if container is ready before updating
+                if (isMapContainerReady()) {
+                    initializeLocationMap(lat, lng, location.name, location.address);
+                } else {
+                    console.log('Map container not ready, waiting...');
+                    setTimeout(function() {
+                        updateLocationMap(location);
+                    }, 500);
+                }
             }
 
             // Function to load latest firmware for a specific model when current firmware is not set
@@ -3655,7 +3883,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             feather.replace();
                         }
                         
-                        // Reload device data to verify the update
+                        // Reload device data to verify the update and refresh map with potentially new coordinates
                         setTimeout(function() {
                             loadDeviceData();
                         }, 1000);
@@ -3801,8 +4029,46 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }, 100);
 
-            // Load device data when page loads
-            loadDeviceData();
+            // Load device data when page loads - with delay to ensure DOM is ready
+            $(document).ready(function() {
+                setTimeout(function() {
+                    loadDeviceData();
+                }, 500);
+            });
+
+            // Handle window resize to make map responsive
+            $(window).on('resize', function() {
+                if (window.locationMap) {
+                    setTimeout(function() {
+                        window.locationMap.invalidateSize();
+                    }, 100);
+                }
+            });
+
+            // Handle tab switching to refresh map size
+            $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+                if (window.locationMap) {
+                    setTimeout(function() {
+                        window.locationMap.invalidateSize();
+                    }, 100);
+                } else {
+                    // If map doesn't exist but container is now visible, try to initialize
+                    setTimeout(function() {
+                        if (isMapContainerReady() && window.currentLocationData) {
+                            const location = window.currentLocationData;
+                            if (location && location.latitude && location.longitude) {
+                                // Convert coordinates to ensure they're numbers
+                                const lat = parseFloat(location.latitude);
+                                const lng = parseFloat(location.longitude);
+                                
+                                if (!isNaN(lat) && !isNaN(lng)) {
+                                    initializeLocationMap(lat, lng, location.name, location.address);
+                                }
+                            }
+                        }
+                    }, 200);
+                }
+            });
 
             // Load web filter categories when page loads
             loadWebFilterCategories();
