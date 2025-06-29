@@ -1173,6 +1173,21 @@ class LocationController extends Controller
                 $settings = new LocationSettings(['location_id' => $id]);
             }
             
+            // Get the device for config version increment
+            $device = Device::find($location->device_id);
+            $increment_version = 0;
+            
+            // Store original values for comparison
+            $originalSettings = [
+                'country_code' => $settings->country_code,
+                'transmit_power_2g' => $settings->transmit_power_2g,
+                'transmit_power_5g' => $settings->transmit_power_5g,
+                'channel_2g' => $settings->channel_2g,
+                'channel_5g' => $settings->channel_5g,
+                'channel_width_2g' => $settings->channel_width_2g,
+                'channel_width_5g' => $settings->channel_width_5g,
+            ];
+            
             // Update settings with provided data
             $settingsData = $request->only([
                 'web_filter_enabled',
@@ -1204,6 +1219,55 @@ class LocationController extends Controller
                 'mac_filter_list',
             ]);
             
+            // Check for router setting changes that require config version increment
+            $routerSettingsChanged = false;
+            
+            // Country/Region changes
+            if (isset($settingsData['country_code']) && $settingsData['country_code'] !== $originalSettings['country_code']) {
+                $increment_version = 1;
+                $routerSettingsChanged = true;
+                Log::info('Country code updated from "' . $originalSettings['country_code'] . '" to "' . $settingsData['country_code'] . '"');
+            }
+            
+            // Transmit Power changes
+            if (isset($settingsData['transmit_power_2g']) && $settingsData['transmit_power_2g'] !== $originalSettings['transmit_power_2g']) {
+                $increment_version = 1;
+                $routerSettingsChanged = true;
+                Log::info('Transmit power 2G updated from "' . $originalSettings['transmit_power_2g'] . '" to "' . $settingsData['transmit_power_2g'] . '"');
+            }
+            
+            if (isset($settingsData['transmit_power_5g']) && $settingsData['transmit_power_5g'] !== $originalSettings['transmit_power_5g']) {
+                $increment_version = 1;
+                $routerSettingsChanged = true;
+                Log::info('Transmit power 5G updated from "' . $originalSettings['transmit_power_5g'] . '" to "' . $settingsData['transmit_power_5g'] . '"');
+            }
+            
+            // Channel changes
+            if (isset($settingsData['channel_2g']) && $settingsData['channel_2g'] !== $originalSettings['channel_2g']) {
+                $increment_version = 1;
+                $routerSettingsChanged = true;
+                Log::info('Channel 2G updated from "' . $originalSettings['channel_2g'] . '" to "' . $settingsData['channel_2g'] . '"');
+            }
+            
+            if (isset($settingsData['channel_5g']) && $settingsData['channel_5g'] !== $originalSettings['channel_5g']) {
+                $increment_version = 1;
+                $routerSettingsChanged = true;
+                Log::info('Channel 5G updated from "' . $originalSettings['channel_5g'] . '" to "' . $settingsData['channel_5g'] . '"');
+            }
+            
+            // Channel Width changes
+            if (isset($settingsData['channel_width_2g']) && $settingsData['channel_width_2g'] !== $originalSettings['channel_width_2g']) {
+                $increment_version = 1;
+                $routerSettingsChanged = true;
+                Log::info('Channel width 2G updated from "' . $originalSettings['channel_width_2g'] . '" to "' . $settingsData['channel_width_2g'] . '"');
+            }
+            
+            if (isset($settingsData['channel_width_5g']) && $settingsData['channel_width_5g'] !== $originalSettings['channel_width_5g']) {
+                $increment_version = 1;
+                $routerSettingsChanged = true;
+                Log::info('Channel width 5G updated from "' . $originalSettings['channel_width_5g'] . '" to "' . $settingsData['channel_width_5g'] . '"');
+            }
+            
             // Ensure web_filter_categories is properly handled as JSON
             if (isset($settingsData['web_filter_categories'])) {
                 if (is_string($settingsData['web_filter_categories'])) {
@@ -1213,17 +1277,39 @@ class LocationController extends Controller
                 }
             }
             
+            // Apply the settings changes
             $settings->fill($settingsData);
             $settings->save();
             
+            // Increment device configuration version if router settings changed
+            if ($increment_version == 1 && $device) {
+                $oldVersion = $device->configuration_version;
+                $device->configuration_version = $device->configuration_version + 1;
+                $device->save();
+                Log::info('Device configuration version incremented from ' . $oldVersion . ' to ' . $device->configuration_version . ' for location: ' . $id);
+            }
+            
             Log::info('Location settings updated successfully for location: ' . $id);
+            
+            // Prepare response data
+            $responseData = [
+                'settings' => $settings
+            ];
+            
+            // Add config version information to response if it was incremented
+            if ($increment_version == 1 && $device) {
+                $responseData['config_version_incremented'] = true;
+                $responseData['new_config_version'] = $device->configuration_version;
+                $responseData['previous_config_version'] = $device->configuration_version - 1;
+            } else {
+                $responseData['config_version_incremented'] = false;
+                $responseData['current_config_version'] = $device ? $device->configuration_version : null;
+            }
             
             return response()->json([
                 'success' => true,
                 'message' => 'Location settings updated successfully',
-                'data' => [
-                    'settings' => $settings
-                ]
+                'data' => $responseData
             ]);
             
         } catch (\Exception $e) {

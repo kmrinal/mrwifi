@@ -197,13 +197,19 @@ class DeviceController extends Controller
             'whitelist_domains' => $whitelist_domains,
         ];
 
+        $firmware = [
+            'version' => 1,
+            'file_path' => 'https://portal.monsieur-wifi.com/monsieur-wifi-firmware.tar.gz',
+        ];
+
         return response()->json(
             [
                 'status' => 'success',
                 'location' => $location,
                 'settings' => $settings,
                 'radius_settings' => $radius_settings,
-                'guest_settings' => $guest_settings
+                'guest_settings' => $guest_settings,
+                'firmware' => $firmware
             ]
         );
     }

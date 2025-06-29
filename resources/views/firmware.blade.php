@@ -280,7 +280,7 @@
                                         <i data-feather="hard-drive"></i>
                                     </div>
                                 </div>
-                                <h2 class="font-weight-bolder firmware-stats total" id="total-firmware">8</h2>
+                                <h2 class="font-weight-bolder firmware-stats total" id="total-firmware">0</h2>
                                 <p class="card-text">Total Firmware Versions</p>
                             </div>
                         </div>
@@ -584,8 +584,12 @@
         });
 
         function initializeSelect2() {
-            // Destroy existing Select2 instances first
-            $('#status, #edit-status, #model, #edit-model').select2('destroy');
+            // Destroy existing Select2 instances first (only if they exist)
+            $('#status, #edit-status, #model, #edit-model').each(function() {
+                if ($(this).hasClass('select2-hidden-accessible')) {
+                    $(this).select2('destroy');
+                }
+            });
             
             // Initialize Select2 for all dropdowns
             $('#status, #edit-status').select2({
@@ -667,6 +671,7 @@
                 method: 'GET',
                 headers: getAuthHeaders(),
                 success: function(response) {
+                    console.log(response);
                     if (response.status === 'success') {
                         firmwareData = response.data;
                         updateFirmwareTable();
@@ -918,6 +923,9 @@
         }
 
         function getModelName(modelId) {
+            if (modelId === '835AX' || modelId === '820AX' || modelId === '820AX') {
+                return modelId;
+            }
             const modelMap = {
                 '1': '820AX',
                 '2': '835AX',
