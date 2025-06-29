@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\LocationSettings;
+use App\Models\Radacct;
 class Location extends Model
 {
     use HasFactory;
@@ -51,5 +52,23 @@ class Location extends Model
     public function settings()
     {
         return $this->hasOne(LocationSettings::class);
+    }
+
+    /**
+     * Get the accounting records for this location.
+     */
+    public function radacct()
+    {
+        return $this->setConnection('radius')->hasMany(Radacct::class, 'location_id');
+    }
+
+    /**
+     * Get active sessions for this location.
+     */
+    public function activeSessions()
+    {
+        return $this->setConnection('radius')->hasMany(Radacct::class, 'location_id')
+            ->whereNull('acctstoptime')
+            ->orderBy('acctstarttime', 'desc');
     }
 }

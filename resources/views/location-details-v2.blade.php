@@ -1009,38 +1009,62 @@
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h5 class="card-title mb-0">Current Usage</h5>
                             <div class="dropdown">
-                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" id="usage-period-btn">
                                     Today
                                 </button>
-                                <div class="dropdown-menu dropdown-menu-right">
-                                    <a class="dropdown-item" href="javascript:void(0);">Today</a>
-                                    <a class="dropdown-item" href="javascript:void(0);">Last 7 Days</a>
-                                    <a class="dropdown-item" href="javascript:void(0);">Last 30 Days</a>
+                                <div class="dropdown-menu dropdown-menu-right" id="usage-period-dropdown">
+                                    <a class="dropdown-item" href="javascript:void(0);" data-period="today">Today</a>
+                                    <a class="dropdown-item" href="javascript:void(0);" data-period="7days">Last 7 Days</a>
+                                    <a class="dropdown-item" href="javascript:void(0);" data-period="30days">Last 30 Days</a>
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="row text-center">
+                        <!-- Loading Indicator -->
+                        <div id="usage-loading" class="text-center py-3" style="display: none;">
+                            <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                            <small class="d-block mt-2 text-muted">Loading usage data...</small>
+                        </div>
+                        
+                        <!-- Usage Data -->
+                        <div class="row text-center" id="usage-data">
                             <div class="col-6">
                                 <div class="mb-3">
-                                    <div class="stat-value text-primary" id="download-usage">0 GB</div>
+                                    <div class="stat-value text-primary" id="download-usage">
+                                        <i class="fas fa-spinner fa-spin" style="font-size: 1rem;"></i>
+                                    </div>
                                     <div class="stat-label">Download</div>
                                 </div>
                                 <div>
-                                    <div class="stat-value text-info" id="connected-users">0</div>
-                                    <div class="stat-label">Users</div>
+                                    <div class="stat-value text-info" id="connected-users">
+                                        <i class="fas fa-spinner fa-spin" style="font-size: 1rem;"></i>
+                                    </div>
+                                    <div class="stat-label">Active Users</div>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="mb-3">
-                                    <div class="stat-value text-success" id="upload-usage">0 GB</div>
+                                    <div class="stat-value text-success" id="upload-usage">
+                                        <i class="fas fa-spinner fa-spin" style="font-size: 1rem;"></i>
+                                    </div>
                                     <div class="stat-label">Upload</div>
                                 </div>
                                 <div>
-                                    <div class="stat-value text-warning" id="avg-session-time">0 hrs</div>
+                                    <div class="stat-value text-warning" id="avg-session-time">
+                                        <i class="fas fa-spinner fa-spin" style="font-size: 1rem;"></i>
+                                    </div>
                                     <div class="stat-label">Avg. Session</div>
                                 </div>
                             </div>
+                        </div>
+                        
+                        <!-- Last Updated -->
+                        <div class="text-center mt-3">
+                            <small class="text-muted" id="usage-last-updated">
+                                Loading data...
+                            </small>
                         </div>
                     </div>
 

@@ -6,6 +6,7 @@ use App\Models\Location;
 use App\Models\Device;
 use App\Models\LocationSettings;
 use App\Models\SystemSetting;
+use App\Models\Radacct;
 use App\Services\GeocodingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -62,8 +63,16 @@ class LocationController extends Controller
                 // Add last_seen timestamp to the response
                 $locationData['last_seen'] = $location->device->last_seen;
             }
-            $locationData['users'] = 0;
-            $locationData['data_usage'] = 0;
+            // Get data usage and user statistics from accounting records
+            $dataUsage = Radacct::getLocationDataUsage($location->id);
+            $activeSessions = Radacct::getActiveSessions($location->id);
+            
+            $locationData['users'] = $activeSessions->count();
+            $locationData['unique_users_today'] = $dataUsage['unique_users'];
+            $locationData['data_usage'] = $dataUsage['total_mb']; // In MB
+            $locationData['data_usage_gb'] = $dataUsage['total_gb']; // In GB
+            $locationData['total_sessions'] = $dataUsage['total_sessions'];
+            $locationData['active_sessions'] = $activeSessions->count();
             $locationData['settings'] = LocationSettings::where('location_id', $location->id)->first();
             return $locationData;
         });
@@ -236,6 +245,107 @@ class LocationController extends Controller
             'message' => 'Location fetched successfully',
             'data' => $locationData
         ]);
+    }
+
+    /**
+     * Get accounting statistics for a location
+     */
+    public function getAccounting($id, Request $request)
+    {
+        try {
+            $location = Location::find($id);
+            
+            if (!$location) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Location not found'
+                ], 404);
+            }
+            
+            // Get date range from request, default to last 30 days
+            $startDate = $request->has('start_date') 
+                ? \Carbon\Carbon::parse($request->start_date) 
+                : \Carbon\Carbon::now()->subDays(30);
+            $endDate = $request->has('end_date') 
+                ? \Carbon\Carbon::parse($request->end_date) 
+                : \Carbon\Carbon::now();
+            
+            // Get comprehensive statistics
+            $dataUsage = Radacct::getLocationDataUsage($id, $startDate, $endDate);
+            $activeSessions = Radacct::getActiveSessions($id);
+            $recentSessions = Radacct::getRecentSessions($id, 20);
+            $dailyStats = Radacct::getSessionStats($id, $startDate, $endDate);
+            
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'location' => $location,
+                    'date_range' => [
+                        'start' => $startDate->format('Y-m-d'),
+                        'end' => $endDate->format('Y-m-d')
+                    ],
+                    'summary' => $dataUsage,
+                    'active_sessions' => $activeSessions,
+                    'recent_sessions' => $recentSessions,
+                    'daily_statistics' => $dailyStats
+                ]
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Error getting location accounting data: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error retrieving accounting data: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get user session history for a location
+     */
+    public function getUserSessions($id, Request $request)
+    {
+        try {
+            $location = Location::find($id);
+            
+            if (!$location) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Location not found'
+                ], 404);
+            }
+            
+            $username = $request->input('username');
+            if (!$username) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Username is required'
+                ], 400);
+            }
+            
+            // Get user sessions for this location
+            $sessions = Radacct::getByUsernameAndLocation($username, $id);
+            $userDataUsage = Radacct::getUserDataUsage($username, $id);
+            
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'location' => $location,
+                    'username' => $username,
+                    'sessions' => $sessions,
+                    'usage_summary' => $userDataUsage
+                ]
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Error getting user sessions: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error retrieving user sessions: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**

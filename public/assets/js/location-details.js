@@ -1,5 +1,6 @@
 // Define location_id as a global variable
 let location_id;
+let currentUsagePeriod = 'today'; // Default to today
 
 $(window).on('load', function() {
     if (feather) {
@@ -15,8 +16,41 @@ $(window).on('load', function() {
     // get location_id from url and assign to global variable
     location_id = window.location.pathname.split('/').pop();
     console.log("location_id", location_id);
-    // load location details
+    
+    // load location details and current usage
     loadLocationDetails(location_id);
+    loadCurrentUsage(location_id, currentUsagePeriod);
+
+    // Set up auto-refresh for current usage (every 30 seconds)
+    setInterval(function() {
+        loadCurrentUsage(location_id, currentUsagePeriod);
+    }, 30000);
+
+    // Handle usage period dropdown
+    $('#usage-period-dropdown .dropdown-item').on('click', function(e) {
+        e.preventDefault();
+        const selectedPeriod = $(this).data('period');
+        const selectedText = $(this).text();
+        const $button = $('#usage-period-btn');
+        
+        // Update button text
+        $button.text(selectedText);
+        
+        // Update current period
+        currentUsagePeriod = selectedPeriod;
+        
+        // Add loading state to button temporarily
+        const originalText = $button.text();
+        $button.html('<i class="fas fa-spinner fa-spin mr-1"></i>' + originalText);
+        
+        // Reload usage data with new period
+        loadCurrentUsage(location_id, currentUsagePeriod);
+        
+        // Reset button after a delay
+        setTimeout(function() {
+            $button.text(originalText);
+        }, 1000);
+    });
 
     $('#password-network-modal').on('shown.bs.modal', function() {
         initPasswordNetworkToggle();
@@ -56,6 +90,187 @@ function loadLocationDetails(location_id) {
             console.error("Error loading location details:", error);
         }
     });
+}
+
+function loadCurrentUsage(location_id, period) {
+    console.log("Loading current usage for period:", period);
+    
+    // Show loading state
+    showCurrentUsageLoading();
+    
+    // Calculate date range based on period
+    let startDate, endDate;
+    const now = new Date();
+    endDate = now.toISOString().split('T')[0]; // Today
+    
+    switch(period) {
+        case 'today':
+            startDate = endDate;
+            break;
+        case '7days':
+            const sevenDaysAgo = new Date(now);
+            sevenDaysAgo.setDate(now.getDate() - 7);
+            startDate = sevenDaysAgo.toISOString().split('T')[0];
+            break;
+        case '30days':
+            const thirtyDaysAgo = new Date(now);
+            thirtyDaysAgo.setDate(now.getDate() - 30);
+            startDate = thirtyDaysAgo.toISOString().split('T')[0];
+            break;
+        default:
+            startDate = endDate;
+    }
+    
+    // Make API call to get accounting data
+    $.ajax({
+        url: '/api/locations/' + location_id + '/accounting',
+        type: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + UserManager.getToken(),
+            'Content-Type': 'application/json'
+        },
+        data: {
+            start_date: startDate,
+            end_date: endDate
+        },
+        success: function(response) {
+            console.log("Current Usage Response", response);
+            if (response.success && response.data) {
+                updateCurrentUsageDisplay(response.data, period);
+                updateLastUpdatedTime();
+            } else {
+                console.error("Invalid response format for current usage");
+                showCurrentUsageError();
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error("Error loading current usage:", error);
+            showCurrentUsageError();
+        }
+    });
+}
+
+function updateCurrentUsageDisplay(data, period) {
+    const summary = data.summary;
+    const activeSessions = data.active_sessions || [];
+    
+    // Format data usage
+    const totalGB = summary.total_gb || 0;
+    const inputGB = summary.total_input_bytes ? (summary.total_input_bytes / (1024 * 1024 * 1024)).toFixed(2) : 0;
+    const outputGB = summary.total_output_bytes ? (summary.total_output_bytes / (1024 * 1024 * 1024)).toFixed(2) : 0;
+    
+    // Update download usage (input/download)
+    $('#download-usage').html(inputGB + ' GB');
+    
+    // Update upload usage (output/upload)  
+    $('#upload-usage').html(outputGB + ' GB');
+    
+    // Update connected users (current active sessions)
+    $('#connected-users').html(activeSessions.length);
+    
+    // Calculate average session time
+    const totalSessionHours = summary.total_session_time_hours || 0;
+    const totalSessions = summary.total_sessions || 1; // Avoid division by zero
+    const avgSessionHours = totalSessions > 0 ? (totalSessionHours / totalSessions).toFixed(1) : 0;
+    
+    $('#avg-session-time').html(avgSessionHours + ' hrs');
+    
+    // Update status colors based on activity
+    updateUsageStatusColors(activeSessions.length, totalGB);
+    
+    // Hide loading, show data
+    hideCurrentUsageLoading();
+    
+    console.log("Updated current usage display", {
+        period: period,
+        download: inputGB + ' GB',
+        upload: outputGB + ' GB', 
+        users: activeSessions.length,
+        avgSession: avgSessionHours + ' hrs',
+        totalSessions: summary.total_sessions,
+        uniqueUsers: summary.unique_users
+    });
+}
+
+function updateUsageStatusColors(activeUsers, totalGB) {
+    // Update connected users color based on activity
+    const $usersElement = $('#connected-users');
+    $usersElement.removeClass('text-primary text-info text-warning text-danger');
+    
+    if (activeUsers === 0) {
+        $usersElement.addClass('text-muted');
+    } else if (activeUsers <= 5) {
+        $usersElement.addClass('text-info');
+    } else if (activeUsers <= 15) {
+        $usersElement.addClass('text-primary');
+    } else if (activeUsers <= 25) {
+        $usersElement.addClass('text-warning');
+    } else {
+        $usersElement.addClass('text-danger');
+    }
+    
+    // Update data usage colors
+    const $downloadElement = $('#download-usage');
+    const $uploadElement = $('#upload-usage');
+    
+    $downloadElement.removeClass('text-primary text-success text-warning text-danger');
+    $uploadElement.removeClass('text-primary text-success text-warning text-danger');
+    
+    if (totalGB < 1) {
+        $downloadElement.addClass('text-success');
+        $uploadElement.addClass('text-success');
+    } else if (totalGB < 5) {
+        $downloadElement.addClass('text-primary');
+        $uploadElement.addClass('text-info');
+    } else if (totalGB < 10) {
+        $downloadElement.addClass('text-warning');
+        $uploadElement.addClass('text-warning');
+    } else {
+        $downloadElement.addClass('text-danger');
+        $uploadElement.addClass('text-danger');
+    }
+}
+
+function showCurrentUsageLoading() {
+    // Show loading spinners in the stats
+    $('#download-usage').html('<i class="fas fa-spinner fa-spin" style="font-size: 1rem;"></i>');
+    $('#upload-usage').html('<i class="fas fa-spinner fa-spin" style="font-size: 1rem;"></i>');
+    $('#connected-users').html('<i class="fas fa-spinner fa-spin" style="font-size: 1rem;"></i>');
+    $('#avg-session-time').html('<i class="fas fa-spinner fa-spin" style="font-size: 1rem;"></i>');
+    
+    // Update last updated text
+    $('#usage-last-updated').text('Loading data...');
+}
+
+function hideCurrentUsageLoading() {
+    // This function will be called after data is loaded
+    // The actual data display is handled in updateCurrentUsageDisplay()
+}
+
+function updateLastUpdatedTime() {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString('en-US', { 
+        hour12: true,
+        hour: 'numeric',
+        minute: '2-digit'
+    });
+    $('#usage-last-updated').text(`Last updated: ${timeString}`);
+}
+
+function showCurrentUsageError() {
+    // Show error state in current usage display
+    $('#download-usage').html('Error');
+    $('#upload-usage').html('Error');
+    $('#connected-users').html('Error');
+    $('#avg-session-time').html('Error');
+    
+    // Add error styling
+    $('#download-usage, #upload-usage, #connected-users, #avg-session-time')
+        .removeClass('text-primary text-info text-success text-warning text-danger')
+        .addClass('text-muted');
+    
+    // Update timestamp
+    $('#usage-last-updated').text('Failed to load data');
 }
 
 function populateLocationDetails(location, captive_portal_designs) {

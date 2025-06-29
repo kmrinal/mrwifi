@@ -69,6 +69,9 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'locations'], function () 
     Route::get('/{id}/channel-scan', [LocationController::class, 'channelScan']);
     // Firmware update route
     Route::post('/{id}/update-firmware', [LocationController::class, 'updateFirmware']);
+    // Accounting routes
+    Route::get('/{id}/accounting', [LocationController::class, 'getAccounting']);
+    Route::get('/{id}/user-sessions', [LocationController::class, 'getUserSessions']);
 });
 
 Route::group(['middleware' => 'auth:api', 'prefix' => 'system-settings'], function () {
