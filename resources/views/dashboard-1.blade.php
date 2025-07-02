@@ -374,25 +374,25 @@
                     <div class="row match-height">
                         <!-- Welcome Card -->
                         <div class="col-lg-4 col-md-6 col-12">
-                            <div class="card card-congratulation-medal" id="welcome-card">
+                            <div class="card card-congratulation-medal">
                                 <div class="card-body">
                                     <h5>Welcome to monsieur-wifi Dashboard</h5>
                                     <p class="card-text font-small-3">Network Status Overview</p>
                                     <h3 class="mb-75 mt-2 pt-50">
-                                        <span class="text-primary" id="welcome-total-locations">Loading...</span>
+                                        <span class="text-primary">6 Locations</span>
                                     </h3>
                                     <div class="d-flex">
                                         <div class="d-flex align-items-center mr-2">
                                             <i data-feather="check-circle" class="text-success font-medium-2 mr-50"></i>
-                                            <span class="font-weight-bold" id="welcome-active-count">-</span> Active
+                                            <span class="font-weight-bold">5 Active</span>
                                 </div>
                                         <span class="mx-1">|</span>
                                         <div class="d-flex align-items-center ml-1">
                                             <i data-feather="x-circle" class="text-danger font-medium-2 mr-50"></i>
-                                            <span class="font-weight-bold" id="welcome-offline-count">-</span> Offline
+                                            <span class="font-weight-bold">1 Offline</span>
                             </div>
                         </div>
-                                    <a type="button" class="btn btn-primary mt-1" href="/locations">View Details</a>
+                                    <a type="button" class="btn btn-primary mt-1" href="locations.html">View Details</a>
                                     <img src="app-assets/images/illustration/badge.svg" class="congratulation-medal" alt="Medal Pic" />
                                 </div>
                             </div>
@@ -401,7 +401,7 @@
 
                         <!-- Statistics Card -->
                         <div class="col-lg-8 col-12">
-                            <div class="card card-statistics" id="network-stats">
+                            <div class="card card-statistics">
                                 <div class="card-header">
                                     <h4 class="card-title">Network Statistics</h4>
                                     <div class="d-flex align-items-center">
@@ -418,7 +418,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="media-body my-auto">
-                                                    <h4 class="font-weight-bolder mb-0" id="routers-online-count">-/-</h4>
+                                                    <h4 class="font-weight-bolder mb-0">5/6</h4>
                                                     <p class="card-text font-small-3 mb-0">Routers Online</p>
                                                 </div>
                                             </div>
@@ -431,7 +431,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="media-body my-auto">
-                                                    <h4 class="font-weight-bolder mb-0" id="active-users-count">-</h4>
+                                                    <h4 class="font-weight-bolder mb-0">2,380</h4>
                                                     <p class="card-text font-small-3 mb-0">Active Users</p>
                                                 </div>
                                             </div>
@@ -444,7 +444,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="media-body my-auto">
-                                                    <h4 class="font-weight-bolder mb-0" id="data-used-count">-</h4>
+                                                    <h4 class="font-weight-bolder mb-0">5.2TB</h4>
                                                     <p class="card-text font-small-3 mb-0">Data Used</p>
                                                 </div>
                                             </div>
@@ -457,7 +457,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="media-body my-auto">
-                                                    <h4 class="font-weight-bolder mb-0" id="uptime-percentage">-%</h4>
+                                                    <h4 class="font-weight-bolder mb-0">99.8%</h4>
                                                     <p class="card-text font-small-3 mb-0">Uptime</p>
                                                 </div>
                                             </div>
@@ -480,9 +480,9 @@
                                             <i data-feather="maximize"></i>
                                         </button>
                                         <div class="dropdown chart-dropdown">
-                                            <!-- <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="networkMapDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="networkMapDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                 Last 7 Days
-                                            </button> -->
+                                            </button>
                                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="networkMapDropdown">
                                                 <a class="dropdown-item" href="javascript:void(0);">Last 7 Days</a>
                                                 <a class="dropdown-item" href="javascript:void(0);">Last 28 Days</a>
@@ -493,17 +493,7 @@
                                         </div>
                                         </div>
                                         <div class="card-body">
-                                    <div id="network-map" style="height: 400px;">
-                                        <!-- Loading indicator for map -->
-                                        <div class="d-flex align-items-center justify-content-center h-100" id="map-loading">
-                                            <div class="text-center">
-                                                <div class="spinner-border text-primary mb-2" role="status">
-                                                    <span class="sr-only">Loading...</span>
-                                                </div>
-                                                <p class="text-muted">Loading network map...</p>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <div id="network-map" style="height: 400px;"></div>
                                             </div>
                             </div>
                         </div>
@@ -569,9 +559,6 @@
                         <!--/ Alerts and Network Health -->
                     </div>
 
-                    <!-- Error Messages Container -->
-                    <div id="dashboard-errors"></div>
-                    
                     <div class="row">
                         <div class="col-12">
                             <div class="card">
@@ -589,74 +576,340 @@
                                     </div>
                                 </div>
                                 <div class="card-body">
-                                    <div class="row" id="locations-container">
-                                        <!-- Location cards will be dynamically populated here -->
+                                    <div class="row">
+                                        <!-- Location Card 1 -->
+                                        <div class="col-md-6 col-lg-4 mb-2">
+                                            <div class="card shadow-none border">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="avatar bg-light-primary p-50 mr-1">
+                                                                <div class="avatar-content">
+                                                                    <i data-feather="map-pin" class="font-medium-4"></i>
+                                                                </div>
+                                                            </div>
+                                                            <div>
+                                                                <h5 class="mb-0">Paris Office</h5>
+                                                                <small class="text-muted">123 Main Street, Suite 100</small>
+                                                            </div>
+                                                        </div>
+                                                        <span class="badge badge-pill badge-light-success">Online</span>
+                                                        </div>
+                                                    
+                                                    <div class="row mt-1">
+                                                        <div class="col-6">
+                                                        <div class="d-flex align-items-center">
+                                                                <i data-feather="users" class="text-info mr-1" style="width: 14px; height: 14px;"></i>
+                                                                <small>856 Users</small>
+                                                        </div>
+                                                        </div>
+                                                        <div class="col-6">
+                                                        <div class="d-flex align-items-center">
+                                                                <i data-feather="download" class="text-warning mr-1" style="width: 14px; height: 14px;"></i>
+                                                                <small>1.2TB Used</small>
+                                                                </div>
+                                                            </div>
+                                                            </div>
+                                                    
+                                                    <div class="d-flex justify-content-between align-items-center mt-2">
+                                                        <div class="d-flex align-items-center">
+                                                            <i data-feather="hard-drive" class="text-primary mr-1" style="width: 14px; height: 14px;"></i>
+                                                            <small>Router Online</small>
+                                                        </div>
+                                                        <a href="location-details.html" class="btn btn-sm btn-primary">View Details</a>
+                                                        </div>
+                                                        </div>
+                                                        </div>
+                                        </div>
+
+                                        <!-- Location Card 2 -->
+                                        <div class="col-md-6 col-lg-4 mb-2">
+                                            <div class="card shadow-none border">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="avatar bg-light-primary p-50 mr-1">
+                                                                <div class="avatar-content">
+                                                                    <i data-feather="map-pin" class="font-medium-4"></i>
+                                                                </div>
+                                                            </div>
+                                                            <div>
+                                                                <h5 class="mb-0">Lyon Branch</h5>
+                                                                <small class="text-muted">456 Oak Avenue, Suite 200</small>
+                                                            </div>
+                                                        </div>
+                                                        <span class="badge badge-pill badge-light-success">Online</span>
+                                                        </div>
+                                                    
+                                                    <div class="row mt-1">
+                                                        <div class="col-6">
+                                                        <div class="d-flex align-items-center">
+                                                                <i data-feather="users" class="text-info mr-1" style="width: 14px; height: 14px;"></i>
+                                                                <small>542 Users</small>
+                                                        </div>
+                                                        </div>
+                                                        <div class="col-6">
+                                                        <div class="d-flex align-items-center">
+                                                                <i data-feather="download" class="text-warning mr-1" style="width: 14px; height: 14px;"></i>
+                                                                <small>0.8TB Used</small>
+                                                                </div>
+                                                            </div>
+                                                            </div>
+                                                    
+                                                    <div class="d-flex justify-content-between align-items-center mt-2">
+                                                        <div class="d-flex align-items-center">
+                                                            <i data-feather="hard-drive" class="text-primary mr-1" style="width: 14px; height: 14px;"></i>
+                                                            <small>Router Online</small>
+                                                        </div>
+                                                        <a href="location-details.html" class="btn btn-sm btn-primary">View Details</a>
+                                                        </div>
+                                                        </div>
+                                                        </div>
+                                        </div>
+
+                                        <!-- Location Card 3 -->
+                                        <div class="col-md-6 col-lg-4 mb-2">
+                                            <div class="card shadow-none border">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="avatar bg-light-primary p-50 mr-1">
+                                                                <div class="avatar-content">
+                                                                    <i data-feather="map-pin" class="font-medium-4"></i>
+                                                                </div>
+                                                            </div>
+                                                            <div>
+                                                                <h5 class="mb-0">Marseille Warehouse</h5>
+                                                                <small class="text-muted">789 Industrial Pkwy</small>
+                                                            </div>
+                                                        </div>
+                                                        <span class="badge badge-pill badge-light-success">Online</span>
+                                                    </div>
+                                                    
+                                                    <div class="row mt-1">
+                                                        <div class="col-6">
+                                                        <div class="d-flex align-items-center">
+                                                                <i data-feather="users" class="text-info mr-1" style="width: 14px; height: 14px;"></i>
+                                                                <small>128 Users</small>
+                                                        </div>
+                                                        </div>
+                                                        <div class="col-6">
+                                                        <div class="d-flex align-items-center">
+                                                                <i data-feather="download" class="text-warning mr-1" style="width: 14px; height: 14px;"></i>
+                                                                <small>0.3TB Used</small>
+                                                        </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="d-flex justify-content-between align-items-center mt-2">
+                                                        <div class="d-flex align-items-center">
+                                                            <i data-feather="hard-drive" class="text-primary mr-1" style="width: 14px; height: 14px;"></i>
+                                                            <small>Router Online</small>
+                                                        </div>
+                                                        <a href="location-details.html" class="btn btn-sm btn-primary">View Details</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Location Card 4 -->
+                                        <div class="col-md-6 col-lg-4 mb-2">
+                                            <div class="card shadow-none border">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="avatar bg-light-primary p-50 mr-1">
+                                                                <div class="avatar-content">
+                                                                    <i data-feather="map-pin" class="font-medium-4"></i>
+                                                                </div>
+                                                            </div>
+                                                            <div>
+                                                                <h5 class="mb-0">Nice Retail</h5>
+                                                                <small class="text-muted">101 Shopping Center Blvd</small>
+                                                            </div>
+                                                        </div>
+                                                        <span class="badge badge-pill badge-light-success">Online</span>
+                                                    </div>
+                                                    
+                                                    <div class="row mt-1">
+                                                        <div class="col-6">
+                                                        <div class="d-flex align-items-center">
+                                                                <i data-feather="users" class="text-info mr-1" style="width: 14px; height: 14px;"></i>
+                                                                <small>752 Users</small>
+                                                        </div>
+                                                        </div>
+                                                        <div class="col-6">
+                                                        <div class="d-flex align-items-center">
+                                                                <i data-feather="download" class="text-warning mr-1" style="width: 14px; height: 14px;"></i>
+                                                                <small>0.6TB Used</small>
+                                                        </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="d-flex justify-content-between align-items-center mt-2">
+                                                        <div class="d-flex align-items-center">
+                                                            <i data-feather="hard-drive" class="text-primary mr-1" style="width: 14px; height: 14px;"></i>
+                                                            <small>Router Online</small>
+                                                        </div>
+                                                        <a href="location-details.html" class="btn btn-sm btn-primary">View Details</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Location Card 5 -->
+                                        <div class="col-md-6 col-lg-4 mb-2">
+                                            <div class="card shadow-none border">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="avatar bg-light-primary p-50 mr-1">
+                                                                <div class="avatar-content">
+                                                                    <i data-feather="map-pin" class="font-medium-4"></i>
+                                                                </div>
+                                                            </div>
+                                                            <div>
+                                                                <h5 class="mb-0">Bordeaux Data Center</h5>
+                                                                <small class="text-muted">202 Tech Drive</small>
+                                                            </div>
+                                                        </div>
+                                                        <span class="badge badge-pill badge-light-success">Online</span>
+                                                    </div>
+                                                    
+                                                    <div class="row mt-1">
+                                                        <div class="col-6">
+                                                        <div class="d-flex align-items-center">
+                                                                <i data-feather="users" class="text-info mr-1" style="width: 14px; height: 14px;"></i>
+                                                                <small>24 Users</small>
+                                                        </div>
+                                                        </div>
+                                                        <div class="col-6">
+                                                        <div class="d-flex align-items-center">
+                                                                <i data-feather="download" class="text-warning mr-1" style="width: 14px; height: 14px;"></i>
+                                                                <small>1.8TB Used</small>
+                                                        </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="d-flex justify-content-between align-items-center mt-2">
+                                                        <div class="d-flex align-items-center">
+                                                            <i data-feather="hard-drive" class="text-primary mr-1" style="width: 14px; height: 14px;"></i>
+                                                            <small>Router Online</small>
+                                                        </div>
+                                                        <a href="location-details.html" class="btn btn-sm btn-primary">View Details</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Location Card 6 -->
+                                        <div class="col-md-6 col-lg-4 mb-2">
+                                            <div class="card shadow-none border">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="avatar bg-light-primary p-50 mr-1">
+                                                                <div class="avatar-content">
+                                                                    <i data-feather="map-pin" class="font-medium-4"></i>
+                                                                </div>
+                                                            </div>
+                                                            <div>
+                                                                <h5 class="mb-0">Toulouse Office</h5>
+                                                                <small class="text-muted">303 Remote Way</small>
+                                                            </div>
+                                                        </div>
+                                                        <span class="badge badge-pill badge-light-success">Online</span>
+                                                    </div>
+                                                    
+                                                    <div class="row mt-1">
+                                                        <div class="col-6">
+                                                        <div class="d-flex align-items-center">
+                                                                <i data-feather="users" class="text-info mr-1" style="width: 14px; height: 14px;"></i>
+                                                                <small>78 Users</small>
+                                                        </div>
+                                                        </div>
+                                                        <div class="col-6">
+                                                        <div class="d-flex align-items-center">
+                                                                <i data-feather="download" class="text-warning mr-1" style="width: 14px; height: 14px;"></i>
+                                                                <small>0.5TB Used</small>
+                                                        </div>
+                                                        </div>
+                                    </div>
+                                                    
+                                                    <div class="d-flex justify-content-between align-items-center mt-2">
+                                                        <div class="d-flex align-items-center">
+                                                            <i data-feather="hard-drive" class="text-primary mr-1" style="width: 14px; height: 14px;"></i>
+                                                            <small>Router Online</small>
+                                </div>
+                                                        <a href="location-details.html" class="btn btn-sm btn-primary">View Details</a>
+                            </div>
+                        </div>
+                                </div>
+                                        </div>
+                                        </div>
                                     </div>
                                             </div>
                                         </div>
                                         </div>
 
                     <!-- Network Analytics Overview -->
-                    <div class="row" style="width: 100%; margin: 0; padding: 0;">
-                        <div class="col-12" style="width: 100%; max-width: 100%; flex: 0 0 100%;">
-                            <div class="card" id="analytics-section" style="width: 100% !important; max-width: 100% !important;">
-                                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
                                     <h4 class="card-title">Network Analytics Overview</h4>
                                     <div class="dropdown">
                                         <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="analyticsDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             Last 7 Days
                                         </button>
                                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="analyticsDropdown">
-                                            <a class="dropdown-item" href="javascript:void(0);" data-analytics-period="1">Today</a>
-                                            <a class="dropdown-item" href="javascript:void(0);" data-analytics-period="7">Last 7 Days</a>
-                                            <a class="dropdown-item" href="javascript:void(0);" data-analytics-period="30">Last 30 Days</a>
-                                            <a class="dropdown-item" href="javascript:void(0);" data-analytics-period="90">Last 90 Days</a>
-                                        </div>
+                                            <a class="dropdown-item" href="javascript:void(0);">Last 7 Days</a>
+                                            <a class="dropdown-item" href="javascript:void(0);">Last 28 Days</a>
+                                            <a class="dropdown-item" href="javascript:void(0);">Last Month</a>
+                                            <a class="dropdown-item" href="javascript:void(0);">Last Year</a>
                                     </div>
-                                </div>
+                                            </div>
+                                        </div>
                                 <div class="card-body">
-                                    <!-- Analytics Error Container -->
-                                    <div id="analytics-errors"></div>
-                                    
                                     <!-- Analytics Metrics Row -->
                                     <div class="row mb-2">
-                                        <div class="col-xl-3 col-md-6 col-12 mb-2 mb-xl-0">
+                                        <div class="col-md-3 col-sm-6">
                                             <div class="d-flex align-items-center mb-1">
                                                 <div class="avatar bg-light-primary p-50 mr-1">
                                                     <div class="avatar-content">
                                                         <i data-feather="users" class="font-medium-4"></i>
-                                                    </div>
-                                                </div>
+                                        </div>
+                                    </div>
                                                 <div>
-                                                    <h4 class="mb-0" id="analytics-total-users">-</h4>
+                                                    <h4 class="mb-0">8,249</h4>
                                                     <span>Total Users</span>
                                                 </div>
                                             </div>
                                             <div class="progress progress-bar-primary mb-1" style="height: 6px">
                                                 <div class="progress-bar" role="progressbar" aria-valuenow="83" aria-valuemin="0" aria-valuemax="100" style="width: 83%"></div>
                                             </div>
-                                            <span class="text-muted"><i data-feather="activity" class="font-small-3 mr-25"></i> Period total</span>
+                                            <span class="text-success"><i data-feather="trending-up" class="font-small-3 mr-25"></i> +12.4% growth</span>
                                         </div>
                                         
-                                        <div class="col-xl-3 col-md-6 col-12 mb-2 mb-xl-0">
+                                        <div class="col-md-3 col-sm-6">
                                             <div class="d-flex align-items-center mb-1">
                                                 <div class="avatar bg-light-info p-50 mr-1">
                                                     <div class="avatar-content">
                                                         <i data-feather="activity" class="font-medium-4"></i>
-                                                    </div>
-                                                </div>
+                                        </div>
+                                        </div>
                                                 <div>
-                                                    <h4 class="mb-0" id="analytics-data-usage">- GB</h4>
+                                                    <h4 class="mb-0">243.8 GB</h4>
                                                     <span>Data Usage</span>
-                                                </div>
-                                            </div>
+                                        </div>
+                                        </div>
                                             <div class="progress progress-bar-info mb-1" style="height: 6px">
                                                 <div class="progress-bar" role="progressbar" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100" style="width: 65%"></div>
-                                            </div>
-                                            <span class="text-muted"><i data-feather="download" class="font-small-3 mr-25"></i> Period total</span>
                                         </div>
+                                            <span class="text-danger"><i data-feather="trending-down" class="font-small-3 mr-25"></i> -5.3% decrease</span>
+                                    </div>
                                         
-                                        <div class="col-xl-3 col-md-6 col-12 mb-2 mb-xl-0">
+                                        <div class="col-md-3 col-sm-6">
                                             <div class="d-flex align-items-center mb-1">
                                                 <div class="avatar bg-light-success p-50 mr-1">
                                                     <div class="avatar-content">
@@ -664,34 +917,36 @@
                                                     </div>
                                                 </div>
                                                 <div>
-                                                    <h4 class="mb-0" id="analytics-uptime">-%</h4>
+                                                    <h4 class="mb-0">98.7%</h4>
                                                     <span>Uptime</span>
                                                 </div>
                                             </div>
                                             <div class="progress progress-bar-success mb-1" style="height: 6px">
                                                 <div class="progress-bar" role="progressbar" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100" style="width: 95%"></div>
                                             </div>
-                                            <span class="text-muted"><i data-feather="activity" class="font-small-3 mr-25"></i> Current status</span>
+                                            <span class="text-success"><i data-feather="trending-up" class="font-small-3 mr-25"></i> +1.2% improved</span>
                                         </div>
                                         
-                                        <div class="col-xl-3 col-md-6 col-12 mb-2 mb-xl-0">
+                                        <div class="col-md-3 col-sm-6">
                                             <div class="d-flex align-items-center mb-1">
                                                 <div class="avatar bg-light-warning p-50 mr-1">
                                                     <div class="avatar-content">
-                                                        <i data-feather="monitor" class="font-medium-4"></i>
+                                                        <i data-feather="alert-triangle" class="font-medium-4"></i>
                                                     </div>
                                                 </div>
                                                 <div>
-                                                    <h4 class="mb-0" id="analytics-sessions">-</h4>
-                                                    <span>Total Sessions</span>
+                                                    <h4 class="mb-0">12</h4>
+                                                    <span>Websites Blocked</span>
                                                 </div>
                                             </div>
                                             <div class="progress progress-bar-warning mb-1" style="height: 6px">
                                                 <div class="progress-bar" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%"></div>
                                             </div>
-                                            <span class="text-muted"><i data-feather="activity" class="font-small-3 mr-25"></i> Period total</span>
+                                            <span class="text-warning"><i data-feather="minus" class="font-small-3 mr-25"></i> No change</span>
                                         </div>
                                     </div>
+
+                                    
                                 </div>
                             </div>
                         </div>
@@ -735,9 +990,6 @@
 
     <!-- Include config.js before other custom scripts -->
     <script src="assets/js/config.js"></script>
-    
-    <!-- Include dashboard.js for dynamic data loading -->
-    <script src="assets/js/dashboard.js"></script>
 
     <script>
         $(window).on('load', function() {
@@ -926,11 +1178,77 @@
     <script src="app-assets/js/scripts/maps/map-leaflet.js"></script>
 
     <script>
-        // Map initialization will be handled by dashboard.js when real data is loaded
-        // Handle fullscreen button functionality
-        $(document).ready(function() {
-            // Handle fullscreen button with simplified approach
-            if (document.getElementById('fullscreen-btn')) {
+        // Initialize map
+    $(document).ready(function() {
+            // Check if Leaflet is loaded
+            if (typeof L !== 'undefined') {
+                // Initialize the map
+                var networkMap = L.map('network-map').setView([46.2276, 2.2137], 6);
+                
+                // Add tile layer (OpenStreetMap)
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(networkMap);
+                
+                // Add location markers
+                var locations = [
+                    { name: "Paris Office", lat: 48.8566, lng: 2.3522, status: "online" },
+                    { name: "Lyon Branch", lat: 45.7640, lng: 4.8357, status: "online" },
+                    { name: "Marseille Warehouse", lat: 43.2965, lng: 5.3698, status: "online" },
+                    { name: "Nice Retail", lat: 43.7102, lng: 7.2620, status: "online" },
+                    { name: "Bordeaux Data Center", lat: 44.8378, lng: -0.5792, status: "online" },
+                    { name: "Toulouse Office", lat: 43.6047, lng: 1.4442, status: "online" }
+                ];
+                
+                // Define marker icons - using simpler divIcons to avoid errors
+                var onlineIcon = L.divIcon({
+                    className: 'marker-icon marker-icon-online',
+                    html: '<div style="background-color:#28C76F; width: 12px; height: 12px; border-radius: 50%; border: 2px solid #fff;"></div>',
+                    iconSize: [16, 16],
+                    iconAnchor: [8, 8]
+                });
+                
+                var warningIcon = L.divIcon({
+                    className: 'marker-icon marker-icon-warning',
+                    html: '<div style="background-color:#FF9F43; width: 12px; height: 12px; border-radius: 50%; border: 2px solid #fff;"></div>',
+                    iconSize: [16, 16],
+                    iconAnchor: [8, 8]
+                });
+                
+                var offlineIcon = L.divIcon({
+                    className: 'marker-icon marker-icon-offline',
+                    html: '<div style="background-color:#EA5455; width: 12px; height: 12px; border-radius: 50%; border: 2px solid #fff;"></div>',
+                    iconSize: [16, 16],
+                    iconAnchor: [8, 8]
+                });
+                
+                // Add markers to map
+                locations.forEach(function(location) {
+                    var icon;
+                    if (location.status === "online") {
+                        icon = onlineIcon;
+                    } else if (location.status === "warning") {
+                        icon = warningIcon;
+                    } else {
+                        icon = offlineIcon;
+                    }
+                    
+                    var marker = L.marker([location.lat, location.lng], { icon: icon }).addTo(networkMap);
+                    
+                    // Simplified popup content to avoid potential issues
+                    var popupContent = '<div class="p-1">' +
+                        '<h6 class="mb-1">' + location.name + '</h6>' +
+                        '<p class="mb-1 small">Location: ' + location.lat.toFixed(4) + ', ' + location.lng.toFixed(4) + '</p>' +
+                        '<p class="mb-0 small">Status: <span class="text-' + 
+                        (location.status === "online" ? "success" : (location.status === "warning" ? "warning" : "danger")) + 
+                        '">' + location.status.charAt(0).toUpperCase() + location.status.slice(1) + '</span></p>' +
+                        '<a href="location-details.html" class="btn btn-sm btn-primary mt-2">View Details</a>' +
+                        '</div>';
+                    
+                    marker.bindPopup(popupContent);
+                });
+                
+                // Handle fullscreen button with simplified approach
                 document.getElementById('fullscreen-btn').addEventListener('click', function() {
                     var mapElement = document.getElementById('network-map');
                     
@@ -969,7 +1287,7 @@
                     }, 100);
                 });
             }
-        });
+    });
     </script>
 
     <script>

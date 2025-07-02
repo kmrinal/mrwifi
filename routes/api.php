@@ -10,6 +10,7 @@ use App\Http\Controllers\GuestNetworkUserController;
 use App\Http\Controllers\CaptivePortalDesignController;
 use App\Http\Controllers\FirmwareController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\DashboardController;
 
 // Public routes (no auth required)
 Route::post('auth/login', [AuthController::class, 'login']);
@@ -109,6 +110,26 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'firmware'], function () {
 Route::group(['middleware' => 'auth:api', 'prefix' => 'categories'], function () {
     Route::get('/', [CategoryController::class, 'index']);
     Route::get('/enabled', [CategoryController::class, 'enabled']);
+    Route::post('/{category}/toggle', [CategoryController::class, 'toggle'])->name('categories.toggle');
+    Route::post('/reorder', [CategoryController::class, 'reorder'])->name('categories.reorder');
+    Route::get('/{category}/stats', [CategoryController::class, 'stats'])->name('categories.stats');
+});
+
+
+// Additional Domain Blocking API routes
+Route::prefix('domain-blocking')->group(function () {
+    Route::post('/bulk-delete', [DomainBlockingController::class, 'bulkDelete'])->name('domain-blocking.bulk-delete');
+    Route::post('/import', [DomainBlockingController::class, 'import'])->name('domain-blocking.import');
+    Route::get('/export', [DomainBlockingController::class, 'export'])->name('domain-blocking.export');
+    Route::post('/categories/{category}/toggle', [DomainBlockingController::class, 'toggleCategory'])->name('domain-blocking.toggle-category');
+    Route::get('/stats', [DomainBlockingController::class, 'stats'])->name('domain-blocking.stats');
+    Route::post('/check-domain', [DomainBlockingController::class, 'checkDomain'])->name('domain-blocking.check-domain');
+});
+
+// Dashboard routes (protected with auth)
+Route::group(['middleware' => 'auth:api', 'prefix' => 'dashboard'], function () {
+    Route::get('/overview', [DashboardController::class, 'getOverview']);
+    Route::get('/analytics', [DashboardController::class, 'getAnalytics']);
 });
 
 Route::post('/captive-portal/{location_id}/info', [GuestNetworkUserController::class, 'info']);

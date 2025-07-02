@@ -12,6 +12,8 @@ use Illuminate\Support\Str;
 use App\Models\Firmware;
 use App\Models\Category;
 use App\Models\BlockedDomain;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class DeviceController extends Controller
 {
@@ -197,9 +199,29 @@ class DeviceController extends Controller
             'whitelist_domains' => $whitelist_domains,
         ];
 
+        $firmware_version = $device->firmware_id;
+        Log::info('Firmware version: ' . $firmware_version);
+        Log::info('Device: ');
+        Log::info($device);
+        $firmware_info = Firmware::where('id', $firmware_version)->first();
+        Log::info('Firmware info: ');
+        Log::info($firmware_info);
+        if (!$firmware_info) {
+            $firmware_version = 0;
+        }
+
+        $file_name = $firmware_info->file_path;
+        // remove the first part of the file_path after the last /
+        $file_name = substr($file_name, strrpos($file_name, '/') + 1);
+
+        // Generate full URL for firmware file
+        $firmware_url = $firmware_info ? Storage::disk('public')->url($firmware_info->file_path) : null;
+
         $firmware = [
-            'version' => 1,
-            'file_path' => 'https://portal.monsieur-wifi.com/monsieur-wifi-firmware.tar.gz',
+            'version' => $firmware_version,
+            'file_path' => $firmware_url,
+            'file_name' => $file_name,
+            'hash' => $firmware_info->md5sum,
         ];
 
         return response()->json(

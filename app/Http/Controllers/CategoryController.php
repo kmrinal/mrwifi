@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Location;
+use App\Models\Device;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class CategoryController extends Controller
@@ -208,15 +211,73 @@ class CategoryController extends Controller
      */
     public function toggle(Category $category)
     {
+        Log::info('CategoryController::toggle called');
+        Log::info('Category:', $category->toArray());
+        
         try {
             $category->update(['is_enabled' => !$category->is_enabled]);
+            
+            // Find all locations which have that category enabled and increment 
+            // config_version of their devices.
+            Log::info('Searching for category:', ['category_id' => $category->id, 'category_id_string' => (string)$category->id]);
+            
+            $locationSettings = \App\Models\LocationSettings::where('web_filter_enabled', true)
+                ->whereJsonContains('web_filter_categories', (string)$category->id)
+                ->with(['location.device'])
+                ->get();
+
+            Log::info('Found location settings:', ['count' => $locationSettings->count()]);
+            Log::info('Location settings:', $locationSettings->toArray());
+
+            $devicesUpdated = 0;
+            foreach ($locationSettings as $settings) {
+                Log::info('Processing location setting:', ['location_id' => $settings->location_id]);
+                
+                if ($settings->location_id) {
+                    $location = Location::where('id', $settings->location_id)->first();
+                    
+                    if ($location && $location->device_id) {
+                        $device = Device::where('id', $location->device_id)->first();
+
+                        if ($device) {
+                            Log::info('Updating device:', ['device_id' => $device->id, 'current_config_version' => $device->configuration_version]);
+                            
+                            $device->increment('configuration_version');
+                            $devicesUpdated++;
+                            
+                            Log::info('Device updated:', ['device_id' => $device->id, 'new_config_version' => $device->fresh()->configuration_version]);
+                        } else {
+                            Log::warning('Device not found for location:', ['location_id' => $settings->location_id, 'device_id' => $location->device_id]);
+                        }
+                    } else {
+                        Log::warning('Location not found or has no device_id:', ['location_id' => $settings->location_id]);
+                    }
+                } else {
+                    Log::warning('No location_id in setting:', ['setting_id' => $settings->id]);
+                }
+            }
+
+            $message = $category->is_enabled 
+                ? "Category '{$category->name}' enabled" 
+                : "Category '{$category->name}' disabled";
+            
+            if ($devicesUpdated > 0) {
+                $message .= " and {$devicesUpdated} device(s) configuration updated";
+            }
+
+            Log::info('Toggle completed:', [
+                'category_id' => $category->id,
+                'category_name' => $category->name,
+                'new_status' => $category->is_enabled,
+                'devices_updated' => $devicesUpdated,
+                'message' => $message
+            ]);
 
             return response()->json([
                 'success' => true,
-                'message' => $category->is_enabled 
-                    ? "Category '{$category->name}' enabled" 
-                    : "Category '{$category->name}' disabled",
-                'category' => $category
+                'message' => $message,
+                'category' => $category,
+                'devices_updated' => $devicesUpdated
             ]);
         } catch (\Exception $e) {
             return response()->json([

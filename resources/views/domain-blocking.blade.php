@@ -891,7 +891,7 @@
                     }
                 });
             }
-            
+
             // Update category counters
             function updateCategoryCounters(categories) {
                 console.log("categories", categories);
@@ -902,11 +902,11 @@
                         // alert(category.blocked_domains_count);
                         console.log("category", category);
                         categoryCard.find('span:first').text(`${category.blocked_domains_count || 0} domains`);
-                        
+
                         // Update checkbox state
                         var checkbox = categoryCard.find('.custom-control-input');
                         checkbox.prop('checked', category.is_enabled);
-                        
+
                         // Update border
                         if (category.is_enabled) {
                             categoryCard.addClass('border-primary');
@@ -916,7 +916,7 @@
                     }
                 });
             }
-            
+
             // Initialize select2
             if ($.fn.select2) {
                 $('#domain-category, #edit-domain-category, #import-category, #category-icon, #category-color').select2({
@@ -930,25 +930,97 @@
                 let fileName = $(this).val().split('\\').pop();
                 $(this).next('.custom-file-label').html(fileName || 'Choose file');
             });
-            
+
+            // Helper function to get category ID by name
+            function getCategoryIdByName(categoryName) {
+                const categoryMapping = {
+                    'Adult Content': '1',
+                    'Gambling': '2',
+                    'Malware': '3',
+                    'Social Media': '4',
+                    'Streaming': '5',
+                    'Custom List': '6'
+                };
+                return categoryMapping[categoryName] || null;
+            }
+
             // Handle category toggles
             $('.custom-switch input[type="checkbox"]').on('change', function() {
                 const categoryCard = $(this).closest('.card');
                 const categoryName = categoryCard.find('h4').text();
                 const isEnabled = $(this).is(':checked');
+                const checkbox = $(this);
+
+                // Find category ID based on name
+                var categoryId = getCategoryIdByName(categoryName);
                 
-                // Find category ID
-                var categoryId = null;
-                // You might need to store category ID in data attribute
-                
-                if (isEnabled) {
-                    categoryCard.addClass('border-primary');
-                } else {
-                    categoryCard.removeClass('border-primary');
+                if (!categoryId) {
+                    console.error('Category ID not found for:', categoryName);
+                    // Revert checkbox state
+                    checkbox.prop('checked', !isEnabled);
+                    return;
                 }
+
+                // Show loading state
+                checkbox.prop('disabled', true);
                 
-                // TODO: Add API call to toggle category
-                console.log(`Category "${categoryName}" toggled to: ${isEnabled}`);
+                // API call to toggle category
+                $.ajax({
+                    url: `/api/categories/${categoryId}/toggle`,
+                    type: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + UserManager.getToken(),
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        console.log("response", response);
+                        if (response.success) {
+                            // Update visual state
+                            if (isEnabled) {
+                                categoryCard.addClass('border-primary');
+                            } else {
+                                categoryCard.removeClass('border-primary');
+                            }
+
+                            // Show success message
+                            if (typeof toastr !== 'undefined') {
+                                toastr.success(`${categoryName} ${isEnabled ? 'enabled' : 'disabled'} successfully`);
+                            }
+
+                            console.log(`Category "${categoryName}" toggled to: ${isEnabled}`);
+                        } else {
+                            // Revert checkbox state on failure
+                            checkbox.prop('checked', !isEnabled);
+                            if (typeof toastr !== 'undefined') {
+                                toastr.error(response.message || 'Failed to update category');
+                            } else {
+                                alert('Error: ' + (response.message || 'Failed to update category'));
+                            }
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        // Revert checkbox state on error
+                        checkbox.prop('checked', !isEnabled);
+                        
+                        var errorMessage = 'Failed to update category';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+                        
+                        if (typeof toastr !== 'undefined') {
+                            toastr.error(errorMessage);
+                        } else {
+                            alert('Error: ' + errorMessage);
+                        }
+                        console.error('Category toggle error:', error);
+                    },
+                    complete: function() {
+                        // Re-enable checkbox
+                        checkbox.prop('disabled', false);
+                    }
+                });
             });
             
             // Handle domain addition
@@ -1180,17 +1252,17 @@
                     }
                 }
             });
-            
+
             // "View All Domains" button click
             $(document).on('click', '#view-all-domains', function() {
                 $('.card-title:contains("Blocked Domains")').html('All Blocked Domains');
                 domainsTable.search('').draw();
                 window.selectedCategory = null;
             });
-            
+
             // Initialize all category cards
             $('.card.cursor-pointer').addClass('category-card');
-            
+
             // Add the "All Domains" option at the top
             $('.card-title:contains("Blocked Domains")').after(`
                 <div class="mb-2">
@@ -1202,7 +1274,7 @@
                     </button>
                 </div>
             `);
-            
+
             // Replace Feather icons in new elements
             feather.replace({
                 width: 14,

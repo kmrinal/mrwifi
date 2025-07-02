@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use App\Models\Location;
+use App\Models\Device;
+use Log;
 
 class DomainBlockingController extends Controller
 {
@@ -18,7 +21,7 @@ class DomainBlockingController extends Controller
     public function index(Request $request)
     {
         $categories = Category::withCount('blockedDomains')->ordered()->get();
-        
+
         $query = BlockedDomain::with('category')
             ->when($request->filled('category'), function ($q) use ($request) {
                 return $q->byCategory($request->category);
@@ -355,15 +358,45 @@ class DomainBlockingController extends Controller
      */
     public function toggleCategory(Request $request, Category $category)
     {
+        Log::info('toggleCategory');
+        Log::info($category);
         try {
             $category->update(['is_enabled' => !$category->is_enabled]);
 
+            // Find all locations which have that category enabled and increment 
+            // config_version of their devices.
+            $locationSettings = \App\Models\LocationSettings::where('web_filter_enabled', true)
+                ->whereJsonContains('web_filter_categories', (string)$category->id)
+                ->with(['location.device'])
+                ->get();
+
+            $devicesUpdated = 0;
+            foreach ($locationSettings as $settings) {
+                if ($settings->location_id) {
+                    $device_id = Location::where('id', $settings->location_id)->first()->device_id;
+                    if ($device_id) {
+                        $device = Device::where('id', $device_id)->first();
+                        if ($device) {
+                            $device->increment('config_version');
+                        }
+                        $devicesUpdated++;
+                    }
+                }
+            }
+
+            $message = $category->is_enabled 
+                ? "Category '{$category->name}' enabled" 
+                : "Category '{$category->name}' disabled";
+            
+            if ($devicesUpdated > 0) {
+                $message .= " and {$devicesUpdated} device(s) configuration updated";
+            }
+
             return response()->json([
                 'success' => true,
-                'message' => $category->is_enabled 
-                    ? "Category '{$category->name}' enabled" 
-                    : "Category '{$category->name}' disabled",
-                'category' => $category
+                'message' => $message,
+                'category' => $category,
+                'devices_updated' => $devicesUpdated
             ]);
         } catch (\Exception $e) {
             return response()->json([
