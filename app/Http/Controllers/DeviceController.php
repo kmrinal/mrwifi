@@ -162,6 +162,9 @@ class DeviceController extends Controller
             $domain_blocked = collect();
         } else {
             // Web filtering is enabled, get domains for enabled categories
+            // Filter out categories which are not enabled
+            $enabled_categories = Category::whereIn('id', $settings->web_filter_categories)->where('is_enabled', true)->pluck('id');
+            $settings->web_filter_categories = $enabled_categories;
             $domain_blocked = BlockedDomain::select('domain')->whereIn('category_id', $settings->web_filter_categories)->get();
         }
         
