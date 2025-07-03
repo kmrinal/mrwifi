@@ -289,17 +289,17 @@ function populateLocationDetails(location, captive_portal_designs) {
         $('.router_model_updated').text(device.model || 'Unknown');
         $('.router_firmware').text(device.firmware_version || 'Unknown');
         
-        // Calculate and display uptime if last_seen exists
-        if (device.last_seen) {
-            const lastSeen = new Date(device.last_seen);
-            const now = new Date();
-            const diffMs = now - lastSeen;
-            const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-            const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            $('.uptime').text(`${diffDays} days, ${diffHours} hours`);
-        } else {
-            $('.uptime').text('Unknown');
-        }
+        // // Calculate and display uptime if last_seen exists
+        // if (device.last_seen) {
+        //     const lastSeen = new Date(device.last_seen);
+        //     const now = new Date();
+        //     const diffMs = now - lastSeen;
+        //     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+        //     const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        //     $('.uptime').text(`${diffDays} days, ${diffHours} hours`);
+        // } else {
+        //     $('.uptime').text('Unknown');
+        // }
         
         // Display reboot count
         // $('.reboot_count').text(device.reboot_count || '0');

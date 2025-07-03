@@ -27,6 +27,7 @@ class Device extends Model
         'device_secret',
         'reboot_count',
         'scan_counter',
+        'uptime',
     ];
 
     /**

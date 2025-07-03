@@ -985,10 +985,10 @@
                                     <span class="interface-label">Uptime</span>
                                     <span class="interface-value uptime"></span>
                                 </div>
-                                <div class="interface-detail">
+                                <!-- <div class="interface-detail">
                                     <span class="interface-label">Reboot Count</span>
                                     <span class="interface-value reboot_count">0</span>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
                         
@@ -3630,11 +3630,42 @@ document.addEventListener('DOMContentLoaded', function() {
                                 console.log('Setting reboot count to:', device.reboot_count);
                                 $('.reboot_count').text(device.reboot_count);
                             }
+                            
+                            // Update uptime if it exists
+                            if (device.uptime !== null && device.uptime !== undefined) {
+                                var uptime_text = '';
+                                var actual_uptime = device.uptime;
+                                
+                                // If device is offline, set uptime to 0
+                                if (device.is_online === false) {
+                                    console.log('Device is offline, setting uptime to 0');
+                                    actual_uptime = 0;
+                                }
+                                
+                                console.log('Setting uptime to:', actual_uptime);
+                                
+                                // Uptime is in seconds, convert to hours, minutes, Hours Days
+                                const uptime_hours = Math.floor(actual_uptime / 3600);
+                                const uptime_minutes = Math.floor((actual_uptime % 3600) / 60);
+                                if (uptime_hours > 24) {
+                                    const uptime_days = Math.floor(uptime_hours / 24);
+                                    uptime_text = uptime_days + 'd ' + (uptime_hours % 24) + 'h ' + uptime_minutes + 'm';
+                                } else if (uptime_hours > 0) {
+                                    uptime_text = uptime_hours + 'h ' + uptime_minutes + 'm';
+                                } else {
+                                    uptime_text = uptime_minutes + 'm';
+                                }
+                                $('.uptime').text(uptime_text);
+                            } else {
+                                console.log('No uptime found, leaving blank');
+                                $('.uptime').text('');
+                            }
                         } else {
                             console.log('No device data found in response, setting defaults');
                             window.currentDeviceData = null;
                             $('.router_model_updated').text('');
                             $('.router_firmware').text('Unknown');
+                            $('.uptime').text('');
                         }
                     },
                     error: function(xhr, status, error) {

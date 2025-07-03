@@ -239,8 +239,18 @@ class DeviceController extends Controller
         );
     }
 
-    public function heartbeat($device_key, $device_secret)
+    public function heartbeat($device_key, $device_secret, Request $request)
     {
+        Log::info('Heartbeat request: '.$device_key.' '.$device_secret);
+        Log::info($request->all());
+
+        $firmware_version = $request->input('firmware_version');
+        $firmware_id = $request->input('firmware_id');
+
+        if ($firmware_version) {
+            $firmware = Firmware::where('id', $firmware_version)->first();
+        }
+
         $device = Device::where('device_key', $device_key)->where('device_secret', $device_secret)->first();
         if (!$device) {
             return response()->json(['error' => 'Invalid device credentials'], 401);
@@ -248,6 +258,15 @@ class DeviceController extends Controller
 
         // Update the last_seen field
         $device->last_seen = now();
+        // if uptime in request is not set or is null or not integer, set it to 0
+        if (!$request->input('uptime') || !is_numeric($request->input('uptime'))) {
+            Log::info('Uptime is not set or is not an integer, setting to 0');
+            $uptime = 0;
+        } else {
+            $uptime = $request->input('uptime');
+        }
+        $device->uptime = $uptime;
+        
         $device->save();
 
         $firmware = Firmware::where('model', $device->model)->orderBy('created_at', 'desc')->first();
