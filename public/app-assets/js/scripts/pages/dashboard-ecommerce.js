@@ -56,20 +56,27 @@ $(window).on('load', function () {
   var browserStateWarningChart;
   var goalOverviewChart;
   var isRtl = $('html').attr('data-textdirection') === 'rtl';
-  var userName = localStorage.getItem('user_name');
-  var userRole = localStorage.getItem('user_role');
-  // On load Toast
-  setTimeout(function () {
-    toastr['success'](
-      'You have successfully logged in to Mr WiFi. Manage your WiFi network with ease!',
-      '👋 Welcome ' + userName + '!',
-      {
-        closeButton: true,
-        tapToDismiss: false,
-        rtl: isRtl
-      }
-    );
-  }, 2000);
+  
+  // Get user data using UserManager (consistent with login.blade.php)
+  var user = UserManager.getUser();
+  var userName = user ? user.name : 'User';
+  var userRole = user ? user.role : '';
+  
+  // On load Toast - only show if URL has ?status=login
+  var urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('status') === 'login') {
+    setTimeout(function () {
+      toastr['success'](
+        'You have successfully logged in to Mr WiFi. Manage your WiFi network with ease!',
+        '👋 Welcome ' + userName + '!',
+        {
+          closeButton: true,
+          tapToDismiss: false,
+          rtl: isRtl
+        }
+      );
+    }, 2000);
+  }
 
   //------------ Statistics Bar Chart ------------
   //----------------------------------------------

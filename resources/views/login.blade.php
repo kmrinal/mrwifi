@@ -555,6 +555,8 @@
                     dataType: 'json',
                     data: formData,
                     success: function(response) {
+                        console.log('Login successful');
+                        console.log(response);
                         // Store user info and token using UserManager from config.js
                         UserManager.setToken(response.access_token);
                         
@@ -577,7 +579,7 @@
                         
                         // Set a timeout to redirect to dashboard after showing the success message
                         setTimeout(function() {
-                            window.location.href = '/dashboard';
+                            window.location.href = '/dashboard?status=login';
                         }, 1500); // Redirect after 1.5 seconds
                     },
                     error: function(xhr) {
