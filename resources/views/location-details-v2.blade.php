@@ -916,6 +916,121 @@
             background-color: #7367f0 !important;
             border-color: #7367f0 !important;
         }
+
+        /* Dark mode fixes for Router Settings tab specific elements */
+        .dark-layout .stat-label {
+            color: #b4b7bd !important;
+        }
+
+        .dark-layout .stat-value {
+            color: #d0d2d6 !important;
+        }
+
+        .dark-layout .content-section {
+            background-color: #283046 !important;
+            border: 1px solid #3b4253 !important;
+        }
+
+        .dark-layout .section-header {
+            border-bottom-color: #3b4253 !important;
+        }
+
+        .dark-layout .alert {
+            background-color: #2c2c2c !important;
+            border-color: #3b4253 !important;
+            color: #d0d2d6 !important;
+        }
+
+        .dark-layout .alert .alert-body {
+            color: #d0d2d6 !important;
+        }
+
+        .dark-layout .custom-control-label {
+            color: #d0d2d6 !important;
+        }
+
+        .dark-layout .custom-control-label::before {
+            background-color: #3b4253 !important;
+            border-color: #3b4253 !important;
+        }
+
+        .dark-layout small, .dark-layout .small {
+            color: #b4b7bd !important;
+        }
+
+        .dark-layout .form-control {
+            background-color: #3b4253 !important;
+            border-color: #3b4253 !important;
+            color: #d0d2d6 !important;
+        }
+
+        .dark-layout .form-control:focus {
+            background-color: #3b4253 !important;
+            border-color: #7367f0 !important;
+            color: #d0d2d6 !important;
+        }
+
+        .dark-layout .form-control option {
+            background-color: #3b4253 !important;
+            color: #d0d2d6 !important;
+        }
+
+        .semi-dark-layout .stat-label {
+            color: #b4b7bd !important;
+        }
+
+        .semi-dark-layout .stat-value {
+            color: #d0d2d6 !important;
+        }
+
+        .semi-dark-layout .content-section {
+            background-color: #283046 !important;
+            border: 1px solid #3b4253 !important;
+        }
+
+        .semi-dark-layout .section-header {
+            border-bottom-color: #3b4253 !important;
+        }
+
+        .semi-dark-layout .alert {
+            background-color: #2c2c2c !important;
+            border-color: #3b4253 !important;
+            color: #d0d2d6 !important;
+        }
+
+        .semi-dark-layout .alert .alert-body {
+            color: #d0d2d6 !important;
+        }
+
+        .semi-dark-layout .custom-control-label {
+            color: #d0d2d6 !important;
+        }
+
+        .semi-dark-layout .custom-control-label::before {
+            background-color: #3b4253 !important;
+            border-color: #3b4253 !important;
+        }
+
+        .semi-dark-layout small, .semi-dark-layout .small {
+            color: #b4b7bd !important;
+        }
+
+        .semi-dark-layout .form-control {
+            background-color: #3b4253 !important;
+            border-color: #3b4253 !important;
+            color: #d0d2d6 !important;
+        }
+
+        .semi-dark-layout .form-control:focus {
+            background-color: #3b4253 !important;
+            border-color: #7367f0 !important;
+            color: #d0d2d6 !important;
+        }
+
+        .semi-dark-layout .form-control option {
+            background-color: #3b4253 !important;
+            color: #d0d2d6 !important;
+        }
     </style>
 
     <!-- Add this right before the closing body tag -->
@@ -1305,7 +1420,90 @@
                                
                             </ul>
                             <div class="tab-content">
-                                                                <!-- Router Settings Tab -->
+                                <!-- Location Details Tab -->
+                                <div class="tab-pane active show" id="location-settings" role="tabpanel" aria-labelledby="location-settings-tab">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h4 class="card-title">Location Information</h4>
+                                        </div>
+                                        <div class="card-body">
+                                            <form id="location-info-form">
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="location-name">Location Name</label>
+                                                            <input type="text" class="form-control" id="location-name" placeholder="Enter location name">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="location-address">Address</label>
+                                                            <input type="text" class="form-control" id="location-address" placeholder="Street address">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="location-city">City</label>
+                                                            <input type="text" class="form-control" id="location-city" placeholder="City">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="location-state">State/Province</label>
+                                                            <input type="text" class="form-control" id="location-state" placeholder="State/Province">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="location-postal-code">Postal Code</label>
+                                                            <input type="text" class="form-control" id="location-postal-code" placeholder="Postal code">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="location-country">Country</label>
+                                                            <input type="text" class="form-control" id="location-country" placeholder="Country">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="router-model-select">Router Model</label>
+                                                            <select class="form-control" id="router-model-select">
+                                                                <option value="">Select Router Model</option>
+                                                                <option value="820AX">820AX</option>
+                                                                <option value="835AX">835AX</option>
+                                                            </select>
+                                                            <small class="text-muted">Choose the router model installed at this location.</small>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="location-manager">Manager Name</label>
+                                                            <input type="text" class="form-control" id="location-manager" placeholder="Manager name">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="location-contact-email">Contact Email</label>
+                                                            <input type="email" class="form-control" id="location-contact-email" placeholder="Contact email">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="location-contact-phone">Contact Phone</label>
+                                                            <input type="text" class="form-control" id="location-contact-phone" placeholder="Contact phone">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="location-status">Status</label>
+                                                            <select class="form-control" id="location-status">
+                                                                <option value="active">Active</option>
+                                                                <option value="inactive">Inactive</option>
+                                                                <option value="maintenance">Maintenance</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="location-description">Description</label>
+                                                            <textarea class="form-control" id="location-description" rows="3" placeholder="Location description"></textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <button type="button" id="save-location-info" class="btn btn-primary">Save Location Information</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Router Settings Tab -->
                                 <div class="tab-pane fade" id="router" aria-labelledby="router-tab" role="tabpanel">
                                     <!-- WAN Configuration Section -->
                                     <div class="content-section">
@@ -2139,7 +2337,7 @@
                                 </div>
 
                                 <!-- Total Users Tab -->
-                                <div class="tab-pane" id="connected-users" aria-labelledby="connected-users-tab" role="tabpanel">
+                                <div class="tab-pane fade" id="connected-users" aria-labelledby="connected-users-tab" role="tabpanel">
                                     <div class="row">
                                         <div class="col-12">
                                             <div class="card">
@@ -2179,97 +2377,14 @@
                                                                 </tr>
                                                             </tbody>
                                                         </table>
-                                            </div>
-                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                
+                                </div>
 
-                                <!-- Location Details Tab -->
-<div class="tab-pane active" id="location-settings" role="tabpanel" aria-labelledby="location-settings-tab">
-    <div class="card">
-        <div class="card-header">
-            <h4 class="card-title">Location Information</h4>
-        </div>
-        <div class="card-body">
-            <form id="location-info-form">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="location-name">Location Name</label>
-                            <input type="text" class="form-control" id="location-name" placeholder="Enter location name">
-                        </div>
-                        <div class="form-group">
-                            <label for="location-address">Address</label>
-                            <input type="text" class="form-control" id="location-address" placeholder="Street address">
-                        </div>
-                        <div class="form-group">
-                            <label for="location-city">City</label>
-                            <input type="text" class="form-control" id="location-city" placeholder="City">
-                        </div>
-                        <div class="form-group">
-                            <label for="location-state">State/Province</label>
-                            <input type="text" class="form-control" id="location-state" placeholder="State/Province">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="location-postal-code">Postal Code</label>
-                            <input type="text" class="form-control" id="location-postal-code" placeholder="Postal code">
-                        </div>
-                        <div class="form-group">
-                            <label for="location-country">Country</label>
-                            <input type="text" class="form-control" id="location-country" placeholder="Country">
-                        </div>
-                        <div class="form-group">
-                            <label for="router-model-select">Router Model</label>
-                            <select class="form-control" id="router-model-select">
-                                <option value="">Select Router Model</option>
-                                <option value="820AX">820AX</option>
-                                <option value="835AX">835AX</option>
-                            </select>
-                            <small class="text-muted">Choose the router model installed at this location.</small>
-                        </div>
-                        <div class="form-group">
-                            <label for="location-manager">Manager Name</label>
-                            <input type="text" class="form-control" id="location-manager" placeholder="Manager name">
-                        </div>
-                        <div class="form-group">
-                            <label for="location-contact-email">Contact Email</label>
-                            <input type="email" class="form-control" id="location-contact-email" placeholder="Contact email">
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="location-contact-phone">Contact Phone</label>
-                            <input type="text" class="form-control" id="location-contact-phone" placeholder="Contact phone">
-                        </div>
-                        <div class="form-group">
-                            <label for="location-status">Status</label>
-                            <select class="form-control" id="location-status">
-                                <option value="active">Active</option>
-                                <option value="inactive">Inactive</option>
-                                <option value="maintenance">Maintenance</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="location-description">Description</label>
-                            <textarea class="form-control" id="location-description" rows="3" placeholder="Location description"></textarea>
-                        </div>
-                    </div>
-                </div>
-                <button type="button" id="save-location-info" class="btn btn-primary">Save Location Information</button>
-            </form>
-        </div>
-    </div>
-</div>
-</div><!-- End .tab-content -->
+                            </div><!-- End .tab-content -->
                             </div><!-- End .card-body -->
                         </div><!-- End .card -->
                     </div><!-- End .col-12 -->
@@ -4312,6 +4427,44 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     }, 200);
                 }
+            });
+
+            // Fix for Total Users tab - Force proper Bootstrap tab initialization
+            $(document).ready(function() {
+                // Debug: Check if tab elements exist
+                console.log('Total Users tab link exists:', $('#connected-users-tab').length > 0);
+                console.log('Total Users tab content exists:', $('#connected-users').length > 0);
+                
+                // Force tab initialization
+                $('#connected-users-tab').on('click', function(e) {
+                    e.preventDefault();
+                    console.log('Total Users tab clicked');
+                    
+                    // Remove active class from all tabs
+                    $('.nav-link').removeClass('active');
+                    $('.tab-pane').removeClass('active show');
+                    
+                    // Add active class to clicked tab
+                    $(this).addClass('active');
+                    $('#connected-users').addClass('active show');
+                    
+                    console.log('Total Users tab should now be visible');
+                });
+                
+                // Also handle all other tabs the same way to ensure consistency
+                $('.nav-link[data-toggle="tab"]').on('click', function(e) {
+                    e.preventDefault();
+                    const targetId = $(this).attr('href');
+                    console.log('Tab clicked:', targetId);
+                    
+                    // Remove active class from all tabs
+                    $('.nav-link').removeClass('active');
+                    $('.tab-pane').removeClass('active show');
+                    
+                    // Add active class to clicked tab and its content
+                    $(this).addClass('active');
+                    $(targetId).addClass('active show');
+                });
             });
 
             // Load web filter categories when page loads
