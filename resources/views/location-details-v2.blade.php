@@ -184,6 +184,38 @@
             padding: 12px 16px;
             font-size: 0.95rem;
             transition: all 0.3s ease;
+            line-height: 1.5;
+        }
+        
+        /* Select specific improvements for vertical alignment */
+        select.form-control {
+            padding: 12px 16px;
+            height: 50px;
+            line-height: 1.5;
+            vertical-align: middle;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 12px center;
+            background-repeat: no-repeat;
+            background-size: 16px 12px;
+            padding-right: 40px;
+            display: flex;
+            align-items: center;
+        }
+        
+        select.form-control option {
+            padding: 8px 16px;
+            line-height: 1.5;
+            vertical-align: middle;
+        }
+        
+        /* Textarea specific to avoid flex layout issues */
+        textarea.form-control {
+            display: block;
+            resize: vertical;
+            min-height: 80px;
         }
         
         .form-control:focus {
@@ -2277,27 +2309,6 @@
                                                 
                                                 <div class="col-lg-6">
                                                     <!-- Network Security Settings -->
-                                                    <div class="form-group">
-                                                        <div class="d-flex justify-content-between align-items-center mb-1">
-                                                            <label class="mb-0">WPS (WiFi Protected Setup)</label>
-                                                            <div class="custom-control custom-switch custom-control-primary">
-                                                                <input type="checkbox" class="custom-control-input" id="wps-enabled">
-                                                                <label class="custom-control-label" for="wps-enabled"></label>
-                                                            </div>
-                                                        </div>
-                                                        <small class="text-muted">Allow devices to connect using WPS push button.</small>
-                                                    </div>
-                                                    
-                                                    <div class="form-group">
-                                                        <div class="d-flex justify-content-between align-items-center mb-1">
-                                                            <label class="mb-0">Band Steering</label>
-                                                            <div class="custom-control custom-switch custom-control-primary">
-                                                                <input type="checkbox" class="custom-control-input" id="band-steering" checked>
-                                                                <label class="custom-control-label" for="band-steering"></label>
-                                                            </div>
-                                                        </div>
-                                                        <small class="text-muted">Automatically guide devices to the best frequency band.</small>
-                                                    </div>
                                                 </div>
                                             </div>
                                             
