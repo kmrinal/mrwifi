@@ -78,11 +78,31 @@ class LocationController extends Controller
             $locationData['settings'] = LocationSettings::where('location_id', $location->id)->first();
             return $locationData;
         });
+
+        // Calculate network-wide totals using the Radacct model helper methods
+        $networkTotals = [
+            'total_input_bytes' => 0,
+            'total_output_bytes' => 0,
+            'total_users' => 0,
+            'total_data_gb' => 0
+        ];
+        
+        // Sum up actual data usage across all locations using Radacct model methods
+        foreach ($locations as $location) {
+            // Get all-time data usage for each location
+            $allTimeUsage = Radacct::getLocationDataUsage($location->id);
+            
+            $networkTotals['total_input_bytes'] += $allTimeUsage['total_input_bytes'];
+            $networkTotals['total_output_bytes'] += $allTimeUsage['total_output_bytes'];
+            $networkTotals['total_users'] += $allTimeUsage['unique_users'];
+            $networkTotals['total_data_gb'] += $allTimeUsage['total_gb'];
+        }
         
         return response()->json([
             'success' => true,
             'message' => 'Locations fetched successfully',
-            'locations' => $locationsWithStatus
+            'locations' => $locationsWithStatus,
+            'network_totals' => $networkTotals
         ]);
     }
 

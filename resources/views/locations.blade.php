@@ -372,7 +372,7 @@
                             <div class="card">
                                 <div class="card-header">
                                     <div>
-                                        <h2 class="font-weight-bolder mb-0">6</h2>
+                                        <h2 class="font-weight-bolder mb-0" id="total-locations"></h2>
                                         <p class="card-text">Total Locations</p>
                                     </div>
                                     <div class="avatar bg-light-primary p-50 m-0">
@@ -387,7 +387,7 @@
                             <div class="card">
                                 <div class="card-header">
                                     <div>
-                                        <h2 class="font-weight-bolder mb-0">5</h2>
+                                        <h2 class="font-weight-bolder mb-0" id="online-locations"></h2>
                                         <p class="card-text">Online Locations</p>
                                     </div>
                                     <div class="avatar bg-light-success p-50 m-0">
@@ -402,7 +402,7 @@
                             <div class="card">
                                 <div class="card-header">
                                     <div>
-                                        <h2 class="font-weight-bolder mb-0">2,380</h2>
+                                        <h2 class="font-weight-bolder mb-0" id="total-users"></h2>
                                         <p class="card-text">Total Users</p>
                                     </div>
                                     <div class="avatar bg-light-info p-50 m-0">
@@ -417,7 +417,7 @@
                             <div class="card">
                                 <div class="card-header">
                                     <div>
-                                        <h2 class="font-weight-bolder mb-0">5.2TB</h2>
+                                        <h2 class="font-weight-bolder mb-0" id="total-data"></h2>
                                         <p class="card-text">Total Data Usage</p>
                                     </div>
                                     <div class="avatar bg-light-warning p-50 m-0">
@@ -674,7 +674,22 @@
                 },
                 success: function(response) {
                     var locations = response.locations;
+                    var networkTotals = response.network_totals;
                     console.log("Locations list response: ", locations);
+                    console.log("Network totals: ", networkTotals);
+                    
+                    var total_locations = locations.length;
+                    var online_locations = locations.filter(loc => loc.online_status == "online").length;
+                    var total_users = locations.reduce((sum, loc) => sum + loc.users, 0);
+                    var total_data_gb = networkTotals.total_data_gb;
+                    var total_data_formatted = total_data_gb > 1024 ? 
+                        (total_data_gb / 1024).toFixed(1) + 'TB' : 
+                        total_data_gb.toFixed(1) + 'GB';
+                    
+                    $("#total-locations").text(total_locations);
+                    $("#online-locations").text(online_locations);
+                    $("#total-users").text(total_users);
+                    $("#total-data").text(total_data_formatted);
                     // Populate table with locations data
                     var table_content = "";
                     locations.forEach(function(location) {
