@@ -265,9 +265,9 @@
                 </div>
                 <div class="content-header-right text-md-right col-md-3 col-12 d-md-block">
                     <div class="form-group breadcrumb-right">
-                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-new-category">
-                            <i data-feather="plus" class="mr-25"></i>
-                            <span>Add Category</span>
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#domain-blocking-info">
+                            <i data-feather="info" class="mr-25"></i>
+                            <span>Info</span>
                         </button>
                     </div>
                 </div>
@@ -290,7 +290,7 @@
                                                     <div class="d-flex align-items-center">
                                                         <div class="avatar bg-light-danger p-50 mr-1">
                                                             <div class="avatar-content">
-                                                                <i data-feather="x-octagon"></i>
+                                                                <i data-feather="octagon"></i>
                                                             </div>
                                                         </div>
                                                         <div>
@@ -435,10 +435,6 @@
                                 <div class="card-header d-flex justify-content-between align-items-center">
                                     <h4 class="card-title">Blocked Domains</h4>
                                     <div>
-                                        <button type="button" class="btn btn-outline-primary mr-1" data-toggle="modal" data-target="#import-domains">
-                                            <i data-feather="upload" class="mr-25"></i>
-                                            <span>Import</span>
-                                        </button>
                                         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-new-domain">
                                             <i data-feather="plus" class="mr-25"></i>
                                             <span>Add Domain</span>
@@ -565,12 +561,6 @@
                             <label for="domain-notes">Notes</label>
                             <textarea class="form-control" id="domain-notes" rows="3" placeholder="Enter any notes"></textarea>
                         </div>
-                        <div class="form-group">
-                            <div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input" id="block-subdomains" checked>
-                                <label class="custom-control-label" for="block-subdomains">Block all subdomains</label>
-                            </div>
-                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="reset" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
@@ -628,59 +618,130 @@
         </div>
     </div>
 
-    <!-- Import Domains Modal -->
-    <div class="modal fade text-left" id="import-domains" tabindex="-1" role="dialog" aria-labelledby="myModalLabel36" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
+
+
+    <!-- Domain Blocking Info Modal -->
+    <div class="modal fade text-left" id="domain-blocking-info" tabindex="-1" role="dialog" aria-labelledby="myModalLabel37" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="myModalLabel36">Import Domains</h4>
+                    <h4 class="modal-title" id="myModalLabel37">
+                        <i data-feather="info" class="mr-1"></i>
+                        How Domain Blocking Works
+                    </h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form action="#">
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label for="import-category">Category</label>
-                            <select class="form-control" id="import-category">
-                                <option value="1">Adult Content</option>
-                                <option value="2">Gambling</option>
-                                <option value="3">Malware</option>
-                                <option value="4">Social Media</option>
-                                <option value="5">Streaming</option>
-                                <option value="6">Custom List</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="import-file">File</label>
-                            <div class="custom-file">
-                                <input type="file" class="custom-file-input" id="import-file">
-                                <label class="custom-file-label" for="import-file">Choose file</label>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <!-- What is Domain Blocking -->
+                            <div class="card shadow-none border-left-primary">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <i data-feather="shield" class="mr-1"></i>
+                                        What is Domain Blocking?
+                                    </h5>
+                                    <p class="card-text">
+                                        Domain blocking prevents users on your network from accessing specific websites by blocking their domain names. 
+                                        When a user tries to visit a blocked domain, the request is intercepted and denied, protecting your network from 
+                                        unwanted content, security threats, or productivity distractions.
+                                    </p>
+                                </div>
                             </div>
-                            <small class="form-text text-muted">Accepted formats: .txt, .csv (one domain per line)</small>
-                        </div>
-                        <div class="form-group">
-                            <label>Or paste domains (one per line)</label>
-                            <textarea class="form-control" id="import-domains-text" rows="6" placeholder="example1.com&#10;example2.com&#10;example3.com"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input" id="import-block-subdomains" checked>
-                                <label class="custom-control-label" for="import-block-subdomains">Block all subdomains</label>
+
+                            <!-- How to Add Domains -->
+                            <div class="card shadow-none border-left-info mt-2">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <i data-feather="plus-circle" class="mr-1"></i>
+                                        How to Add Domains
+                                    </h5>
+                                    <ol class="mb-0">
+                                        <li><strong>Single Domain:</strong> Click "Add Domain" button to add individual websites</li>
+                                        <li><strong>Categories:</strong> Organize domains into predefined categories for better management</li>
+                                    </ol>
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input" id="import-overwrite">
-                                <label class="custom-control-label" for="import-overwrite">Overwrite existing domains</label>
+
+                            <!-- Comprehensive Blocking -->
+                            <div class="card shadow-none border-left-warning mt-2">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <i data-feather="alert-triangle" class="mr-1"></i>
+                                        Why Multiple Domains Are Needed
+                                    </h5>
+                                    <p class="card-text">
+                                        Many websites use multiple domains to deliver content, avoid blocking, or improve performance. 
+                                        To effectively block a service, you often need to block several related domains:
+                                    </p>
+                                    
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Service</th>
+                                                    <th>Domains to Block</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td><strong>Facebook</strong></td>
+                                                    <td>facebook.com, fb.com, fbcdn.net, fb.me, messenger.com</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>YouTube</strong></td>
+                                                    <td>youtube.com, youtu.be, ytimg.com, googlevideo.com</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>Instagram</strong></td>
+                                                    <td>instagram.com, cdninstagram.com, ig.me</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>Twitter/X</strong></td>
+                                                    <td>twitter.com, x.com, t.co, twimg.com</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>TikTok</strong></td>
+                                                    <td>tiktok.com, tiktokv.com, tiktokcdn.com, musical.ly</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Best Practices -->
+                            <div class="card shadow-none border-left-success mt-2">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <i data-feather="check-circle" class="mr-1"></i>
+                                        Best Practices
+                                    </h5>
+                                    <ul class="mb-0">
+                                        <li><strong>Use Categories:</strong> Group related domains for easier management</li>
+                                        <li><strong>Research Thoroughly:</strong> Look up all domains used by a service before blocking</li>
+                                        <li><strong>Test Blocking:</strong> Verify that the blocking works as expected</li>
+                                        <li><strong>Regular Updates:</strong> Keep your block lists updated as services change domains</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Tips -->
+                            <div class="alert alert-info mt-3">
+                                <div class="alert-body">
+                                    <i data-feather="zap" class="mr-1"></i>
+                                    <strong>Pro Tip:</strong> Use browser developer tools (F12) to inspect network requests and identify 
+                                    all domains used by a website. This helps ensure comprehensive blocking.
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="reset" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Import Domains</button>
-                    </div>
-                </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Got It!</button>
+                </div>
             </div>
         </div>
     </div>
@@ -919,8 +980,8 @@
 
             // Initialize select2
             if ($.fn.select2) {
-                $('#domain-category, #edit-domain-category, #import-category, #category-icon, #category-color').select2({
-                    dropdownParent: $('#domain-category, #edit-domain-category, #import-category').closest('.modal'),
+                $('#domain-category, #edit-domain-category, #category-icon, #category-color').select2({
+                    dropdownParent: $('#domain-category, #edit-domain-category').closest('.modal'),
                     minimumResultsForSearch: Infinity
                 });
             }
@@ -1030,7 +1091,7 @@
                 const domainName = $('#domain-name').val();
                 const categoryId = $('#domain-category').val();
                 const notes = $('#domain-notes').val();
-                const blockSubdomains = $('#block-subdomains').is(':checked');
+                const blockSubdomains = true; // Always block subdomains
                 
                 // API call to add domain
                 $.ajax({
