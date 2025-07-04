@@ -727,6 +727,195 @@
         .static_ip_display {
             display: none;
         }
+
+        /* Dark mode fixes for wizard/stepper text */
+        .dark-layout .text-muted {
+            color: #b4b7bd !important;
+        }
+
+        .dark-layout .timeline-event h6 {
+            color: #d0d2d6 !important;
+        }
+
+        .dark-layout .timeline-event p {
+            color: #b4b7bd !important;
+        }
+
+        .dark-layout .channel-value {
+            color: #d0d2d6 !important;
+        }
+
+        .dark-layout .card .card-title {
+            color: #d0d2d6 !important;
+        }
+
+        .dark-layout .card .card-text {
+            color: #b4b7bd !important;
+        }
+
+        .dark-layout .channel-recommendation {
+            background-color: #2c2c2c !important;
+            color: #d0d2d6 !important;
+        }
+
+        .semi-dark-layout .text-muted {
+            color: #b4b7bd !important;
+        }
+
+        .semi-dark-layout .timeline-event h6 {
+            color: #d0d2d6 !important;
+        }
+
+        .semi-dark-layout .timeline-event p {
+            color: #b4b7bd !important;
+        }
+
+        .semi-dark-layout .channel-value {
+            color: #d0d2d6 !important;
+        }
+
+        .semi-dark-layout .card .card-title {
+            color: #d0d2d6 !important;
+        }
+
+        .semi-dark-layout .card .card-text {
+            color: #b4b7bd !important;
+        }
+
+        .semi-dark-layout .channel-recommendation {
+            background-color: #2c2c2c !important;
+            color: #d0d2d6 !important;
+        }
+
+        /* Dark mode fixes for tab navigation and form text */
+        .dark-layout .nav-tabs {
+            background-color: #283046 !important;
+        }
+
+        .dark-layout .nav-tabs .nav-link {
+            color: #b4b7bd !important;
+        }
+
+        .dark-layout .nav-tabs .nav-link:hover {
+            background-color: rgba(115, 103, 240, 0.2) !important;
+            color: #d0d2d6 !important;
+        }
+
+        .dark-layout .nav-tabs .nav-link.active {
+            color: #ffffff !important;
+        }
+
+        .dark-layout .form-group label {
+            color: #d0d2d6 !important;
+        }
+
+        .dark-layout .interface-label {
+            color: #b4b7bd !important;
+        }
+
+        .dark-layout .interface-value {
+            color: #d0d2d6 !important;
+        }
+
+        .dark-layout .section-title {
+            color: #d0d2d6 !important;
+        }
+
+        .dark-layout .card-title {
+            color: #d0d2d6 !important;
+        }
+
+        .dark-layout h4, .dark-layout h5, .dark-layout h6 {
+            color: #d0d2d6 !important;
+        }
+
+        .semi-dark-layout .nav-tabs {
+            background-color: #283046 !important;
+        }
+
+        .semi-dark-layout .nav-tabs .nav-link {
+            color: #b4b7bd !important;
+        }
+
+        .semi-dark-layout .nav-tabs .nav-link:hover {
+            background-color: rgba(115, 103, 240, 0.2) !important;
+            color: #d0d2d6 !important;
+        }
+
+        .semi-dark-layout .nav-tabs .nav-link.active {
+            color: #ffffff !important;
+        }
+
+        .semi-dark-layout .form-group label {
+            color: #d0d2d6 !important;
+        }
+
+        .semi-dark-layout .interface-label {
+            color: #b4b7bd !important;
+        }
+
+        .semi-dark-layout .interface-value {
+            color: #d0d2d6 !important;
+        }
+
+        .semi-dark-layout .section-title {
+            color: #d0d2d6 !important;
+        }
+
+        .semi-dark-layout .card-title {
+            color: #d0d2d6 !important;
+        }
+
+        .semi-dark-layout h4, .semi-dark-layout h5, .semi-dark-layout h6 {
+            color: #d0d2d6 !important;
+        }
+
+        /* Dark mode fixes for card headers */
+        .dark-layout .card-header {
+            background: linear-gradient(135deg, #283046 0%, #2c2c2c 100%) !important;
+            border-bottom: 1px solid rgba(180, 183, 189, 0.3) !important;
+        }
+
+        .dark-layout .card-header h4, 
+        .dark-layout .card-header h5, 
+        .dark-layout .card-header h6,
+        .dark-layout .card-header .card-title {
+            color: #d0d2d6 !important;
+        }
+
+        .dark-layout .card-header .btn {
+            color: #b4b7bd !important;
+            border-color: #b4b7bd !important;
+        }
+
+        .dark-layout .card-header .btn:hover {
+            color: #ffffff !important;
+            background-color: #7367f0 !important;
+            border-color: #7367f0 !important;
+        }
+
+        .semi-dark-layout .card-header {
+            background: linear-gradient(135deg, #283046 0%, #2c2c2c 100%) !important;
+            border-bottom: 1px solid rgba(180, 183, 189, 0.3) !important;
+        }
+
+        .semi-dark-layout .card-header h4, 
+        .semi-dark-layout .card-header h5, 
+        .semi-dark-layout .card-header h6,
+        .semi-dark-layout .card-header .card-title {
+            color: #d0d2d6 !important;
+        }
+
+        .semi-dark-layout .card-header .btn {
+            color: #b4b7bd !important;
+            border-color: #b4b7bd !important;
+        }
+
+        .semi-dark-layout .card-header .btn:hover {
+            color: #ffffff !important;
+            background-color: #7367f0 !important;
+            border-color: #7367f0 !important;
+        }
     </style>
 
     <!-- Add this right before the closing body tag -->
