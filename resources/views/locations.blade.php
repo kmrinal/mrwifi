@@ -701,6 +701,10 @@
                 },
                 error: function(xhr, status, error) {
                     console.error('Error fetching locations:', error);
+                    // redirect to login page if Unauthorized
+                    if (xhr.status === 401) {
+                        window.location.href = '/';
+                    }
                 }
             });
             

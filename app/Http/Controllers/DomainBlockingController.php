@@ -287,7 +287,7 @@ class DomainBlockingController extends Controller
         $validator = Validator::make($request->all(), [
             'category_id' => 'nullable|exists:categories,id',
             'format' => 'in:txt,csv,json',
-            'active_only' => 'boolean',
+            'active_only' => 'nullable|in:true,false,1,0',
         ]);
 
         if ($validator->fails()) {

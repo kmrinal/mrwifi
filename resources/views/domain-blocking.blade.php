@@ -1321,6 +1321,48 @@
                 window.selectedCategory = null;
             });
 
+            // "Export All Domains" button click
+            $(document).on('click', '#export-all-domains', function() {
+                const button = $(this);
+                const originalText = button.html();
+                
+                // Show loading state
+                button.prop('disabled', true).html('<i data-feather="loader" class="mr-25"></i>Exporting...');
+                feather.replace();
+                
+                // Prepare export URL with parameters
+                let exportUrl = '/blocked-domains/export?format=txt&active_only=true';
+                
+                // If a specific category is selected, include it
+                if (window.selectedCategory) {
+                    const categoryId = getCategoryIdByName(window.selectedCategory);
+                    if (categoryId) {
+                        exportUrl += `&category_id=${categoryId}`;
+                    }
+                }
+                
+                // Create a temporary link to trigger download
+                const link = document.createElement('a');
+                link.href = exportUrl;
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Restore button state after a short delay
+                setTimeout(function() {
+                    button.prop('disabled', false).html(originalText);
+                    feather.replace();
+                }, 1000);
+                
+                // Show success message
+                if (typeof toastr !== 'undefined') {
+                    toastr.success('Export started! Check your downloads folder.');
+                } else {
+                    alert('Export started! Check your downloads folder.');
+                }
+            });
+
             // Initialize all category cards
             $('.card.cursor-pointer').addClass('category-card');
 
