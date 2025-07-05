@@ -130,6 +130,7 @@ Route::prefix('domain-blocking')->group(function () {
 Route::group(['middleware' => 'auth:api', 'prefix' => 'dashboard'], function () {
     Route::get('/overview', [DashboardController::class, 'getOverview']);
     Route::get('/analytics', [DashboardController::class, 'getAnalytics']);
+    Route::get('/data-usage-trends', [DashboardController::class, 'getDataUsageTrends']);
 });
 
 Route::post('/captive-portal/{location_id}/info', [GuestNetworkUserController::class, 'info']);

@@ -485,6 +485,7 @@
                                             </button> -->
                                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="networkMapDropdown">
                                                 <a class="dropdown-item" href="javascript:void(0);">Last 7 Days</a>
+                                                <a class="dropdown-item" href="javascript:void(0);">Last 28 Days</a>
                                                 <a class="dropdown-item" href="javascript:void(0);">Last Month</a>
                                                 <a class="dropdown-item" href="javascript:void(0);">Last Year</a>
                                         </div>
@@ -508,17 +509,18 @@
                         </div>
                         <!--/ Network Map -->
 
-                        <!-- Data Usage Trends -->
+                        <!-- Alerts and Network Health -->
                         <div class="col-lg-4 col-12">
                             <div class="card">
                                 <div class="card-header d-flex justify-content-between align-items-center">
-                                    <h4 class="card-title">Data Usage Trends</h4>
+                                    <h4 class="card-title">Network Health</h4>
                                     <div class="dropdown chart-dropdown">
-                                        <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="dataUsageDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="healthDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             Last 7 Days
                                         </button>
-                                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dataUsageDropdown">
+                                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="healthDropdown">
                                             <a class="dropdown-item" href="javascript:void(0);">Last 7 Days</a>
+                                            <a class="dropdown-item" href="javascript:void(0);">Last 28 Days</a>
                                             <a class="dropdown-item" href="javascript:void(0);">Last Month</a>
                                             <a class="dropdown-item" href="javascript:void(0);">Last Year</a>
                                         </div>
@@ -527,44 +529,44 @@
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-12 d-flex flex-column flex-wrap text-center mb-2">
-                                            <h1 class="font-weight-bolder mt-2 mb-0" id="total-bandwidth-used">-</h1>
-                                            <p class="card-text">Total Usage This Week</p>
-                                        </div>
-                                    </div>
-                                    <div id="data-usage-chart" class="mt-2" style="min-height: 270px;"></div>
+                                            <h1 class="font-large-2 font-weight-bolder mt-2 mb-0">99.8%</h1>
+                                            <p class="card-text">Overall Uptime</p>
+                            </div>
+                        </div>
+                                    <div id="network-health-chart" class="mt-2"></div>
                                     
                                     <div class="row mt-3">
                                         <div class="col-6">
                                             <div class="d-flex align-items-center">
-                                                <div class="avatar bg-light-info mr-1 p-50">
+                                                <div class="avatar bg-light-primary mr-1 p-50">
                                                     <div class="avatar-content">
-                                                        <i data-feather="download" class="font-medium-4"></i>
-                                                    </div>
+                                                        <i data-feather="wifi" class="font-medium-4"></i>
+                                                </div>
                                                 </div>
                                                 <div>
-                                                    <h4 class="font-weight-bolder mb-0" id="download-usage">185 GB</h4>
-                                                    <p class="card-text font-small-3 mb-0">Download</p>
-                                                </div>
+                                                    <h4 class="font-weight-bolder mb-0">5/6</h4>
+                                                    <p class="card-text font-small-3 mb-0">Routers Online</p>
                                             </div>
                                         </div>
+                                    </div>
                                         <div class="col-6">
                                             <div class="d-flex align-items-center">
-                                                <div class="avatar bg-light-warning mr-1 p-50">
+                                                <div class="avatar bg-light-success mr-1 p-50">
                                                     <div class="avatar-content">
-                                                        <i data-feather="upload" class="font-medium-4"></i>
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <h4 class="font-weight-bolder mb-0" id="upload-usage">60 GB</h4>
-                                                    <p class="card-text font-small-3 mb-0">Upload</p>
-                                                </div>
+                                                        <i data-feather="activity" class="font-medium-4"></i>
                                             </div>
+                                        </div>
+                                                <div>
+                                                    <h4 class="font-weight-bolder mb-0">0</h4>
+                                                    <p class="card-text font-small-3 mb-0">Active Alerts</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <!--/ Data Usage Trends -->
+                            </div>
+                        </div>
+                        <!--/ Alerts and Network Health -->
                     </div>
 
                     <!-- Error Messages Container -->
@@ -723,7 +725,7 @@
     <script src="assets/js/config.js"></script>
     
     <!-- Include dashboard.js for dynamic data loading -->
-    <script src="assets/js/dashboard.js?v=8"></script>
+    <script src="assets/js/dashboard.js?v=1"></script>
 
     <script>
         $(window).on('load', function() {
@@ -857,7 +859,48 @@
             new ApexCharts(document.querySelector('#bandwidth-chart'), bandwidthOptions).render();
             new ApexCharts(document.querySelector('#alerts-chart'), alertsOptions).render();
 
-            // Data Usage Trends Chart will be initialized by dashboard.js with real data
+            // Network Health Chart
+            var healthOptions = {
+                chart: {
+                    height: 270,
+                    type: 'radialBar'
+                },
+                colors: ['#28C76F', '#7367F0', '#FF9F43'],
+                plotOptions: {
+                    radialBar: {
+                        size: 150,
+                        hollow: {
+                            size: '20%'
+                        },
+                        track: {
+                            strokeWidth: '100%',
+                            margin: 15
+                        },
+                        dataLabels: {
+                            name: {
+                                fontSize: '14px'
+                            },
+                            value: {
+                                fontSize: '16px',
+                                formatter: function(val) {
+                                    return val + '%';
+                                }
+                            },
+                            total: {
+                                show: true,
+                                label: 'Overall',
+                                formatter: function() {
+                                    return '86%';
+                                }
+                            }
+                        }
+                    }
+                },
+                series: [90, 80, 85],
+                labels: ['Uptime', 'Performance', 'Connectivity']
+            };
+
+            new ApexCharts(document.querySelector('#network-health-chart'), healthOptions).render();
         });
     </script>
     

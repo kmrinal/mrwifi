@@ -111,6 +111,11 @@ class LocationSettings extends Model
         'wan_mac_address',
         'wan_mtu',
         'wan_nat_enabled',
+        
+        // VLAN Settings
+        'password_wifi_vlan',
+        'captive_portal_vlan',
+        'captive_portal_redirect',
     ];
 
     /**
@@ -159,6 +164,10 @@ class LocationSettings extends Model
         'wan_enabled' => 'boolean',
         'wan_nat_enabled' => 'boolean',
         'wan_mtu' => 'integer',
+        
+        // VLAN Settings casts
+        'password_wifi_vlan' => 'integer',
+        'captive_portal_vlan' => 'integer',
     ];
 
     /**

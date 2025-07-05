@@ -576,6 +576,23 @@ class LocationController extends Controller
                         $locationSettings->captive_portal_design = $settings['captive_portal_design'];
                     }
                     
+                    // Captive Portal VLAN
+                    if (isset($settings['captive_portal_vlan'])) {
+                        if ($settings['captive_portal_vlan'] !== $locationSettings->captive_portal_vlan) {
+                            $increment_version = 1;
+                            Log::info('Captive portal VLAN updated');
+                        }
+                        $locationSettings->captive_portal_vlan = $settings['captive_portal_vlan'];
+                    }
+                    
+                    // Captive Portal Redirect URL
+                    if (isset($settings['captive_portal_redirect'])) {
+                        if ($settings['captive_portal_redirect'] !== $locationSettings->captive_portal_redirect) {
+                            Log::info('Captive portal redirect URL updated');
+                        }
+                        $locationSettings->captive_portal_redirect = $settings['captive_portal_redirect'];
+                    }
+                    
                     Log::info('Updating captive portal settings for location: ' . $location->id);
                 } 
                 elseif ($settingsType === 'wifi') {
@@ -879,6 +896,13 @@ class LocationController extends Controller
                         $locationSettings->password_wifi_dhcp_end = $settings['password_wifi_dhcp_end'];
                     }
 
+                    if (isset($settings['password_wifi_vlan'])) {
+                        if ($settings['password_wifi_vlan'] !== $locationSettings->password_wifi_vlan) {
+                            $increment_version = 1;
+                            Log::info('Password network VLAN updated');
+                        }
+                        $locationSettings->password_wifi_vlan = $settings['password_wifi_vlan'];
+                    }
 
                     Log::info('Updating password network settings for location: ' . $location->id);
                 } elseif ($settingsType === 'location_info') {
@@ -1428,6 +1452,8 @@ class LocationController extends Controller
                 'channel_5g' => $settings->channel_5g,
                 'channel_width_2g' => $settings->channel_width_2g,
                 'channel_width_5g' => $settings->channel_width_5g,
+                'password_wifi_vlan' => $settings->password_wifi_vlan,
+                'captive_portal_vlan' => $settings->captive_portal_vlan,
             ];
             
             // Update settings with provided data
@@ -1459,6 +1485,10 @@ class LocationController extends Controller
                 'channel_width_5g',
                 'mac_filter_mode',
                 'mac_filter_list',
+                // New VLAN and redirect fields
+                'password_wifi_vlan',
+                'captive_portal_vlan',
+                'captive_portal_redirect',
             ]);
             
             // Check for router setting changes that require config version increment
@@ -1508,6 +1538,19 @@ class LocationController extends Controller
                 $increment_version = 1;
                 $routerSettingsChanged = true;
                 Log::info('Channel width 5G updated from "' . $originalSettings['channel_width_5g'] . '" to "' . $settingsData['channel_width_5g'] . '"');
+            }
+            
+            // VLAN changes
+            if (isset($settingsData['password_wifi_vlan']) && $settingsData['password_wifi_vlan'] !== $originalSettings['password_wifi_vlan']) {
+                $increment_version = 1;
+                $routerSettingsChanged = true;
+                Log::info('Password WiFi VLAN updated from "' . $originalSettings['password_wifi_vlan'] . '" to "' . $settingsData['password_wifi_vlan'] . '"');
+            }
+            
+            if (isset($settingsData['captive_portal_vlan']) && $settingsData['captive_portal_vlan'] !== $originalSettings['captive_portal_vlan']) {
+                $increment_version = 1;
+                $routerSettingsChanged = true;
+                Log::info('Captive portal VLAN updated from "' . $originalSettings['captive_portal_vlan'] . '" to "' . $settingsData['captive_portal_vlan'] . '"');
             }
             
             // Ensure web_filter_categories is properly handled as JSON

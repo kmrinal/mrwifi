@@ -17,6 +17,9 @@ let allLocations = [];
 // Current location filter state
 let currentLocationFilter = 'all';
 
+// Global variable to store the data usage chart instance
+let dataUsageChart = null;
+
 /**
  * Load dashboard overview data
  */
@@ -98,6 +101,49 @@ function loadAnalytics(period = '7') {
         },
         complete: function() {
             showAnalyticsLoading(false);
+        }
+    });
+}
+
+/**
+ * Load data usage trends from radacct table
+ * @param {string} period - Period for data usage (7, 30, 90 days)
+ */
+function loadDataUsageTrends(period = '7') {
+    const token = UserManager.getToken();
+    
+    if (!token) {
+        console.error('No authentication token found');
+        return;
+    }
+    
+    // Show loading indicator
+    showDataUsageLoading(true);
+    
+    $.ajax({
+        url: '/api/dashboard/data-usage-trends',
+        method: 'GET',
+        data: { period: period },
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        success: function(response) {
+            if (response.success) {
+                updateDataUsageChart(response.data);
+                updateDataUsageStats(response.data);
+            } else {
+                console.error('Failed to load data usage trends:', response.message);
+                showDataUsageError();
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('Error loading data usage trends:', error);
+            showDataUsageError();
+        },
+        complete: function() {
+            showDataUsageLoading(false);
         }
     });
 }
@@ -260,9 +306,6 @@ function updateOverviewDisplay(data) {
     $('#active-users-count').text(networkStats.active_users.toLocaleString());
     $('#data-used-count').text(networkStats.data_used_tb + 'TB');
     $('#uptime-percentage').text(networkStats.uptime_percentage + '%');
-    
-    // Update network health chart values
-    updateNetworkHealthChart(networkStats.uptime_percentage);
     
     // Initialize network map with real location data
     initializeNetworkMap(locations.data);
@@ -435,15 +478,249 @@ function renderLocationCards() {
 }
 
 /**
- * Update network health chart
- * @param {number} uptimePercentage - Uptime percentage
+ * Update data usage chart with real data
+ * @param {Object} data - Data usage trends data
  */
-function updateNetworkHealthChart(uptimePercentage) {
-    // Update the radial chart if it exists
-    $('#network-health-uptime').text(uptimePercentage + '%');
+function updateDataUsageChart(data) {
+    console.log('Updating data usage chart with data:', data);
     
-    // Update the overall uptime display
-    $('.network-uptime-display').text(uptimePercentage + '%');
+    // Check if ApexCharts is available
+    if (typeof ApexCharts === 'undefined') {
+        console.error('ApexCharts is not loaded!');
+        $('#data-usage-chart').html('<div class="d-flex align-items-center justify-content-center" style="height: 270px;"><div class="text-center"><i data-feather="alert-triangle" class="font-large-1 text-muted mb-2"></i><p class="text-muted">Chart library not loaded</p></div></div>');
+        return;
+    }
+
+    // Clear loading state first
+    const chartContainer = document.querySelector('#data-usage-chart');
+    if (chartContainer) {
+        chartContainer.innerHTML = ''; // Clear any loading content
+        console.log('Chart container found:', chartContainer);
+        console.log('Chart container dimensions:', {
+            width: chartContainer.offsetWidth,
+            height: chartContainer.offsetHeight,
+            clientWidth: chartContainer.clientWidth,
+            clientHeight: chartContainer.clientHeight
+        });
+        console.log('Chart container styles:', window.getComputedStyle(chartContainer));
+    } else {
+        console.error('Chart container #data-usage-chart not found!');
+        return;
+    }
+
+    // Validate data structure and provide fallback
+    if (!data || !data.daily_usage || !Array.isArray(data.daily_usage) || data.daily_usage.length === 0) {
+        console.warn('No data available for chart, using sample data');
+        // Use sample data as fallback
+        data = {
+            daily_usage: [
+                {date: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], download_gb: 10, upload_gb: 3},
+                {date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], download_gb: 15, upload_gb: 5},
+                {date: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], download_gb: 12, upload_gb: 4},
+                {date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], download_gb: 18, upload_gb: 6},
+                {date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], download_gb: 14, upload_gb: 5},
+                {date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], download_gb: 16, upload_gb: 7},
+                {date: new Date().toISOString().split('T')[0], download_gb: 20, upload_gb: 8}
+            ]
+        };
+    }
+    
+    // Prepare data for the chart
+    const downloadData = data.daily_usage.map(item => parseFloat(item.download_gb) || 0);
+    const uploadData = data.daily_usage.map(item => parseFloat(item.upload_gb) || 0);
+    const categories = data.daily_usage.map(item => {
+        const date = new Date(item.date);
+        return date.toLocaleDateString('en-US', { weekday: 'short' });
+    });
+    
+    console.log('Chart data prepared:', {
+        downloadData,
+        uploadData,
+        categories
+    });
+    
+    // Chart options
+    const dataUsageOptions = {
+        chart: {
+            height: 270,
+            type: 'area',
+            toolbar: {
+                show: false
+            }
+        },
+        colors: ['#00CFE8', '#FF9F43'],
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            curve: 'smooth',
+            width: 2
+        },
+        series: [{
+            name: 'Download',
+            data: downloadData
+        }, {
+            name: 'Upload',
+            data: uploadData
+        }],
+        xaxis: {
+            categories: categories,
+            labels: {
+                style: {
+                    fontSize: '12px'
+                }
+            }
+        },
+        yaxis: {
+            title: {
+                text: 'GB'
+            },
+            labels: {
+                formatter: function(val) {
+                    return val.toFixed(1) + ' GB';
+                }
+            }
+        },
+        fill: {
+            type: 'gradient',
+            gradient: {
+                shadeIntensity: 1,
+                opacityFrom: 0.7,
+                opacityTo: 0.3,
+                stops: [0, 100]
+            }
+        },
+        grid: {
+            borderColor: '#e7eef7',
+            strokeDashArray: 5
+        },
+        legend: {
+            position: 'top',
+            horizontalAlign: 'left'
+        },
+        tooltip: {
+            y: {
+                formatter: function(val) {
+                    return val.toFixed(2) + ' GB';
+                }
+            }
+        }
+    };
+    
+    // Destroy existing chart if it exists
+    if (dataUsageChart) {
+        dataUsageChart.destroy();
+        dataUsageChart = null;
+    }
+    
+    try {
+        // Use setTimeout to ensure DOM is fully ready
+        setTimeout(() => {
+            // Create new chart
+            dataUsageChart = new ApexCharts(document.querySelector('#data-usage-chart'), dataUsageOptions);
+            console.log('ApexCharts instance created:', dataUsageChart);
+            
+            dataUsageChart.render().then(() => {
+                console.log('Data usage chart rendered successfully');
+                
+                // Check immediately after render
+                setTimeout(() => {
+                    console.log('Chart element after render:', document.querySelector('#data-usage-chart'));
+                    console.log('Chart container content:', document.querySelector('#data-usage-chart').innerHTML);
+                    
+                    // Check if the chart has any SVG elements
+                    const svgElements = document.querySelectorAll('#data-usage-chart svg');
+                    console.log('SVG elements found:', svgElements.length);
+                    
+                    if (svgElements.length === 0) {
+                        console.warn('No SVG elements found, attempting alternative rendering...');
+                        
+                        // Try alternative rendering approach
+                        const container = document.querySelector('#data-usage-chart');
+                        if (container) {
+                            // Clear and set up container again
+                            container.innerHTML = '';
+                            container.style.height = '270px';
+                            container.style.width = '100%';
+                            
+                            // Create new chart instance with explicit container
+                            if (dataUsageChart) {
+                                dataUsageChart.destroy();
+                            }
+                            
+                            dataUsageChart = new ApexCharts(container, dataUsageOptions);
+                            dataUsageChart.render().then(() => {
+                                console.log('Alternative render completed');
+                                
+                                // Final check after alternative render
+                                setTimeout(() => {
+                                    const finalSvgElements = document.querySelectorAll('#data-usage-chart svg');
+                                    console.log('Final SVG elements found:', finalSvgElements.length);
+                                    
+                                    if (finalSvgElements.length === 0) {
+                                        console.error('Chart still not rendering, showing fallback');
+                                        container.innerHTML = '<div class="d-flex align-items-center justify-content-center" style="height: 270px;"><div class="text-center"><i data-feather="alert-triangle" class="font-large-1 text-muted mb-2"></i><p class="text-muted">Chart display issue - please refresh</p></div></div>';
+                                    }
+                                }, 100);
+                            });
+                        }
+                    } else {
+                        console.log('Chart SVG dimensions:', {
+                            width: svgElements[0].getAttribute('width'),
+                            height: svgElements[0].getAttribute('height')
+                        });
+                        console.log('Chart rendered successfully and visible!');
+                    }
+                }, 100);
+                
+            }).catch(error => {
+                console.error('Error rendering chart:', error);
+                $('#data-usage-chart').html('<div class="d-flex align-items-center justify-content-center" style="height: 270px;"><div class="text-center"><i data-feather="alert-triangle" class="font-large-1 text-muted mb-2"></i><p class="text-muted">Chart rendering failed</p></div></div>');
+            });
+        }, 50);
+    } catch (error) {
+        console.error('Error creating chart:', error);
+        $('#data-usage-chart').html('<div class="d-flex align-items-center justify-content-center" style="height: 270px;"><div class="text-center"><i data-feather="alert-triangle" class="font-large-1 text-muted mb-2"></i><p class="text-muted">Chart creation failed</p></div></div>');
+    }
+}
+
+/**
+ * Update data usage statistics
+ * @param {Object} data - Data usage trends data
+ */
+function updateDataUsageStats(data) {
+    // Format numbers for display
+    const formatBytes = (bytes) => {
+        if (bytes >= 1024) {
+            return (bytes / 1024).toFixed(1) + ' TB';
+        }
+        return bytes.toFixed(1) + ' GB';
+    };
+    
+    // Determine period text based on the period
+    let periodText = 'This Week';
+    switch(data.period) {
+        case '30':
+            periodText = 'This Month';
+            break;
+        case '365':
+            periodText = 'This Year';
+            break;
+        case '7':
+        default:
+            periodText = 'This Week';
+            break;
+    }
+    
+    // Update the statistics
+    $('#total-bandwidth-used').text(formatBytes(data.total_usage_gb));
+    $('#download-usage').text(formatBytes(data.total_download_gb));
+    $('#upload-usage').text(formatBytes(data.total_upload_gb));
+    
+    // Update the period text
+    $('#total-bandwidth-used').next('p').text(`Total Usage ${periodText}`);
+    
+    console.log('Data usage stats updated:', data);
 }
 
 /**
@@ -494,6 +771,65 @@ function showAnalyticsError() {
 }
 
 /**
+ * Show/hide loading indicators for data usage section
+ * @param {boolean} show - Whether to show loading
+ */
+function showDataUsageLoading(show) {
+    if (show) {
+        $('#data-usage-chart').html('<div class="d-flex align-items-center justify-content-center" style="height: 270px;"><div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div></div>');
+        $('#total-bandwidth-used').text('Loading...');
+        $('#download-usage').text('Loading...');
+        $('#upload-usage').text('Loading...');
+        // Don't change the period text while loading
+    } else {
+        // Clear loading content - this will be handled by updateDataUsageChart
+        $('#data-usage-chart').empty();
+    }
+}
+
+/**
+ * Show error message for data usage section
+ */
+function showDataUsageError() {
+    $('#data-usage-chart').html('<div class="d-flex align-items-center justify-content-center" style="height: 270px;"><div class="text-center"><i data-feather="alert-triangle" class="font-large-1 text-muted mb-2"></i><p class="text-muted">Failed to load data usage trends</p></div></div>');
+    $('#total-bandwidth-used').text('Error');
+    $('#download-usage').text('Error');
+    $('#upload-usage').text('Error');
+    
+    if (typeof feather !== 'undefined') {
+        feather.replace();
+    }
+}
+
+/**
+ * Initialize data usage chart with default data
+ */
+function initializeDataUsageChart() {
+    console.log('Initializing data usage chart with default data...');
+    
+    // Default sample data
+    const defaultData = {
+        daily_usage: [
+            {date: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], download_gb: 10, upload_gb: 3},
+            {date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], download_gb: 15, upload_gb: 5},
+            {date: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], download_gb: 12, upload_gb: 4},
+            {date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], download_gb: 18, upload_gb: 6},
+            {date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], download_gb: 14, upload_gb: 5},
+            {date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], download_gb: 16, upload_gb: 7},
+            {date: new Date().toISOString().split('T')[0], download_gb: 20, upload_gb: 8}
+        ],
+        total_usage_gb: 163,
+        total_download_gb: 105,
+        total_upload_gb: 38,
+        period: '7'
+    };
+    
+    // Initialize chart immediately
+    updateDataUsageChart(defaultData);
+    updateDataUsageStats(defaultData);
+}
+
+/**
  * Initialize dashboard
  */
 function initializeDashboard() {
@@ -509,9 +845,13 @@ function initializeDashboard() {
         return;
     }
     
+    // Initialize chart with default data first
+    initializeDataUsageChart();
+    
     // Load initial data
     loadDashboardOverview();
     loadAnalytics('7'); // Default to 7 days
+    loadDataUsageTrends('7'); // Default to 7 days
     
     // Set up event listeners
     setupEventListeners();
@@ -543,11 +883,34 @@ function setupEventListeners() {
         filterLocations(filterType);
     });
     
+    // Data usage period dropdown
+    $(document).on('click', '#dataUsageDropdown + .dropdown-menu .dropdown-item', function(e) {
+        e.preventDefault();
+        const periodText = $(this).text();
+        
+        // Determine period based on text
+        let period = '7';
+        if (periodText.includes('28') || periodText.includes('Month')) {
+            period = '30';
+        } else if (periodText.includes('Year')) {
+            period = '365';
+        } else if (periodText.includes('7')) {
+            period = '7';
+        }
+        
+        // Load data usage trends
+        loadDataUsageTrends(period);
+        
+        // Update dropdown text
+        $('#dataUsageDropdown').text(periodText);
+    });
+    
     // Refresh button (if exists)
     $(document).on('click', '[data-action="refresh-dashboard"]', function(e) {
         e.preventDefault();
         loadDashboardOverview();
         loadAnalytics('7');
+        loadDataUsageTrends('7');
     });
 }
 

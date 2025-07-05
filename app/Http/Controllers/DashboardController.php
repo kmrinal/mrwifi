@@ -209,4 +209,105 @@ class DashboardController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Get data usage trends from radacct table
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function getDataUsageTrends(Request $request)
+    {
+        try {
+            $period = $request->input('period', '7'); // Default 7 days
+            
+            // Calculate date range based on period
+            $endDate = Carbon::now();
+            switch ($period) {
+                case '7':
+                    $startDate = Carbon::now()->subDays(6); // Include today = 7 days
+                    break;
+                case '30':
+                    $startDate = Carbon::now()->subDays(29); // Include today = 30 days
+                    break;
+                case '365':
+                    $startDate = Carbon::now()->subDays(364); // Include today = 365 days
+                    break;
+                default:
+                    $startDate = Carbon::now()->subDays(6);
+            }
+            
+            // Get all locations
+            $locations = Location::all();
+            
+            // Initialize daily usage array
+            $dailyUsage = [];
+            $totalDownloadGB = 0;
+            $totalUploadGB = 0;
+            
+            // Generate daily data for the period
+            $currentDate = $startDate->copy();
+            while ($currentDate->lte($endDate)) {
+                $dayStart = $currentDate->copy()->startOfDay();
+                $dayEnd = $currentDate->copy()->endOfDay();
+                
+                $dayDownloadBytes = 0;
+                $dayUploadBytes = 0;
+                
+                // Aggregate data from all locations for this day
+                foreach ($locations as $location) {
+                    $dayUsage = Radacct::getLocationDataUsage($location->id, $dayStart, $dayEnd);
+                    
+                    // Get input and output bytes for this day
+                    $records = Radacct::where('location_id', $location->id)
+                        ->where('acctstarttime', '>=', $dayStart)
+                        ->where('acctstarttime', '<=', $dayEnd)
+                        ->get();
+                    
+                    $dayDownloadBytes += $records->sum('acctinputoctets');
+                    $dayUploadBytes += $records->sum('acctoutputoctets');
+                }
+                
+                // Convert bytes to GB
+                $dayDownloadGB = round($dayDownloadBytes / (1024 * 1024 * 1024), 2);
+                $dayUploadGB = round($dayUploadBytes / (1024 * 1024 * 1024), 2);
+                
+                $dailyUsage[] = [
+                    'date' => $currentDate->format('Y-m-d'),
+                    'download_gb' => $dayDownloadGB,
+                    'upload_gb' => $dayUploadGB
+                ];
+                
+                $totalDownloadGB += $dayDownloadGB;
+                $totalUploadGB += $dayUploadGB;
+                
+                $currentDate->addDay();
+            }
+            
+            $totalUsageGB = $totalDownloadGB + $totalUploadGB;
+            
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'period' => $period,
+                    'date_range' => [
+                        'start' => $startDate->format('Y-m-d'),
+                        'end' => $endDate->format('Y-m-d')
+                    ],
+                    'total_usage_gb' => round($totalUsageGB, 2),
+                    'total_download_gb' => round($totalDownloadGB, 2),
+                    'total_upload_gb' => round($totalUploadGB, 2),
+                    'daily_usage' => $dailyUsage
+                ]
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Error loading data usage trends: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error loading data usage trends: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 } 

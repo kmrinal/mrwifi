@@ -1897,6 +1897,7 @@
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    
 
                                                     <!-- Authentication Section -->
                                                     <h5 class="border-bottom pb-1">Authentication</h5>
@@ -1988,6 +1989,13 @@
                                                                     <option value="720">12 Hrs</option>
                                                                     <option value="1440">1 Day</option>
                                                                 </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-12">
+                                                            <div class="form-group">
+                                                                <label for="captive-portal-redirect">Custom Redirect URL (Optional)</label>
+                                                                <input type="url" class="form-control" id="captive-portal-redirect" placeholder="https://example.com/welcome">
+                                                                <small class="text-muted">Redirect users to this URL after successful authentication. Leave empty for default behavior.</small>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -2121,6 +2129,19 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            
+                                            <!-- Network Settings Section -->
+                                            <h5 class="border-bottom pb-1 mt-3">Network Settings</h5>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <button class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#captive-portal-modal">
+                                                            <i data-feather="settings" class="mr-1"></i> Configure IP & VLAN Settings
+                                                        </button>
+                                                        <small class="text-muted d-block mt-1">Configure IP address, gateway, and VLAN settings for the captive portal network.</small>
+                                                    </div>
+                                                </div>
+                                            </div>
                                             <!-- Access Control Section -->
                                             <h5 class="border-bottom pb-1 mt-3">Access Control</h5>
                                             <div class="row">
@@ -2148,34 +2169,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                
-                                                <div class="col-lg-6">
-                                                    <!-- Additional Settings -->
-                                                    <div class="form-group">
-                                                        <div class="d-flex justify-content-between align-items-center mb-1">
-                                                            <label class="mb-0">Guest Network Isolation</label>
-                                                            <div class="custom-control custom-switch custom-control-primary">
-                                                                <input type="checkbox" class="custom-control-input" id="guest-isolation" checked>
-                                                                <label class="custom-control-label" for="guest-isolation"></label>
-                                                            </div>
-                                                        </div>
-                                                        <small class="text-muted">Prevent guests from accessing local network devices.</small>
-                                                    </div>
-                                                    
-                                                    <div class="form-group">
-                                                        <div class="d-flex justify-content-between align-items-center mb-1">
-                                                            <label class="mb-0">Hide Network Name</label>
-                                                            <div class="custom-control custom-switch custom-control-primary">
-                                                                <input type="checkbox" class="custom-control-input" id="guest-hide-ssid">
-                                                                <label class="custom-control-label" for="guest-hide-ssid"></label>
-                                                            </div>
-                                                        </div>
-                                                        <small class="text-muted">Hide the network from WiFi discovery.</small>
-                                                    </div>
-                                                </div>
                                             </div>
-
-                                            
                                         </div>
                                     </div>
                                 </div>
@@ -2293,20 +2287,20 @@
                                                                     <option value="allow-listed">Allow Listed Only</option>
                                                                     <option value="block-listed">Block Listed</option>
                                                                 </select>
-                                            </div>
-                                                </div>
+                                                            </div>
+                                                        </div>
                                                         <div class="input-group mb-1">
                                                             <input type="text" class="form-control" id="secured-mac-address" placeholder="00:11:22:33:44:55">
                                                             <div class="input-group-append">
                                                                 <button class="btn btn-sm btn-primary" id="secured-add-mac">Add</button>
-                                            </div>
-                                                </div>
+                                                            </div>
+                                                        </div>
                                                         <div class="filtered-mac-list border p-1 rounded" style="max-height: 100px; overflow-y: auto;">
                                                             <!-- MAC addresses will be added here dynamically -->
-                                            </div>
-                                        </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                
+
                                                 <div class="col-lg-6">
                                                     <!-- Network Security Settings -->
                                                 </div>
@@ -2322,8 +2316,8 @@
                                                             <div class="custom-control custom-switch custom-control-primary">
                                                                 <input type="checkbox" class="custom-control-input" id="secured-qos">
                                                                 <label class="custom-control-label" for="secured-qos"></label>
-                                        </div>
-                                    </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
@@ -2786,6 +2780,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         <label>Secondary DNS</label>
                         <input type="text" class="form-control" placeholder="1.1.1.1" value="1.1.1.1">
                     </div>
+                    
+                    <div class="form-group">
+                        <label>VLAN ID (Optional)</label>
+                        <input type="number" class="form-control" placeholder="20" id="captive-portal-vlan" value="" min="1" max="4094">
+                        <small class="text-muted">Specify VLAN ID for captive portal network segmentation (1-4094). Leave empty for default.</small>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
@@ -2839,6 +2839,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="form-group">
                             <label>Secondary DNS</label>
                             <input type="text" class="form-control" placeholder="1.1.1.1" id="password-secondary-dns" value="">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>VLAN ID (Optional)</label>
+                            <input type="number" class="form-control" placeholder="10" id="password-wifi-vlan" value="" min="1" max="4094">
+                            <small class="text-muted">Specify VLAN ID for network segmentation (1-4094). Leave empty for default.</small>
                         </div>
 
                         <div class="form-group mt-3 pt-2 border-top">
@@ -3022,6 +3028,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="form-group">
                         <label for="captive-portal-gateway">Gateway</label>
                         <input type="text" class="form-control" id="captive-portal-gateway" placeholder="192.168.2.1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="captive-portal-vlan">VLAN ID (Optional)</label>
+                        <input type="number" class="form-control" id="captive-portal-vlan" placeholder="20" min="1" max="4094">
+                        <small class="text-muted">Specify VLAN ID for captive portal network segmentation (1-4094). Leave empty for default.</small>
                     </div>
                 </div>
                 <div class="modal-footer">
