@@ -76,7 +76,8 @@ class GuestNetworkUserController extends Controller
             'logo_url',
             'welcome_message',
             'captive_portal_design',
-            'captive_social_auth_method'
+            'captive_social_auth_method',
+            'redirect_url'
         ]);
 
         // Fetch the complete captive portal design if a design ID is set

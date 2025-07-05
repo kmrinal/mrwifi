@@ -235,24 +235,24 @@
             // Get location data from localStorage
             const locationData = JSON.parse(localStorage.getItem('location_data') || '{}');
             const designData = locationData.design || {};
-            
+
             console.log('Location data:', locationData);
             console.log('Design data:', designData);
-            
+
             // Apply design settings
             applyDesignSettings(locationData.settings || {}, designData);
-            
+
             // Get referrer URL from localStorage if available
-            const referrerUrl = localStorage.getItem('referrer_url') || 'https://citypassenger.com';
+            const referrerUrl = localStorage.getItem('redirect_url') || 'https://citypassenger.com';
             
             // Update the continue button href
             $('#continue-button').attr('href', referrerUrl);
-            
+
             // Auto-redirect after 5 seconds
             setTimeout(function() {
                 window.location.href = referrerUrl;
             }, 5000);
-            
+
             // Function to apply design settings
             function applyDesignSettings(settings, design) {
                 // Set theme color from full design data first, fallback to settings
@@ -295,22 +295,22 @@
                     $('#privacy-content').html(design.privacy_policy);
                 }
             }
-            
+
             // Helper function to create a darker color for hover states
             function createDarkerColor(hexColor) {
                 // Remove # if present
                 hexColor = hexColor.replace('#', '');
-                
+
                 // Parse the hex color
                 let r = parseInt(hexColor.substr(0, 2), 16);
                 let g = parseInt(hexColor.substr(2, 2), 16);
                 let b = parseInt(hexColor.substr(4, 2), 16);
-                
+
                 // Make it darker by reducing each component
                 r = Math.max(0, r - 25);
                 g = Math.max(0, g - 25);
                 b = Math.max(0, b - 25);
-                
+
                 // Convert back to hex
                 return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
             }

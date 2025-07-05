@@ -86,6 +86,9 @@ function processLocationData(location, mac_address, challenge, nas_ip) {
     localStorage.setItem('design_data', JSON.stringify(design));
     localStorage.setItem('nas_ip', nas_ip);
     localStorage.setItem('challenge', challenge);
+    // if redirect_url is set, then redirect to redirect_url else set it to citypassenger.com
+    const redirect_url = settings.redirect_url || 'https://citypassenger.com';
+    localStorage.setItem('redirect_url', redirect_url);
     // Check if captive portal is enabled
     if (!settings.captive_portal_enabled) {
         showError('Captive portal is not enabled for this location');
