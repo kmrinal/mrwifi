@@ -577,16 +577,16 @@
                             <div class="card">
                                 <div class="card-header">
                                     <h4 class="card-title">Locations Overview</h4>
-                                    <div class="dropdown">
-                                        <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="locationDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            All Locations
-                                        </button>
-                                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="locationDropdown">
-                                            <a class="dropdown-item" href="javascript:void(0);">All Locations</a>
-                                            <a class="dropdown-item" href="javascript:void(0);">Online Only</a>
-                                            <a class="dropdown-item" href="javascript:void(0);">Offline Only</a>
-                                        </div>
+                                                                    <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="locationDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        All Locations
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="locationDropdown">
+                                        <a class="dropdown-item" href="javascript:void(0);" data-location-filter="all">All Locations</a>
+                                        <a class="dropdown-item" href="javascript:void(0);" data-location-filter="online">Online Only</a>
+                                        <a class="dropdown-item" href="javascript:void(0);" data-location-filter="offline">Offline Only</a>
                                     </div>
+                                </div>
                                 </div>
                                 <div class="card-body">
                                     <div class="row" id="locations-container">
@@ -618,80 +618,68 @@
                                     <!-- Analytics Error Container -->
                                     <div id="analytics-errors"></div>
                                     
-                                    <!-- Analytics Metrics Row -->
-                                    <div class="row mb-2">
-                                        <div class="col-xl-3 col-md-6 col-12 mb-2 mb-xl-0">
-                                            <div class="d-flex align-items-center mb-1">
-                                                <div class="avatar bg-light-primary p-50 mr-1">
-                                                    <div class="avatar-content">
-                                                        <i data-feather="users" class="font-medium-4"></i>
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <h4 class="mb-0" id="analytics-total-users">-</h4>
-                                                    <span>Total Users</span>
-                                                </div>
-                                            </div>
-                                            <div class="progress progress-bar-primary mb-1" style="height: 6px">
-                                                <div class="progress-bar" role="progressbar" aria-valuenow="83" aria-valuemin="0" aria-valuemax="100" style="width: 83%"></div>
-                                            </div>
-                                            <span class="text-muted"><i data-feather="activity" class="font-small-3 mr-25"></i> Period total</span>
-                                        </div>
-                                        
-                                        <div class="col-xl-3 col-md-6 col-12 mb-2 mb-xl-0">
-                                            <div class="d-flex align-items-center mb-1">
-                                                <div class="avatar bg-light-info p-50 mr-1">
-                                                    <div class="avatar-content">
-                                                        <i data-feather="activity" class="font-medium-4"></i>
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <h4 class="mb-0" id="analytics-data-usage">- GB</h4>
-                                                    <span>Data Usage</span>
-                                                </div>
-                                            </div>
-                                            <div class="progress progress-bar-info mb-1" style="height: 6px">
-                                                <div class="progress-bar" role="progressbar" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100" style="width: 65%"></div>
-                                            </div>
-                                            <span class="text-muted"><i data-feather="download" class="font-small-3 mr-25"></i> Period total</span>
-                                        </div>
-                                        
-                                        <div class="col-xl-3 col-md-6 col-12 mb-2 mb-xl-0">
-                                            <div class="d-flex align-items-center mb-1">
-                                                <div class="avatar bg-light-success p-50 mr-1">
-                                                    <div class="avatar-content">
-                                                        <i data-feather="wifi" class="font-medium-4"></i>
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <h4 class="mb-0" id="analytics-uptime">-%</h4>
-                                                    <span>Uptime</span>
-                                                </div>
-                                            </div>
-                                            <div class="progress progress-bar-success mb-1" style="height: 6px">
-                                                <div class="progress-bar" role="progressbar" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100" style="width: 95%"></div>
-                                            </div>
-                                            <span class="text-muted"><i data-feather="activity" class="font-small-3 mr-25"></i> Current status</span>
-                                        </div>
-                                        
-                                        <div class="col-xl-3 col-md-6 col-12 mb-2 mb-xl-0">
-                                            <div class="d-flex align-items-center mb-1">
-                                                <div class="avatar bg-light-warning p-50 mr-1">
-                                                    <div class="avatar-content">
-                                                        <i data-feather="monitor" class="font-medium-4"></i>
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <h4 class="mb-0" id="analytics-sessions">-</h4>
-                                                    <span>Total Sessions</span>
-                                                </div>
-                                            </div>
-                                            <div class="progress progress-bar-warning mb-1" style="height: 6px">
-                                                <div class="progress-bar" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%"></div>
-                                            </div>
-                                            <span class="text-muted"><i data-feather="activity" class="font-small-3 mr-25"></i> Period total</span>
-                                        </div>
+                                                        <!-- Analytics Metrics Row -->
+                    <div class="row mb-2">
+                        <div class="col-xl-3 col-md-6 col-12 mb-2 mb-xl-0">
+                            <div class="d-flex align-items-center mb-1">
+                                <div class="avatar bg-light-primary p-50 mr-1">
+                                    <div class="avatar-content">
+                                        <i data-feather="users" class="font-medium-4"></i>
                                     </div>
+                                </div>
+                                <div>
+                                    <h4 class="mb-0" id="analytics-total-users">-</h4>
+                                    <span>Total Users</span>
+                                </div>
+                            </div>
+                            <span class="text-muted"> Unique users connected</span>
+                        </div>
+                        
+                        <div class="col-xl-3 col-md-6 col-12 mb-2 mb-xl-0">
+                            <div class="d-flex align-items-center mb-1">
+                                <div class="avatar bg-light-info p-50 mr-1">
+                                    <div class="avatar-content">
+                                        <i data-feather="activity" class="font-medium-4"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="mb-0" id="analytics-data-usage">- GB</h4>
+                                    <span>Data Usage</span>
+                                </div>
+                            </div>
+                            <span class="text-muted"> Total bandwidth consumed</span>
+                        </div>
+                        
+                        <div class="col-xl-3 col-md-6 col-12 mb-2 mb-xl-0">
+                            <div class="d-flex align-items-center mb-1">
+                                <div class="avatar bg-light-success p-50 mr-1">
+                                    <div class="avatar-content">
+                                        <i data-feather="wifi" class="font-medium-4"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="mb-0" id="analytics-uptime">-%</h4>
+                                    <span>Uptime</span>
+                                </div>
+                            </div>
+                            <span class="text-muted"> Network availability</span>
+                        </div>
+                        
+                        <div class="col-xl-3 col-md-6 col-12 mb-2 mb-xl-0">
+                            <div class="d-flex align-items-center mb-1">
+                                <div class="avatar bg-light-warning p-50 mr-1">
+                                    <div class="avatar-content">
+                                        <i data-feather="monitor" class="font-medium-4"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="mb-0" id="analytics-sessions">-</h4>
+                                    <span>Total Sessions</span>
+                                </div>
+                            </div>
+                            <span class="text-muted"> Connection sessions</span>
+                        </div>
+                    </div>
                                 </div>
                             </div>
                         </div>
@@ -737,7 +725,7 @@
     <script src="assets/js/config.js"></script>
     
     <!-- Include dashboard.js for dynamic data loading -->
-    <script src="assets/js/dashboard.js"></script>
+    <script src="assets/js/dashboard.js?v=1"></script>
 
     <script>
         $(window).on('load', function() {

@@ -11,6 +11,12 @@ let dashboardData = {
 // Global variable to store the map instance
 let networkMap = null;
 
+// Global variable to store all locations for filtering
+let allLocations = [];
+
+// Current location filter state
+let currentLocationFilter = 'all';
+
 /**
  * Load dashboard overview data
  */
@@ -285,6 +291,40 @@ function updateAnalyticsDisplay(data) {
  * @param {Array} locations - Array of location data
  */
 function updateLocationCards(locations) {
+    // Store all locations for filtering
+    allLocations = locations;
+    
+    // Apply current filter
+    renderLocationCards();
+}
+
+/**
+ * Filter locations based on current filter
+ * @param {string} filter - Filter type: 'all', 'online', 'offline'
+ */
+function filterLocations(filter) {
+    currentLocationFilter = filter;
+    
+    // Update dropdown text
+    let filterText = 'All Locations';
+    switch(filter) {
+        case 'online':
+            filterText = 'Online Only';
+            break;
+        case 'offline':
+            filterText = 'Offline Only';
+            break;
+    }
+    $('#locationDropdown').text(filterText);
+    
+    // Re-render cards with filter
+    renderLocationCards();
+}
+
+/**
+ * Render location cards based on current filter
+ */
+function renderLocationCards() {
     const $container = $('#locations-container');
     
     if (!$container.length) {
@@ -295,8 +335,42 @@ function updateLocationCards(locations) {
     // Clear existing cards
     $container.empty();
     
-    // Create cards for each location
-    locations.forEach(function(location, index) {
+    // Filter locations based on current filter
+    let filteredLocations = allLocations;
+    
+    if (currentLocationFilter === 'online') {
+        filteredLocations = allLocations.filter(location => location.online_status === 'online');
+    } else if (currentLocationFilter === 'offline') {
+        filteredLocations = allLocations.filter(location => location.online_status === 'offline');
+    }
+    
+    // Show message if no locations match filter
+    if (filteredLocations.length === 0) {
+        let message = 'No locations found';
+        if (currentLocationFilter === 'online') {
+            message = 'No online locations found';
+        } else if (currentLocationFilter === 'offline') {
+            message = 'No offline locations found';
+        }
+        
+        $container.html(`
+            <div class="col-12">
+                <div class="text-center py-4">
+                    <i data-feather="map-pin" class="font-large-1 text-muted mb-2"></i>
+                    <p class="text-muted">${message}</p>
+                </div>
+            </div>
+        `);
+        
+        // Re-initialize feather icons
+        if (typeof feather !== 'undefined') {
+            feather.replace({ width: 14, height: 14 });
+        }
+        return;
+    }
+    
+    // Create cards for filtered locations
+    filteredLocations.forEach(function(location, index) {
         if (index >= 6) return; // Limit to 6 cards for dashboard
         
         const statusClass = location.online_status === 'online' ? 'badge-light-success' : 'badge-light-danger';
@@ -458,6 +532,15 @@ function setupEventListeners() {
         // Update dropdown text
         const periodText = $(this).text();
         $(this).closest('.dropdown').find('.dropdown-toggle').text(periodText);
+    });
+    
+    // Location filter dropdown
+    $(document).on('click', '[data-location-filter]', function(e) {
+        e.preventDefault();
+        const filterType = $(this).data('location-filter');
+        
+        // Apply filter
+        filterLocations(filterType);
     });
     
     // Refresh button (if exists)
