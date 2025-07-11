@@ -110,6 +110,8 @@ function loadAnalytics(period = '7') {
  * @param {string} period - Period for data usage (7, 30, 90 days)
  */
 function loadDataUsageTrends(period = '7') {
+    console.log('Loading data usage trends for period:', period);
+    
     const token = UserManager.getToken();
     
     if (!token) {
@@ -130,7 +132,9 @@ function loadDataUsageTrends(period = '7') {
             'Content-Type': 'application/json'
         },
         success: function(response) {
+            console.log('Data usage trends API response:', response);
             if (response.success) {
+                console.log('Updating chart with real data...');
                 updateDataUsageChart(response.data);
                 updateDataUsageStats(response.data);
             } else {
@@ -140,9 +144,11 @@ function loadDataUsageTrends(period = '7') {
         },
         error: function(xhr, status, error) {
             console.error('Error loading data usage trends:', error);
+            console.error('XHR details:', xhr);
             showDataUsageError();
         },
         complete: function() {
+            console.log('Data usage trends loading complete');
             showDataUsageLoading(false);
         }
     });
@@ -491,22 +497,20 @@ function updateDataUsageChart(data) {
         return;
     }
 
-    // Clear loading state first
+    // Get chart container
     const chartContainer = document.querySelector('#data-usage-chart');
-    if (chartContainer) {
-        chartContainer.innerHTML = ''; // Clear any loading content
-        console.log('Chart container found:', chartContainer);
-        console.log('Chart container dimensions:', {
-            width: chartContainer.offsetWidth,
-            height: chartContainer.offsetHeight,
-            clientWidth: chartContainer.clientWidth,
-            clientHeight: chartContainer.clientHeight
-        });
-        console.log('Chart container styles:', window.getComputedStyle(chartContainer));
-    } else {
+    if (!chartContainer) {
         console.error('Chart container #data-usage-chart not found!');
         return;
     }
+    
+    console.log('Chart container found:', chartContainer);
+    console.log('Chart container dimensions:', {
+        width: chartContainer.offsetWidth,
+        height: chartContainer.offsetHeight,
+        clientWidth: chartContainer.clientWidth,
+        clientHeight: chartContainer.clientHeight
+    });
 
     // Validate data structure and provide fallback
     if (!data || !data.daily_usage || !Array.isArray(data.daily_usage) || data.daily_usage.length === 0) {
@@ -607,80 +611,51 @@ function updateDataUsageChart(data) {
         }
     };
     
-    // Destroy existing chart if it exists
+    // Comprehensive cleanup to prevent multiple charts
     if (dataUsageChart) {
-        dataUsageChart.destroy();
+        try {
+            dataUsageChart.destroy();
+        } catch (e) {
+            console.log('Chart destroy error (safe to ignore):', e);
+        }
         dataUsageChart = null;
     }
     
+    // Clear any existing chart content
+    chartContainer.innerHTML = '';
+    
+    // Remove any ApexCharts classes or data attributes
+    chartContainer.removeAttribute('data-apexcharts-rendered');
+    chartContainer.className = chartContainer.className.replace(/apexcharts-\w+/g, '');
+    
     try {
-        // Use setTimeout to ensure DOM is fully ready
-        setTimeout(() => {
-            // Create new chart
-            dataUsageChart = new ApexCharts(document.querySelector('#data-usage-chart'), dataUsageOptions);
-            console.log('ApexCharts instance created:', dataUsageChart);
+        // Create new chart with a single, clean approach
+        dataUsageChart = new ApexCharts(chartContainer, dataUsageOptions);
+        console.log('ApexCharts instance created:', dataUsageChart);
+        
+        dataUsageChart.render().then(() => {
+            console.log('Data usage chart rendered successfully');
             
-            dataUsageChart.render().then(() => {
-                console.log('Data usage chart rendered successfully');
-                
-                // Check immediately after render
-                setTimeout(() => {
-                    console.log('Chart element after render:', document.querySelector('#data-usage-chart'));
-                    console.log('Chart container content:', document.querySelector('#data-usage-chart').innerHTML);
-                    
-                    // Check if the chart has any SVG elements
-                    const svgElements = document.querySelectorAll('#data-usage-chart svg');
-                    console.log('SVG elements found:', svgElements.length);
-                    
-                    if (svgElements.length === 0) {
-                        console.warn('No SVG elements found, attempting alternative rendering...');
-                        
-                        // Try alternative rendering approach
-                        const container = document.querySelector('#data-usage-chart');
-                        if (container) {
-                            // Clear and set up container again
-                            container.innerHTML = '';
-                            container.style.height = '270px';
-                            container.style.width = '100%';
-                            
-                            // Create new chart instance with explicit container
-                            if (dataUsageChart) {
-                                dataUsageChart.destroy();
-                            }
-                            
-                            dataUsageChart = new ApexCharts(container, dataUsageOptions);
-                            dataUsageChart.render().then(() => {
-                                console.log('Alternative render completed');
-                                
-                                // Final check after alternative render
-                                setTimeout(() => {
-                                    const finalSvgElements = document.querySelectorAll('#data-usage-chart svg');
-                                    console.log('Final SVG elements found:', finalSvgElements.length);
-                                    
-                                    if (finalSvgElements.length === 0) {
-                                        console.error('Chart still not rendering, showing fallback');
-                                        container.innerHTML = '<div class="d-flex align-items-center justify-content-center" style="height: 270px;"><div class="text-center"><i data-feather="alert-triangle" class="font-large-1 text-muted mb-2"></i><p class="text-muted">Chart display issue - please refresh</p></div></div>';
-                                    }
-                                }, 100);
-                            });
-                        }
-                    } else {
-                        console.log('Chart SVG dimensions:', {
-                            width: svgElements[0].getAttribute('width'),
-                            height: svgElements[0].getAttribute('height')
-                        });
-                        console.log('Chart rendered successfully and visible!');
-                    }
-                }, 100);
-                
-            }).catch(error => {
-                console.error('Error rendering chart:', error);
-                $('#data-usage-chart').html('<div class="d-flex align-items-center justify-content-center" style="height: 270px;"><div class="text-center"><i data-feather="alert-triangle" class="font-large-1 text-muted mb-2"></i><p class="text-muted">Chart rendering failed</p></div></div>');
-            });
-        }, 50);
+            // Verify chart is visible
+            setTimeout(() => {
+                const svgElements = chartContainer.querySelectorAll('svg');
+                console.log('Chart SVG elements found:', svgElements.length);
+                if (svgElements.length > 0) {
+                    console.log('Chart is visible and working properly');
+                } else {
+                    console.warn('Chart SVG not found after render');
+                }
+            }, 100);
+            
+        }).catch(error => {
+            console.error('Error rendering chart:', error);
+            // Fallback display
+            chartContainer.innerHTML = '<div class="d-flex align-items-center justify-content-center" style="height: 270px;"><div class="text-center"><i data-feather="alert-triangle" class="font-large-1 text-muted mb-2"></i><p class="text-muted">Chart rendering failed</p></div></div>';
+        });
+        
     } catch (error) {
         console.error('Error creating chart:', error);
-        $('#data-usage-chart').html('<div class="d-flex align-items-center justify-content-center" style="height: 270px;"><div class="text-center"><i data-feather="alert-triangle" class="font-large-1 text-muted mb-2"></i><p class="text-muted">Chart creation failed</p></div></div>');
+        chartContainer.innerHTML = '<div class="d-flex align-items-center justify-content-center" style="height: 270px;"><div class="text-center"><i data-feather="alert-triangle" class="font-large-1 text-muted mb-2"></i><p class="text-muted">Chart creation failed</p></div></div>';
     }
 }
 
@@ -776,14 +751,25 @@ function showAnalyticsError() {
  */
 function showDataUsageLoading(show) {
     if (show) {
+        // Destroy any existing chart first
+        if (dataUsageChart) {
+            try {
+                dataUsageChart.destroy();
+            } catch (e) {
+                console.log('Chart destroy error during loading (safe to ignore):', e);
+            }
+            dataUsageChart = null;
+        }
+        
+        // Show loading spinner
         $('#data-usage-chart').html('<div class="d-flex align-items-center justify-content-center" style="height: 270px;"><div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div></div>');
         $('#total-bandwidth-used').text('Loading...');
         $('#download-usage').text('Loading...');
         $('#upload-usage').text('Loading...');
         // Don't change the period text while loading
     } else {
-        // Clear loading content - this will be handled by updateDataUsageChart
-        $('#data-usage-chart').empty();
+        // Don't clear the container content when loading is done
+        // This will be handled by updateDataUsageChart function
     }
 }
 
@@ -845,13 +831,13 @@ function initializeDashboard() {
         return;
     }
     
-    // Initialize chart with default data first
-    initializeDataUsageChart();
+    // Show loading state for data usage chart initially
+    showDataUsageLoading(true);
     
     // Load initial data
     loadDashboardOverview();
     loadAnalytics('7'); // Default to 7 days
-    loadDataUsageTrends('7'); // Default to 7 days
+    loadDataUsageTrends('7'); // Default to 7 days - this will replace the loading state
     
     // Set up event listeners
     setupEventListeners();
