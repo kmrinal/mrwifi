@@ -2315,7 +2315,7 @@
                                                                 <!-- Example Row -->
                                                                 <tr>
                                                                     <td>John Doe (iPhone 13)</td>
-                                                                    <td>00:1A:2B:3C:4D:5E</td>
+                                                                    <td>00-1A-2B-3C-4D-5E</td>
                                                                     <td>-</td>
                                                                     <td><span class="badge badge-light-info">Captive Portal</span></td>
                                                                     <td>1h 23m</td>
@@ -6125,9 +6125,76 @@ document.addEventListener('DOMContentLoaded', function() {
                 }, 100);
             });
             
-            // When password network modal is shown, ensure VLAN fields are properly toggled
+            // When password network modal is shown, load current settings and ensure VLAN fields are properly toggled
             $('#password-network-modal').on('shown.bs.modal', function() {
-                console.log('Password Network modal opened, checking VLAN fields');
+                console.log('Password Network modal opened, loading current settings');
+                
+                // Load current settings into modal fields
+                const locationId = getLocationId();
+                if (locationId) {
+                    $.ajax({
+                        url: `/api/locations/${locationId}/settings`,
+                        method: 'GET',
+                        headers: {
+                            'Authorization': 'Bearer ' + UserManager.getToken(),
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        success: function(response) {
+                            console.log('Password network modal: Settings loaded:', response);
+                            
+                            let settings = null;
+                            if (response.settings) {
+                                settings = response.settings;
+                            } else if (response.data && response.data.settings) {
+                                settings = response.data.settings;
+                            } else if (response.data) {
+                                settings = response.data;
+                            }
+                            
+                            if (settings) {
+                                // Populate modal fields with current values
+                                if (settings.password_wifi_ip_mode || settings.password_wifi_ip_type) {
+                                    $('#password-ip-assignment').val((settings.password_wifi_ip_mode || settings.password_wifi_ip_type).toUpperCase()).trigger('change');
+                                }
+                                if (settings.password_wifi_ip) {
+                                    $('#password-ip').val(settings.password_wifi_ip);
+                                    $('#password-gateway').val(settings.password_wifi_ip);
+                                }
+                                if (settings.password_wifi_netmask) {
+                                    $('#password-netmask').val(settings.password_wifi_netmask);
+                                }
+                                if (settings.password_wifi_dns1) {
+                                    $('#password-primary-dns').val(settings.password_wifi_dns1);
+                                }
+                                if (settings.password_wifi_dns2) {
+                                    $('#password-secondary-dns').val(settings.password_wifi_dns2);
+                                }
+                                if (settings.password_wifi_vlan) {
+                                    $('#password-wifi-vlan').val(settings.password_wifi_vlan);
+                                }
+                                if (settings.password_wifi_vlan_tagging) {
+                                    $('#password-wifi-vlan-tagging-modal').val(settings.password_wifi_vlan_tagging);
+                                }
+                                if (settings.password_wifi_dhcp_enabled !== undefined) {
+                                    $('#password-dhcp-server-toggle').prop('checked', settings.password_wifi_dhcp_enabled).trigger('change');
+                                }
+                                if (settings.password_wifi_dhcp_start) {
+                                    $('#password-dhcp-start').val(settings.password_wifi_dhcp_start);
+                                }
+                                if (settings.password_wifi_dhcp_end) {
+                                    $('#password-dhcp-end').val(settings.password_wifi_dhcp_end);
+                                }
+                                
+                                console.log('Password network modal: Fields populated with current settings');
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.log('Failed to load settings for password network modal:', error);
+                        }
+                    });
+                }
+                
                 setTimeout(function() {
                     toggleVlanFields();
                 }, 100);
@@ -6142,6 +6209,36 @@ document.addEventListener('DOMContentLoaded', function() {
                         toggleVlanFields();
                     }, 100);
                 }
+            });
+            
+            // Handle IP assignment mode changes in password network modal
+            $('#password-ip-assignment').on('change', function() {
+                const mode = $(this).val();
+                console.log('Password IP assignment mode changed to:', mode);
+                
+                if (mode === 'STATIC') {
+                    $('#password-static-fields').removeClass('hidden').show();
+                } else {
+                    $('#password-static-fields').addClass('hidden').hide();
+                }
+            });
+            
+            // Handle DHCP server toggle in password network modal
+            $('#password-dhcp-server-toggle').on('change', function() {
+                const enabled = $(this).is(':checked');
+                console.log('Password DHCP server toggle changed to:', enabled);
+                
+                if (enabled) {
+                    $('#password-dhcp-server-fields').removeClass('hidden').show();
+                } else {
+                    $('#password-dhcp-server-fields').addClass('hidden').hide();
+                }
+            });
+            
+            // Auto-update gateway when IP address changes in password network modal
+            $('#password-ip').on('input', function() {
+                const ipAddress = $(this).val();
+                $('#password-gateway').val(ipAddress);
             });
             
             // MAC address management for captive portal
@@ -6284,14 +6381,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Save to API
                 $.ajax({
-                    url: `/api/locations/${locationId}/settings`,
+                    url: `/api/locations/${locationId}`,
                     method: 'PUT',
                     headers: {
                         'Authorization': 'Bearer ' + UserManager.getToken(),
                         'Content-Type': 'application/json',
                         'Accept': 'application/json'
                     },
-                    data: JSON.stringify(passwordWifiData),
+                    data: JSON.stringify({
+                        settings_type: 'password_network',
+                        settings: passwordWifiData
+                    }),
                     success: function(response) {
                         console.log('Password WiFi settings saved successfully:', response);
                         
