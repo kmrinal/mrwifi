@@ -508,10 +508,21 @@
                                 <input type="text" class="form-control" id="location-longitude" placeholder="Enter longitude">
                             </div>
                         </div> -->
-                        <div class="form-group">
-                            <label for="location-router">Router MAC Address <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="location-router" placeholder="Format: 00:11:22:33:44:55">
-                            <small class="form-text text-muted">This will be used to create a new device for this location.</small>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="location-router">Router MAC Address <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="location-router" placeholder="Format: 00:11:22:33:44:55">
+                                <small class="form-text text-muted">This will be used to create a new device for this location.</small>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="device-model">Device Model <span class="text-danger">*</span></label>
+                                <select class="form-control" id="device-model" required>
+                                    <option value="">Select Device Model</option>
+                                    <option value="820AX">820AX</option>
+                                    <option value="835AX">835AX</option>
+                                </select>
+                                <small class="form-text text-muted">Select the model of your WiFi device.</small>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="location-notes">Description</label>
@@ -685,7 +696,7 @@
                     var total_data_formatted = total_data_gb > 1024 ? 
                         (total_data_gb / 1024).toFixed(1) + 'TB' : 
                         total_data_gb.toFixed(1) + 'GB';
-                    
+
                     $("#total-locations").text(total_locations);
                     $("#online-locations").text(online_locations);
                     $("#total-users").text(total_users);
@@ -740,16 +751,17 @@
                     name: $('#location-name').val(),
                     address: $('#location-address').val(),
                     mac_address: $('#location-router').val(), // This will be used to create the device
+                    model: $('#device-model').val(), // Device model selection
                     description: $('#location-notes').val()
                 };
-                
+
                 // Validate required fields
                 let hasErrors = false;
                 if (!locationData.name) {
                     showFieldError('location-name', 'Location name is required');
                     hasErrors = true;
                 }
-                
+
                 if (!locationData.mac_address) {
                     showFieldError('location-router', 'Router MAC address is required');
                     hasErrors = true;
@@ -757,7 +769,12 @@
                     showFieldError('location-router', 'Please enter a valid MAC address (e.g., 00:11:22:33:44:55)');
                     hasErrors = true;
                 }
-                
+
+                if (!locationData.model) {
+                    showFieldError('device-model', 'Device model is required');
+                    hasErrors = true;
+                }
+
                 if (hasErrors) {
                     // Reset button state
                     submitBtn.html(originalBtnText);
@@ -778,16 +795,31 @@
                         // Show success message on button
                         $('#add-location-btn').removeClass('btn-primary');
                         $('#add-location-btn').addClass('btn-success');
-                        $('#add-location-btn').html('Location created successfully');
+                        
+                        let successMessage = 'Location created successfully';
+                        if (response.firmware) {
+                            successMessage += `<br><small>Assigned firmware: ${response.firmware.name}</small>`;
+                        }
+
+                        $('#add-location-btn').html(successMessage);
                         $('#add-location-btn').prop('disabled', true);
-                        // Hide modal after 3 seconds
+                        
+                        // Hide modal after 4 seconds (increased to allow reading firmware info)
                         setTimeout(function() {
                             $('#add-location-btn').removeClass('btn-success');
                             $('#add-location-btn').addClass('btn-primary');
                             $('#add-location-btn').html('Add Location');
                             $('#add-location-btn').prop('disabled', false);
                             $('#add-location-modal').modal('hide');
-                        }, 3000);
+                            
+                            // Clear form
+                            $('#add-location-form')[0].reset();
+                            $('.form-error').remove();
+                            $('.is-invalid').removeClass('is-invalid');
+                            
+                            // Reload page to show new location
+                            window.location.reload();
+                        }, 4000);
                         
                         // alert('Location created successfully');
                     },

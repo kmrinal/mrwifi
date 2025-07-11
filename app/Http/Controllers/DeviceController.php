@@ -86,11 +86,9 @@ class DeviceController extends Controller
             $firmware = Firmware::forModel($device->model)->orderBy('created_at', 'desc')->first();
         }
         
-        // Set firmware_id if firmware is found
-        if ($firmware) {
-            $device->firmware_id = $firmware->id;
-            $device->save();
-        }
+        // Set firmware_id - either the found firmware ID or 0 if no firmware found
+        $device->firmware_id = $firmware ? $firmware->id : 0;
+        $device->save();
 
         return redirect()->route('devices.index')
             ->with('success', 'Device created successfully.');
@@ -225,25 +223,40 @@ class DeviceController extends Controller
         Log::info('Firmware version: ' . $firmware_version);
         Log::info('Device: ');
         Log::info($device);
-        $firmware_info = Firmware::where('id', $firmware_version)->first();
+        
+        // Only try to get firmware info if firmware_id is not 0
+        $firmware_info = null;
+        if ($firmware_version && $firmware_version > 0) {
+            $firmware_info = Firmware::where('id', $firmware_version)->first();
+        }
+        
         Log::info('Firmware info: ');
         Log::info($firmware_info);
+        
         if (!$firmware_info) {
             $firmware_version = 0;
         }
 
-        $file_name = $firmware_info->file_path;
-        // remove the first part of the file_path after the last /
-        $file_name = substr($file_name, strrpos($file_name, '/') + 1);
-
-        // Generate full URL for firmware file
-        $firmware_url = $firmware_info ? Storage::disk('public')->url($firmware_info->file_path) : null;
+        // Handle firmware file information
+        $file_name = null;
+        $firmware_url = null;
+        $firmware_hash = null;
+        
+        if ($firmware_info) {
+            $file_name = $firmware_info->file_path;
+            // remove the first part of the file_path after the last /
+            $file_name = substr($file_name, strrpos($file_name, '/') + 1);
+            
+            // Generate full URL for firmware file
+            $firmware_url = Storage::disk('public')->url($firmware_info->file_path);
+            $firmware_hash = $firmware_info->md5sum;
+        }
 
         $firmware = [
             'version' => $firmware_version,
             'file_path' => $firmware_url,
             'file_name' => $file_name,
-            'hash' => $firmware_info->md5sum,
+            'hash' => $firmware_hash,
         ];
 
         return response()->json(

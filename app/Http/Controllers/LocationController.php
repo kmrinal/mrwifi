@@ -7,6 +7,7 @@ use App\Models\Device;
 use App\Models\LocationSettings;
 use App\Models\SystemSetting;
 use App\Models\Radacct;
+use App\Models\Firmware;
 use App\Services\GeocodingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -140,7 +141,7 @@ class LocationController extends Controller
             'contact_email' => 'nullable|email|max:255',
             'contact_phone' => 'nullable|string|max:255',
             'mac_address' => 'required|string|max:255|unique:devices,mac_address',
-            // 'device_name' => 'required|string|max:255',
+            'model' => 'required|string|in:820AX,835AX',
             'serial_number' => 'nullable|string|max:255|unique:devices,serial_number',
         ]);
 
@@ -179,6 +180,7 @@ class LocationController extends Controller
         $mac_address = str_replace(':', '-', $request->mac_address);
         $device->name = $request->mac_address;
         $device->mac_address = $mac_address;
+        $device->model = $request->model; // Set the device model
         $device->configuration_version = 1;
         if ($request->serial_number) {
             $device->serial_number = $request->serial_number;
@@ -187,6 +189,23 @@ class LocationController extends Controller
         }
         $device->device_key = Str::random(20);
         $device->device_secret = Str::random(30);
+        $device->save();
+
+                // Try to get the default firmware for the device model
+        $firmware = Firmware::getDefaultForModel($device->model);
+        
+        // If no default firmware found, get the latest enabled firmware for the model
+        if (!$firmware) {
+            $firmware = Firmware::forModel($device->model)->enabled()->orderBy('created_at', 'desc')->first();
+        }
+        
+        // If still no firmware found, get the latest firmware for the model (even if disabled)
+        if (!$firmware) {
+            $firmware = Firmware::forModel($device->model)->orderBy('created_at', 'desc')->first();
+        }
+        
+        // Set firmware_id - either the found firmware ID or 0 if no firmware found
+        $device->firmware_id = $firmware ? $firmware->id : 0;
         $device->save();
 
         // Create the location with the device
@@ -221,7 +240,13 @@ class LocationController extends Controller
             'success' => true,
             'message' => 'Location and device created successfully.',
             'location' => $location,
-            'device' => $device
+            'device' => $device,
+            'firmware' => $firmware ? [
+                'id' => $firmware->id,
+                'name' => $firmware->name,
+                'version' => $firmware->version,
+                'is_default' => $firmware->default_model_firmware
+            ] : null
         ]);
     }
 
