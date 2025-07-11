@@ -2849,11 +2849,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                         <div class="form-group">
                             <label>Gateway</label>
-                            <input type="text" class="form-control" placeholder="192.168.1.1" id="password-gateway" value="">
-                        </div>
-                        <div class="form-group">
-                            <label>Broadcast IP</label>
-                            <input type="text" class="form-control" placeholder="192.168.1.255" id="password-broadcast" value="">
+                            <input type="text" class="form-control" placeholder="192.168.1.1" id="password-gateway" value="" readonly>
+                            <small class="text-muted">Gateway is automatically set to the same as IP address.</small>
                         </div>
                         <div class="form-group">
                             <label>Primary DNS</label>
@@ -2871,8 +2868,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                         
                         <div class="form-group vlan-setting">
-                            <label>VLAN Tagging</label>
-                            <select class="form-control" id="password-wifi-vlan-tagging" disabled>
+                            <label for="password-wifi-vlan-tagging-modal">VLAN Tagging</label>
+                            <select class="form-control" id="password-wifi-vlan-tagging-modal" disabled>
                                 <option value="disabled">Disabled</option>
                                 <option value="tagged">Tagged</option>
                                 <option value="untagged">Untagged</option>
@@ -3070,8 +3067,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                     
                     <div class="form-group vlan-setting">
-                        <label for="captive-portal-vlan-tagging">VLAN Tagging</label>
-                        <select class="form-control" id="captive-portal-vlan-tagging" disabled>
+                        <label for="captive-portal-vlan-tagging-modal">VLAN Tagging</label>
+                        <select class="form-control" id="captive-portal-vlan-tagging-modal" disabled>
                             <option value="disabled">Disabled</option>
                             <option value="tagged">Tagged</option>
                             <option value="untagged">Untagged</option>
@@ -4539,18 +4536,50 @@ document.addEventListener('DOMContentLoaded', function() {
             // Load last scan results when page loads
             loadLastScanResults();
             
-            // Load radio settings when page loads
-            loadRadioSettings();
+            // Load all device settings when page loads
+            loadDeviceSettings();
 
-            // Function to load radio settings from database
-            function loadRadioSettings() {
+            // Function to load all device settings from API 
+            function loadDeviceSettings() {
                 const locationId = getLocationId();
                 if (!locationId) {
-                    console.log('No location ID found - cannot load radio settings');
+                    console.log('No location ID found - cannot load device settings');
                     return;
                 }
 
-                console.log('Loading radio settings for location:', locationId);
+                console.log('Loading device settings for location:', locationId);
+                
+                // Try the direct device settings endpoint first
+                if (window.currentDeviceData && window.currentDeviceData.device_token) {
+                    const deviceId = window.currentDeviceData.id;
+                    const deviceToken = window.currentDeviceData.device_token;
+                    
+                    $.ajax({
+                        url: `/api/devices/${deviceId}/${deviceToken}/settings`,
+                        method: 'GET',
+                        headers: {
+                            'Authorization': 'Bearer ' + UserManager.getToken(),
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        success: function(response) {
+                            console.log('Device settings loaded from direct endpoint:', response);
+                            populateAllSettings(response);
+                        },
+                        error: function(xhr, status, error) {
+                            console.log('Failed to load from device endpoint, trying location settings:', error);
+                            loadLocationSettings();
+                        }
+                    });
+                } else {
+                    // Fallback to location settings
+                    loadLocationSettings();
+                }
+            }
+
+            // Function to load settings from location endpoint
+            function loadLocationSettings() {
+                const locationId = getLocationId();
                 
                 $.ajax({
                     url: `/api/locations/${locationId}/settings`,
@@ -4561,52 +4590,217 @@ document.addEventListener('DOMContentLoaded', function() {
                         'Accept': 'application/json'
                     },
                     success: function(response) {
-                        console.log('Radio settings loaded:', response);
-                        
-                        if (response.success && response.data && response.data.settings) {
-                            const settings = response.data.settings;
-                            
-                            // Populate Country/Region
-                            if (settings.country_code) {
-                                $('#wifi-country').val(settings.country_code);
-                            }
-                            
-                            // Populate 2.4 GHz Power
-                            if (settings.transmit_power_2g) {
-                                $('#power-level-2g').val(settings.transmit_power_2g);
-                            }
-                            
-                            // Populate 5 GHz Power
-                            if (settings.transmit_power_5g) {
-                                $('#power-level-5g').val(settings.transmit_power_5g);
-                            }
-                            
-                            // Populate Channel Widths
-                            if (settings.channel_width_2g) {
-                                $('#channel-width-2g').val(settings.channel_width_2g);
-                            }
-                            
-                            if (settings.channel_width_5g) {
-                                $('#channel-width-5g').val(settings.channel_width_5g);
-                            }
-                            
-                            // Populate Channels
-                            if (settings.channel_2g) {
-                                $('#channel-2g').val(settings.channel_2g);
-                            }
-                            
-                            if (settings.channel_5g) {
-                                $('#channel-5g').val(settings.channel_5g);
-                            }
-                            
-                            console.log('Radio settings populated successfully');
-                        }
+                        console.log('Location settings loaded:', response);
+                        populateAllSettings(response);
                     },
                     error: function(xhr, status, error) {
-                        console.log('Failed to load radio settings:', error);
+                        console.log('Failed to load location settings:', error);
                         // Don't show error toast as settings might not exist yet
                     }
                 });
+            }
+
+            // Function to populate all form fields with settings data
+            function populateAllSettings(response) {
+                console.log('Populating all settings with:', response);
+                
+                let settings = null;
+                
+                // Extract settings from different response formats
+                if (response.settings) {
+                    settings = response.settings;
+                } else if (response.data && response.data.settings) {
+                    settings = response.data.settings;
+                } else if (response.data) {
+                    settings = response.data;
+                }
+                
+                if (!settings) {
+                    console.log('No settings found in response');
+                    return;
+                }
+
+                console.log('Extracted settings:', settings);
+                
+                // **VLAN Settings**
+                if (settings.vlan_enabled !== undefined) {
+                    $('#vlan-enabled').prop('checked', settings.vlan_enabled);
+                    console.log('Set VLAN enabled to:', settings.vlan_enabled);
+                }
+                
+                // **Radio Settings**
+                if (settings.country_code) {
+                    $('#wifi-country').val(settings.country_code);
+                }
+                if (settings.transmit_power_2g) {
+                    $('#power-level-2g').val(settings.transmit_power_2g);
+                }
+                if (settings.transmit_power_5g) {
+                    $('#power-level-5g').val(settings.transmit_power_5g);
+                }
+                if (settings.channel_width_2g) {
+                    $('#channel-width-2g').val(settings.channel_width_2g);
+                }
+                if (settings.channel_width_5g) {
+                    $('#channel-width-5g').val(settings.channel_width_5g);
+                }
+                if (settings.channel_2g) {
+                    $('#channel-2g').val(settings.channel_2g);
+                }
+                if (settings.channel_5g) {
+                    $('#channel-5g').val(settings.channel_5g);
+                }
+                
+                // **Captive Portal Settings**
+                if (settings.captive_portal_ssid) {
+                    $('#captive-portal-ssid').val(settings.captive_portal_ssid);
+                }
+                if (settings.captive_portal_visible !== undefined) {
+                    $('#captive-portal-visible').val(settings.captive_portal_visible ? '1' : '0');
+                }
+                if (settings.captive_auth_method) {
+                    $('#captive-auth-method').val(settings.captive_auth_method).trigger('change');
+                }
+                if (settings.captive_portal_password) {
+                    $('#captive_portal_password').val(settings.captive_portal_password);
+                }
+                if (settings.session_timeout) {
+                    $('#captive-session-timeout').val(settings.session_timeout);
+                }
+                if (settings.idle_timeout) {
+                    $('#captive-idle-timeout').val(settings.idle_timeout);
+                }
+                if (settings.download_limit) {
+                    $('#captive-download-limit').val(settings.download_limit);
+                }
+                if (settings.upload_limit) {
+                    $('#captive-upload-limit').val(settings.upload_limit);
+                }
+                if (settings.redirect_url || settings.captive_portal_redirect) {
+                    $('#captive-portal-redirect').val(settings.redirect_url || settings.captive_portal_redirect);
+                }
+                
+                // **Captive Portal Network Settings**
+                if (settings.captive_portal_ip) {
+                    $('#captive-portal-ip').val(settings.captive_portal_ip);
+                }
+                if (settings.captive_portal_netmask) {
+                    $('#captive-portal-netmask').val(settings.captive_portal_netmask);
+                }
+                if (settings.captive_portal_gateway) {
+                    $('#captive-portal-gateway').val(settings.captive_portal_gateway);
+                }
+                if (settings.captive_portal_vlan) {
+                    $('#captive-portal-vlan').val(settings.captive_portal_vlan);
+                }
+                if (settings.captive_portal_vlan_tagging) {
+                    $('#captive-portal-vlan-tagging').val(settings.captive_portal_vlan_tagging);
+                    $('#captive-portal-vlan-tagging-modal').val(settings.captive_portal_vlan_tagging);
+                }
+                
+                // **Password WiFi Settings**
+                if (settings.password_wifi_ssid || settings.wifi_name) {
+                    $('#password-wifi-ssid').val(settings.password_wifi_ssid || settings.wifi_name);
+                }
+                if (settings.password_wifi_password || settings.wifi_password) {
+                    $('#password-wifi-password').val(settings.password_wifi_password || settings.wifi_password);
+                }
+                if (settings.password_wifi_security || settings.wifi_security_type) {
+                    const security = settings.password_wifi_security || settings.wifi_security_type;
+                    if (security === 'WPA2') {
+                        $('#password-wifi-security').val('wpa2-psk');
+                    } else {
+                        $('#password-wifi-security').val(security.toLowerCase());
+                    }
+                }
+                if (settings.password_wifi_cipher_suites) {
+                    $('#password_wifi_cipher_suites').val(settings.password_wifi_cipher_suites);
+                }
+                
+                // **Password WiFi Network Settings**
+                if (settings.password_wifi_ip_mode || settings.password_wifi_ip_type) {
+                    $('#password-ip-assignment').val((settings.password_wifi_ip_mode || settings.password_wifi_ip_type).toUpperCase()).trigger('change');
+                }
+                if (settings.password_wifi_ip) {
+                    $('#password-ip').val(settings.password_wifi_ip);
+                    // For password WiFi, gateway is typically the same as IP address
+                    $('#password-gateway').val(settings.password_wifi_ip);
+                    // Update the display as well
+                    $('#password-gateway-display').text(settings.password_wifi_ip);
+                }
+                if (settings.password_wifi_netmask) {
+                    $('#password-netmask').val(settings.password_wifi_netmask);
+                }
+                if (settings.password_wifi_dns1) {
+                    $('#password-primary-dns').val(settings.password_wifi_dns1);
+                }
+                if (settings.password_wifi_dns2) {
+                    $('#password-secondary-dns').val(settings.password_wifi_dns2);
+                }
+                if (settings.password_wifi_vlan) {
+                    $('#password-wifi-vlan').val(settings.password_wifi_vlan);
+                }
+                if (settings.password_wifi_vlan_tagging) {
+                    $('#password-wifi-vlan-tagging').val(settings.password_wifi_vlan_tagging);
+                    $('#password-wifi-vlan-tagging-modal').val(settings.password_wifi_vlan_tagging);
+                }
+                if (settings.password_wifi_dhcp_enabled !== undefined) {
+                    $('#password-dhcp-server-toggle').prop('checked', settings.password_wifi_dhcp_enabled).trigger('change');
+                }
+                if (settings.password_wifi_dhcp_start) {
+                    $('#password-dhcp-start').val(settings.password_wifi_dhcp_start);
+                }
+                if (settings.password_wifi_dhcp_end) {
+                    $('#password-dhcp-end').val(settings.password_wifi_dhcp_end);
+                }
+                
+                // **WAN Settings**
+                if (settings.wan_connection_type) {
+                    $('#wan-connection-type').val(settings.wan_connection_type).trigger('change');
+                }
+                if (settings.wan_ip_address) {
+                    $('#wan-ip-address').val(settings.wan_ip_address);
+                }
+                if (settings.wan_netmask) {
+                    $('#wan-netmask').val(settings.wan_netmask);
+                }
+                if (settings.wan_gateway) {
+                    $('#wan-gateway').val(settings.wan_gateway);
+                }
+                if (settings.wan_primary_dns) {
+                    $('#wan-primary-dns').val(settings.wan_primary_dns);
+                }
+                if (settings.wan_secondary_dns) {
+                    $('#wan-secondary-dns').val(settings.wan_secondary_dns);
+                }
+                if (settings.wan_pppoe_username) {
+                    $('#wan-pppoe-username').val(settings.wan_pppoe_username);
+                }
+                if (settings.wan_pppoe_password) {
+                    $('#wan-pppoe-password').val(settings.wan_pppoe_password);
+                }
+                if (settings.wan_pppoe_service_name) {
+                    $('#wan-pppoe-service-name').val(settings.wan_pppoe_service_name);
+                }
+                
+                // **Web Filter Settings**
+                if (settings.web_filter_enabled !== undefined) {
+                    $('#global-web-filter').prop('checked', settings.web_filter_enabled);
+                }
+                
+                // **MAC Filter Settings**
+                if (settings.mac_filter_mode) {
+                    $('#portal-mac-filter').val(settings.mac_filter_mode);
+                    $('#secured-mac-filter').val(settings.mac_filter_mode);
+                }
+                
+                console.log('All settings populated successfully');
+                
+                // **Important: Trigger VLAN toggle after all fields are populated**
+                setTimeout(function() {
+                    toggleVlanFields();
+                    console.log('VLAN fields toggled after settings population');
+                }, 100);
             }
 
             // Event handlers for web filter settings
@@ -5603,6 +5797,642 @@ document.addEventListener('DOMContentLoaded', function() {
                         error: error
                     });
                 }
+            });
+            
+            // Function to toggle VLAN fields based on VLAN enabled checkbox
+            function toggleVlanFields() {
+                const vlanEnabled = $('#vlan-enabled').is(':checked');
+                console.log('Toggling VLAN fields, enabled:', vlanEnabled);
+                
+                // Specific VLAN field IDs to target (including modal fields)
+                const vlanFields = [
+                    '#captive-portal-vlan',
+                    '#captive-portal-vlan-tagging',
+                    '#password-wifi-vlan',
+                    '#password-wifi-vlan-tagging',
+                    // Modal specific fields with unique IDs
+                    '#captive-portal-vlan-tagging-modal',
+                    '#password-wifi-vlan-tagging-modal'
+                ];
+                
+                // Toggle all VLAN setting fields by class and specific IDs
+                $('.vlan-setting input, .vlan-setting select').prop('disabled', !vlanEnabled);
+                
+                // Also target specific VLAN field IDs to ensure they get toggled
+                vlanFields.forEach(function(fieldId) {
+                    const field = $(fieldId);
+                    if (field.length > 0) {
+                        field.prop('disabled', !vlanEnabled);
+                        console.log(`✅ Toggled ${fieldId}: disabled = ${!vlanEnabled}`);
+                    }
+                });
+                
+                // Special handling for fields in visible modals
+                $('.modal.show .vlan-setting input, .modal.show .vlan-setting select').prop('disabled', !vlanEnabled);
+                
+                // Update visual styling for all VLAN settings (including in modals)
+                const vlanSettingContainers = $('.vlan-setting, .modal .vlan-setting');
+                
+                if (vlanEnabled) {
+                    vlanSettingContainers.removeClass('text-muted').find('label').removeClass('text-muted');
+                    vlanSettingContainers.find('small').removeClass('text-muted').addClass('text-info');
+                    console.log('VLAN fields enabled - should be interactive now');
+                } else {
+                    vlanSettingContainers.addClass('text-muted').find('label').addClass('text-muted');
+                    vlanSettingContainers.find('small').removeClass('text-info').addClass('text-muted');
+                    
+                    // Clear VLAN values when disabled
+                    vlanSettingContainers.find('input[type="number"]').val('');
+                    vlanSettingContainers.find('select').val('disabled');
+                    console.log('VLAN fields disabled and cleared');
+                }
+                
+                // Debug: Log the state of specific fields
+                console.log('=== VLAN Field States ===');
+                vlanFields.forEach(function(fieldId) {
+                    const field = $(fieldId);
+                    if (field.length > 0) {
+                        console.log(`✅ ${fieldId}: disabled = ${field.prop('disabled')}, value = "${field.val()}"`);
+                    } else {
+                        console.log(`❌ ${fieldId}: not found in DOM`);
+                    }
+                });
+                
+                // Also check if fields are in visible modals
+                $('.modal.show').each(function() {
+                    const modalId = $(this).attr('id');
+                    const modalVlanFields = $(this).find('.vlan-setting input, .vlan-setting select');
+                    console.log(`Modal ${modalId} has ${modalVlanFields.length} VLAN fields`);
+                    modalVlanFields.each(function() {
+                        const fieldId = $(this).attr('id');
+                        console.log(`  - Modal field #${fieldId}: disabled = ${$(this).prop('disabled')}`);
+                    });
+                });
+                console.log('=== End VLAN Debug ===');
+            }
+            
+            // Event handler for VLAN enabled checkbox
+            $('#vlan-enabled').on('change', function() {
+                console.log('VLAN checkbox changed, checked:', $(this).is(':checked'));
+                toggleVlanFields();
+            });
+            
+            // Initialize VLAN fields state on page load
+            setTimeout(function() {
+                console.log('Initializing VLAN fields on page load');
+                console.log('VLAN checkbox exists:', $('#vlan-enabled').length > 0);
+                console.log('VLAN checkbox initial state:', $('#vlan-enabled').is(':checked'));
+                toggleVlanFields();
+            }, 500);
+            
+            // Debug: Manual test function for VLAN (can be called from browser console)
+            window.testVlanToggle = function() {
+                console.log('=== Manual VLAN Test ===');
+                const checkbox = $('#vlan-enabled');
+                console.log('Checkbox exists:', checkbox.length > 0);
+                console.log('Checkbox checked:', checkbox.is(':checked'));
+                
+                // Toggle checkbox programmatically
+                checkbox.prop('checked', !checkbox.is(':checked'));
+                console.log('Toggled checkbox to:', checkbox.is(':checked'));
+                
+                // Trigger the change event
+                checkbox.trigger('change');
+            };
+            
+            // Additional debugging: Check if VLAN fields exist and log their initial state
+            $(document).ready(function() {
+                setTimeout(function() {
+                    console.log('=== VLAN Fields Debug ===');
+                    const vlanFieldSelectors = [
+                        '#captive-portal-vlan',
+                        '#captive-portal-vlan-tagging', 
+                        '#password-wifi-vlan',
+                        '#password-wifi-vlan-tagging'
+                    ];
+                    
+                    vlanFieldSelectors.forEach(function(selector) {
+                        const field = $(selector);
+                        if (field.length > 0) {
+                            console.log(`${selector}: exists, disabled=${field.prop('disabled')}, value="${field.val()}"`);
+                        } else {
+                            console.log(`${selector}: NOT FOUND`);
+                        }
+                    });
+                    
+                    console.log('VLAN setting divs count:', $('.vlan-setting').length);
+                    console.log('=== End VLAN Debug ===');
+                }, 1000);
+            });
+            
+            // Password visibility toggle handlers
+            $('#toggle-password').on('click', function() {
+                const passwordField = $('#password-wifi-password');
+                const icon = $(this).find('i');
+                
+                if (passwordField.attr('type') === 'password') {
+                    passwordField.attr('type', 'text');
+                    icon.attr('data-feather', 'eye-off');
+                } else {
+                    passwordField.attr('type', 'password');
+                    icon.attr('data-feather', 'eye');
+                }
+                feather.replace();
+            });
+            
+            $('#toggle-captive-password').on('click', function() {
+                const passwordField = $('#captive_portal_password');
+                const icon = $(this).find('i');
+                
+                if (passwordField.attr('type') === 'password') {
+                    passwordField.attr('type', 'text');
+                    icon.attr('data-feather', 'eye-off');
+                } else {
+                    passwordField.attr('type', 'password');
+                    icon.attr('data-feather', 'eye');
+                }
+                feather.replace();
+            });
+            
+            $('#toggle-portal-password').on('click', function() {
+                const passwordField = $('#portal-shared-password');
+                const icon = $(this).find('i');
+                
+                if (passwordField.attr('type') === 'password') {
+                    passwordField.attr('type', 'text');
+                    icon.attr('data-feather', 'eye-off');
+                } else {
+                    passwordField.attr('type', 'password');
+                    icon.attr('data-feather', 'eye');
+                }
+                feather.replace();
+            });
+            
+            // Authentication method change handler for captive portal
+            $('#captive-auth-method').on('change', function() {
+                const method = $(this).val();
+                
+                // Hide all auth option sections
+                $('.auth-options-section').hide();
+                
+                // Show relevant section based on method
+                switch(method) {
+                    case 'password':
+                        $('#password-auth-options').show();
+                        break;
+                    case 'sms':
+                        $('#sms-auth-options').show();
+                        break;
+                    case 'email':
+                        $('#email-auth-options').show();
+                        break;
+                    case 'social':
+                        $('#social-auth-options').show();
+                        break;
+                    default:
+                        // click-through - no additional options needed
+                        break;
+                }
+            });
+            
+            // IP assignment change handler for password WiFi
+            $('#password-ip-assignment').on('change', function() {
+                const assignment = $(this).val();
+                
+                if (assignment === 'STATIC') {
+                    $('#password-static-fields').removeClass('hidden').show();
+                    $('#dhcp-client-message').hide();
+                } else {
+                    $('#password-static-fields').addClass('hidden').hide();
+                    $('#dhcp-client-message').show();
+                }
+            });
+            
+            // DHCP server toggle for password WiFi
+            $('#password-dhcp-server-toggle').on('change', function() {
+                const enabled = $(this).is(':checked');
+                
+                if (enabled) {
+                    $('#password-dhcp-server-fields').removeClass('hidden').show();
+                } else {
+                    $('#password-dhcp-server-fields').addClass('hidden').hide();
+                }
+            });
+            
+            // WAN connection type change handler
+            $('#wan-connection-type').on('change', function() {
+                const connectionType = $(this).val();
+                
+                // Hide all connection type specific fields
+                $('#wan-static-fields').addClass('hidden').hide();
+                $('#wan-pppoe-fields').hide();
+                
+                // Show relevant fields based on connection type
+                switch(connectionType) {
+                    case 'STATIC':
+                        $('#wan-static-fields').removeClass('hidden').show();
+                        break;
+                    case 'PPPOE':
+                        $('#wan-pppoe-fields').show();
+                        break;
+                    default:
+                        // DHCP - no additional fields needed
+                        break;
+                }
+            });
+            
+            // Initialize form field visibility on page load
+            $('#captive-auth-method').trigger('change');
+            $('#password-ip-assignment').trigger('change');
+            $('#password-dhcp-server-toggle').trigger('change');
+            $('#wan-connection-type').trigger('change');
+            
+            // Auto-update gateway when password WiFi IP changes
+            $('#password-ip').on('input', function() {
+                const ipAddress = $(this).val();
+                $('#password-gateway').val(ipAddress);
+                $('#password-gateway-display').text(ipAddress);
+                console.log('Password WiFi gateway auto-updated to:', ipAddress);
+            });
+            
+            // **Modal Event Handlers for VLAN fields**
+            // When captive portal modal is shown, ensure VLAN fields are properly toggled
+            $('#captive-portal-modal').on('shown.bs.modal', function() {
+                console.log('Captive Portal modal opened, checking VLAN fields');
+                setTimeout(function() {
+                    toggleVlanFields();
+                }, 100);
+            });
+            
+            // When password network modal is shown, ensure VLAN fields are properly toggled
+            $('#password-network-modal').on('shown.bs.modal', function() {
+                console.log('Password Network modal opened, checking VLAN fields');
+                setTimeout(function() {
+                    toggleVlanFields();
+                }, 100);
+            });
+            
+            // When any modal with VLAN fields is shown, ensure VLAN fields are properly toggled
+            $('.modal').on('shown.bs.modal', function() {
+                const modalId = $(this).attr('id');
+                if (modalId && (modalId.includes('captive') || modalId.includes('password') || modalId.includes('network'))) {
+                    console.log(`Modal ${modalId} opened, checking VLAN fields`);
+                    setTimeout(function() {
+                        toggleVlanFields();
+                    }, 100);
+                }
+            });
+            
+            // MAC address management for captive portal
+            $('#captive-add-mac').on('click', function() {
+                const macAddress = $('#captive-mac-address').val().trim();
+                const filterType = $('#portal-mac-filter').val();
+                
+                if (!macAddress) {
+                    toastr.error('Please enter a MAC address');
+                    return;
+                }
+                
+                // Simple MAC address validation
+                const macRegex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
+                if (!macRegex.test(macAddress)) {
+                    toastr.error('Please enter a valid MAC address format (00:11:22:33:44:55)');
+                    return;
+                }
+                
+                // Add MAC address to the list
+                const macList = $('.filtered-mac-list');
+                const macItem = `
+                    <div class="d-flex justify-content-between align-items-center p-1 border-bottom">
+                        <span class="small">${macAddress}</span>
+                        <button type="button" class="btn btn-sm btn-outline-danger remove-mac">
+                            <i data-feather="x" style="width: 12px; height: 12px;"></i>
+                        </button>
+                    </div>
+                `;
+                
+                macList.append(macItem);
+                $('#captive-mac-address').val('');
+                feather.replace();
+                
+                toastr.success('MAC address added to ' + filterType + ' list');
+            });
+            
+            // MAC address management for password WiFi
+            $('#secured-add-mac').on('click', function() {
+                const macAddress = $('#secured-mac-address').val().trim();
+                const filterType = $('#secured-mac-filter').val();
+                
+                if (!macAddress) {
+                    toastr.error('Please enter a MAC address');
+                    return;
+                }
+                
+                // Simple MAC address validation
+                const macRegex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
+                if (!macRegex.test(macAddress)) {
+                    toastr.error('Please enter a valid MAC address format (00:11:22:33:44:55)');
+                    return;
+                }
+                
+                // Add MAC address to the list
+                const macList = $('#secured-wifi .filtered-mac-list');
+                const macItem = `
+                    <div class="d-flex justify-content-between align-items-center p-1 border-bottom">
+                        <span class="small">${macAddress}</span>
+                        <button type="button" class="btn btn-sm btn-outline-danger remove-mac">
+                            <i data-feather="x" style="width: 12px; height: 12px;"></i>
+                        </button>
+                    </div>
+                `;
+                
+                macList.append(macItem);
+                $('#secured-mac-address').val('');
+                feather.replace();
+                
+                toastr.success('MAC address added to ' + filterType + ' list');
+            });
+            
+            // Remove MAC address handler (delegated event for dynamic elements)
+            $(document).on('click', '.remove-mac', function() {
+                $(this).closest('.d-flex').remove();
+                toastr.success('MAC address removed');
+            });
+            
+            // MAC address input validation (format as user types)
+            $('#captive-mac-address, #secured-mac-address').on('input', function() {
+                let value = $(this).val().replace(/[^0-9A-Fa-f]/g, '');
+                let formatted = '';
+                
+                for (let i = 0; i < value.length && i < 12; i++) {
+                    if (i > 0 && i % 2 === 0) {
+                        formatted += ':';
+                    }
+                    formatted += value[i];
+                }
+                
+                $(this).val(formatted.toUpperCase());
+            });
+            
+            // **Fix for Password WiFi Save Handler**
+            // Override the external JS handler to exclude problematic fields
+            $('.save-password-network').off('click').on('click', function(e) {
+                e.preventDefault();
+                console.log('Password WiFi save clicked - using fixed handler');
+                
+                const locationId = getLocationId();
+                if (!locationId) {
+                    toastr.error('Location ID not found');
+                    return;
+                }
+                
+                // Determine if we're in a modal context
+                const isModal = $(e.target).closest('.modal').length > 0;
+                const modalId = isModal ? $(e.target).closest('.modal').attr('id') : null;
+                
+                console.log('Password WiFi save context:', isModal ? 'Modal: ' + modalId : 'Main form');
+                
+                // Collect form data - EXCLUDING the problematic password_wifi_gateway field
+                const passwordWifiData = {
+                    password_wifi_ssid: $('#password-wifi-ssid').val(),
+                    password_wifi_password: $('#password-wifi-password').val(),
+                    password_wifi_security: $('#password-wifi-security').val(),
+                    password_wifi_cipher_suites: $('#password_wifi_cipher_suites').val(),
+                    password_wifi_ip_mode: $('#password-ip-assignment').val(),
+                    password_wifi_ip: $('#password-ip').val(),
+                    password_wifi_netmask: $('#password-netmask').val(),
+                    password_wifi_dns1: $('#password-primary-dns').val(),
+                    password_wifi_dns2: $('#password-secondary-dns').val(),
+                    password_wifi_vlan: $('#password-wifi-vlan').val(),
+                    // Use the correct VLAN tagging field based on context
+                    password_wifi_vlan_tagging: isModal && modalId === 'password-network-modal' 
+                        ? $('#password-wifi-vlan-tagging-modal').val() 
+                        : $('#password-wifi-vlan-tagging').val(),
+                    password_wifi_dhcp_enabled: $('#password-dhcp-server-toggle').is(':checked'),
+                    password_wifi_dhcp_start: $('#password-dhcp-start').val(),
+                    password_wifi_dhcp_end: $('#password-dhcp-end').val()
+                    // NOTE: Intentionally NOT including password_wifi_gateway since it doesn't exist in DB
+                };
+                
+                console.log('Saving password WiFi data (without gateway):', passwordWifiData);
+                
+                // Show loading state
+                const $button = $(this);
+                const originalText = $button.html();
+                $button.html('<i data-feather="loader" class="mr-1"></i> Saving...').prop('disabled', true);
+                
+                // Save to API
+                $.ajax({
+                    url: `/api/locations/${locationId}/settings`,
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': 'Bearer ' + UserManager.getToken(),
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    data: JSON.stringify(passwordWifiData),
+                    success: function(response) {
+                        console.log('Password WiFi settings saved successfully:', response);
+                        
+                        // Reset button state
+                        $button.html(originalText).prop('disabled', false);
+                        
+                        // Close modal if this was from a modal
+                        if ($(e.target).closest('.modal').length > 0) {
+                            $(e.target).closest('.modal').modal('hide');
+                        }
+                        
+                        // Show success message
+                        toastr.success('Password WiFi settings saved successfully!');
+                        
+                        // Reload device data to verify the update
+                        setTimeout(function() {
+                            loadDeviceSettings();
+                        }, 1000);
+                    },
+                    error: function(xhr, status, error) {
+                        // Reset button state
+                        $button.html(originalText).prop('disabled', false);
+                        
+                        // Handle API error
+                        handleApiError(xhr, status, error, 'saving password WiFi settings');
+                    }
+                                });
+            });
+            
+            // **Fix for Captive Portal Save Handler**
+            // Override any external handlers to ensure we only send valid fields
+            $('.save-captive-portal').off('click').on('click', function(e) {
+                e.preventDefault();
+                console.log('Captive Portal save clicked - using fixed handler');
+                
+                const locationId = getLocationId();
+                if (!locationId) {
+                    toastr.error('Location ID not found');
+                    return;
+                }
+                
+                // Determine if we're in a modal context
+                const isModal = $(e.target).closest('.modal').length > 0;
+                const modalId = isModal ? $(e.target).closest('.modal').attr('id') : null;
+                
+                console.log('Captive portal save context:', isModal ? 'Modal: ' + modalId : 'Main form');
+                
+                // Collect form data - from the correct fields based on context
+                const captivePortalData = {
+                    captive_portal_ssid: $('#captive-portal-ssid').val(),
+                    captive_portal_visible: $('#captive-portal-visible').val() === '1',
+                    captive_auth_method: $('#captive-auth-method').val(),
+                    captive_portal_password: $('#captive_portal_password').val(),
+                    session_timeout: $('#captive-session-timeout').val(),
+                    idle_timeout: $('#captive-idle-timeout').val(),
+                    download_limit: $('#captive-download-limit').val(),
+                    upload_limit: $('#captive-upload-limit').val(),
+                    captive_portal_redirect: $('#captive-portal-redirect').val(),
+                    captive_portal_ip: $('#captive-portal-ip').val(),
+                    captive_portal_netmask: $('#captive-portal-netmask').val(),
+                    captive_portal_gateway: $('#captive-portal-gateway').val(),
+                    captive_portal_vlan: $('#captive-portal-vlan').val(),
+                    // Use the correct VLAN tagging field based on context
+                    captive_portal_vlan_tagging: isModal && modalId === 'captive-portal-modal' 
+                        ? $('#captive-portal-vlan-tagging-modal').val() 
+                        : $('#captive-portal-vlan-tagging').val()
+                };
+                
+                console.log('Saving captive portal data:', captivePortalData);
+                
+                // Show loading state
+                const $button = $(this);
+                const originalText = $button.html();
+                $button.html('<i data-feather="loader" class="mr-1"></i> Saving...').prop('disabled', true);
+                
+                // Save to API
+                $.ajax({
+                    url: `/api/locations/${locationId}/settings`,
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': 'Bearer ' + UserManager.getToken(),
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    data: JSON.stringify(captivePortalData),
+                    success: function(response) {
+                        console.log('Captive portal settings saved successfully:', response);
+                        
+                        // Reset button state
+                        $button.html(originalText).prop('disabled', false);
+                        
+                        // Close modal if this was from a modal
+                        if ($(e.target).closest('.modal').length > 0) {
+                            $(e.target).closest('.modal').modal('hide');
+                        }
+                        
+                        // Show success message
+                        toastr.success('Captive portal settings saved successfully!');
+                        
+                        // Reload device data to verify the update
+                        setTimeout(function() {
+                            loadDeviceSettings();
+                        }, 1000);
+                    },
+                    error: function(xhr, status, error) {
+                        // Reset button state
+                        $button.html(originalText).prop('disabled', false);
+                        
+                        // Handle API error
+                        handleApiError(xhr, status, error, 'saving captive portal settings');
+                    }
+                });
+            });
+            
+            // **Fix for WAN Settings Save Handler**
+            // Override any external handlers to ensure we only send valid fields
+            $('.save-wan-settings').off('click').on('click', function(e) {
+                e.preventDefault();
+                console.log('WAN settings save clicked - using fixed handler');
+                
+                const locationId = getLocationId();
+                if (!locationId) {
+                    toastr.error('Location ID not found');
+                    return;
+                }
+                
+                // Collect form data - only including fields that exist in database
+                const wanData = {
+                    wan_connection_type: $('#wan-connection-type').val(),
+                    wan_ip_address: $('#wan-ip-address').val(),
+                    wan_netmask: $('#wan-netmask').val(),
+                    wan_gateway: $('#wan-gateway').val(),
+                    wan_primary_dns: $('#wan-primary-dns').val(),
+                    wan_secondary_dns: $('#wan-secondary-dns').val(),
+                    wan_pppoe_username: $('#wan-pppoe-username').val(),
+                    wan_pppoe_password: $('#wan-pppoe-password').val(),
+                    wan_pppoe_service_name: $('#wan-pppoe-service-name').val()
+                };
+                
+                console.log('Saving WAN data:', wanData);
+                
+                // Show loading state
+                const $button = $(this);
+                const originalText = $button.html();
+                $button.html('<i data-feather="loader" class="mr-1"></i> Saving...').prop('disabled', true);
+                
+                // Save to API
+                $.ajax({
+                    url: `/api/locations/${locationId}/settings`,
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': 'Bearer ' + UserManager.getToken(),
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    data: JSON.stringify(wanData),
+                    success: function(response) {
+                        console.log('WAN settings saved successfully:', response);
+                        
+                        // Reset button state
+                        $button.html(originalText).prop('disabled', false);
+                        
+                        // Close modal if this was from a modal
+                        if ($(e.target).closest('.modal').length > 0) {
+                            $(e.target).closest('.modal').modal('hide');
+                        }
+                        
+                        // Show success message
+                        toastr.success('WAN settings saved successfully!');
+                        
+                        // Update display
+                        $('#wan-type-display').text(wanData.wan_connection_type);
+                        if (wanData.wan_connection_type === 'STATIC') {
+                            $('#wan-ip-display').text(wanData.wan_ip_address);
+                            $('#wan-subnet-display').text(wanData.wan_netmask);
+                            $('#wan-gateway-display').text(wanData.wan_gateway);
+                            $('#wan-dns1-display').text(wanData.wan_primary_dns);
+                            $('.wan-static-ip-display_div').removeClass('hidden').show();
+                            $('.wan-pppoe-display_div').addClass('hidden').hide();
+                        } else if (wanData.wan_connection_type === 'PPPOE') {
+                            $('#wan-pppoe-username').text(wanData.wan_pppoe_username);
+                            $('#wan-pppoe-service-name').text(wanData.wan_pppoe_service_name);
+                            $('.wan-pppoe-display_div').removeClass('hidden').show();
+                            $('.wan-static-ip-display_div').addClass('hidden').hide();
+                        } else {
+                            $('.wan-static-ip-display_div').addClass('hidden').hide();
+                            $('.wan-pppoe-display_div').addClass('hidden').hide();
+                        }
+                        
+                        // Reload device data to verify the update
+                        setTimeout(function() {
+                            loadDeviceSettings();
+                        }, 1000);
+                    },
+                    error: function(xhr, status, error) {
+                        // Reset button state
+                        $button.html(originalText).prop('disabled', false);
+                        
+                        // Handle API error
+                        handleApiError(xhr, status, error, 'saving WAN settings');
+                    }
+                });
             });
             
             // Debug: Test all possible scan endpoints
