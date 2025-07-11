@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use App\Models\Device;
+use Illuminate\Support\Facades\Log;
 
 class FirmwareController extends Controller
 {
@@ -49,7 +50,6 @@ class FirmwareController extends Controller
      */
     public function store(Request $request)
     {
-        
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'model' => 'nullable|in:1,2,820AX,835AX',
@@ -114,11 +114,11 @@ class FirmwareController extends Controller
                 'is_enabled' => $request->boolean('is_enabled', true),
                 'description' => $request->description,
                 'version' => $request->version,
-                'default_model_firmware' => $request->boolean('default_model_firmware', false),
+                'default_model_firmware' => false,
             ]);
 
             // If this firmware is set as default, ensure it's the only default for this model
-            if ($firmware->default_model_firmware) {
+            if ($request->boolean('default_model_firmware', false)) {
                 $firmware->setAsDefault();
             }
 
