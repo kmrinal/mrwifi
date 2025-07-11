@@ -4683,12 +4683,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 // **Captive Portal Network Settings**
                 if (settings.captive_portal_ip) {
                     $('#captive-portal-ip').val(settings.captive_portal_ip);
+                    // Update display field for IP address
+                    $('#captive-ip-display').text(settings.captive_portal_ip);
                 }
                 if (settings.captive_portal_netmask) {
                     $('#captive-portal-netmask').val(settings.captive_portal_netmask);
+                    // Update display field for netmask
+                    $('#captive-netmask-display').text(settings.captive_portal_netmask);
                 }
                 if (settings.captive_portal_gateway) {
                     $('#captive-portal-gateway').val(settings.captive_portal_gateway);
+                    // Update display field for gateway
+                    $('#captive-gateway-display').text(settings.captive_portal_gateway);
                 }
                 if (settings.captive_portal_vlan) {
                     $('#captive-portal-vlan').val(settings.captive_portal_vlan);
@@ -4721,6 +4727,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 // **Password WiFi Network Settings**
                 if (settings.password_wifi_ip_mode || settings.password_wifi_ip_type) {
                     $('#password-ip-assignment').val((settings.password_wifi_ip_mode || settings.password_wifi_ip_type).toUpperCase()).trigger('change');
+                    // Update display field for IP assignment type
+                    $('#password-wifi-ip-type-display').text((settings.password_wifi_ip_mode || settings.password_wifi_ip_type).toUpperCase());
                 }
                 if (settings.password_wifi_ip) {
                     $('#password-ip').val(settings.password_wifi_ip);
@@ -4728,9 +4736,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     $('#password-gateway').val(settings.password_wifi_ip);
                     // Update the display as well
                     $('#password-gateway-display').text(settings.password_wifi_ip);
+                    // Update display field for IP address
+                    $('#password-ip-display').text(settings.password_wifi_ip);
                 }
                 if (settings.password_wifi_netmask) {
                     $('#password-netmask').val(settings.password_wifi_netmask);
+                    // Update display field for netmask
+                    $('#password-netmask-display').text(settings.password_wifi_netmask);
                 }
                 if (settings.password_wifi_dns1) {
                     $('#password-primary-dns').val(settings.password_wifi_dns1);
@@ -4747,6 +4759,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 if (settings.password_wifi_dhcp_enabled !== undefined) {
                     $('#password-dhcp-server-toggle').prop('checked', settings.password_wifi_dhcp_enabled).trigger('change');
+                    // Update display field for DHCP server status
+                    $('#password-dhcp-status-display').text(settings.password_wifi_dhcp_enabled ? 'Enabled' : 'Disabled');
                 }
                 if (settings.password_wifi_dhcp_start) {
                     $('#password-dhcp-start').val(settings.password_wifi_dhcp_start);
@@ -4796,6 +4810,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 console.log('All settings populated successfully');
+                
+                // **Show Password WiFi Network IP fields if using static IP**
+                if (settings.password_wifi_ip_mode === 'STATIC' || settings.password_wifi_ip_type === 'STATIC') {
+                    $('.password-ip-assignment-display_div').removeClass('hidden').show();
+                    console.log('Password WiFi network IP fields shown for STATIC mode');
+                } else {
+                    $('.password-ip-assignment-display_div').addClass('hidden').hide();
+                    console.log('Password WiFi network IP fields hidden for non-STATIC mode');
+                }
                 
                 // **Important: Trigger VLAN toggle after all fields are populated**
                 setTimeout(function() {
@@ -6001,12 +6024,19 @@ document.addEventListener('DOMContentLoaded', function() {
             $('#password-ip-assignment').on('change', function() {
                 const assignment = $(this).val();
                 
+                // Update display field
+                $('#password-wifi-ip-type-display').text(assignment);
+                
                 if (assignment === 'STATIC') {
                     $('#password-static-fields').removeClass('hidden').show();
+                    $('.password-ip-assignment-display_div').removeClass('hidden').show();
                     $('#dhcp-client-message').hide();
+                    console.log('Password WiFi set to STATIC - showing IP fields');
                 } else {
                     $('#password-static-fields').addClass('hidden').hide();
+                    $('.password-ip-assignment-display_div').addClass('hidden').hide();
                     $('#dhcp-client-message').show();
+                    console.log('Password WiFi set to ' + assignment + ' - hiding IP fields');
                 }
             });
             
@@ -6014,11 +6044,16 @@ document.addEventListener('DOMContentLoaded', function() {
             $('#password-dhcp-server-toggle').on('change', function() {
                 const enabled = $(this).is(':checked');
                 
+                // Update display field
+                $('#password-dhcp-status-display').text(enabled ? 'Enabled' : 'Disabled');
+                
                 if (enabled) {
                     $('#password-dhcp-server-fields').removeClass('hidden').show();
                 } else {
                     $('#password-dhcp-server-fields').addClass('hidden').hide();
                 }
+                
+                console.log('Password WiFi DHCP server status updated to:', enabled ? 'Enabled' : 'Disabled');
             });
             
             // WAN connection type change handler
@@ -6054,7 +6089,36 @@ document.addEventListener('DOMContentLoaded', function() {
                 const ipAddress = $(this).val();
                 $('#password-gateway').val(ipAddress);
                 $('#password-gateway-display').text(ipAddress);
+                $('#password-ip-display').text(ipAddress);
                 console.log('Password WiFi gateway auto-updated to:', ipAddress);
+            });
+            
+            // Auto-update display fields when password WiFi netmask changes
+            $('#password-netmask').on('input', function() {
+                const netmask = $(this).val();
+                $('#password-netmask-display').text(netmask);
+                console.log('Password WiFi netmask display updated to:', netmask);
+            });
+            
+            // Auto-update display fields when captive portal IP changes
+            $('#captive-portal-ip').on('input', function() {
+                const ipAddress = $(this).val();
+                $('#captive-ip-display').text(ipAddress);
+                console.log('Captive portal IP display updated to:', ipAddress);
+            });
+            
+            // Auto-update display fields when captive portal netmask changes
+            $('#captive-portal-netmask').on('input', function() {
+                const netmask = $(this).val();
+                $('#captive-netmask-display').text(netmask);
+                console.log('Captive portal netmask display updated to:', netmask);
+            });
+            
+            // Auto-update display fields when captive portal gateway changes
+            $('#captive-portal-gateway').on('input', function() {
+                const gateway = $(this).val();
+                $('#captive-gateway-display').text(gateway);
+                console.log('Captive portal gateway display updated to:', gateway);
             });
             
             // **Modal Event Handlers for VLAN fields**
