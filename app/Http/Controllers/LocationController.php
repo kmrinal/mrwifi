@@ -1729,7 +1729,7 @@ class LocationController extends Controller
                 ], 404);
             }
 
-            $newMacAddress = $request->mac_address;
+            $newMacAddress = str_replace(':', '-', $request->mac_address);
             
             // Check if MAC address is already in use by another device
             $existingDevice = Device::where('mac_address', $newMacAddress)
@@ -1768,7 +1768,7 @@ class LocationController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid MAC address format. Please use format XX:XX:XX:XX:XX:XX',
+                'message' => 'Invalid MAC address format. Please use format XX-XX-XX-XX-XX-XX',
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {

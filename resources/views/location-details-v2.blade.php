@@ -2252,50 +2252,6 @@
                                                 </div>
                                             </div>
                                             
-                                            <!-- Network Settings Section -->
-                                            <!-- <h5 class="border-bottom pb-1 mt-2">Network Settings</h5>
-                                            <div class="row">
-                                                <div class="col-md-3">
-                                                    <div class="form-group">
-                                                        <label>IP Configuration</label>
-                                                        <div>
-                                                            <div class="custom-control custom-radio custom-control-inline">
-                                                                <input type="radio" id="static-ip-radio" name="password-ip-assignment" class="custom-control-input" checked>
-                                                                <label class="custom-control-label" for="static-ip-radio">Static IP</label>
-                                                        </div>
-                                                            <div class="custom-control custom-radio custom-control-inline">
-                                                                <input type="radio" id="dhcp-client-radio" name="password-ip-assignment" class="custom-control-input">
-                                                                <label class="custom-control-label" for="dhcp-client-radio">DHCP Client</label>
-                                            </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                                <div class="col-md-3">
-                                                    <div class="form-group" id="static-ip-field">
-                                                        <label for="password-ip-address">IP Address</label>
-                                                        <input type="text" class="form-control" id="password-ip-address" placeholder="192.168.1.1">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <div class="form-group" id="static-netmask-field">
-                                                        <label for="password-netmask">Netmask</label>
-                                                        <input type="text" class="form-control" id="password-netmask" placeholder="255.255.255.0">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-3 d-flex align-items-end mb-1">
-                                                    <button class="btn btn-outline-primary btn-sm" id="advanced-network-btn" data-toggle="modal" data-target="#password-network-modal">
-                                                        <i data-feather="edit" class="mr-1"></i> Advanced Settings
-                                                    </button>
-                                        </div>
-                                    </div>
-
-                                            <div id="dhcp-client-message" style="display: none;">
-                                                <div class="alert alert-info p-2">
-                                                    <i data-feather="info" class="mr-1 align-middle"></i>
-                                                    <span>In DHCP Client mode, this WiFi interface will request an IP address from an upstream DHCP server.</span>
-                                                </div>
-                                            </div>
-                                             -->
                                             <!-- Access Control Section -->
                                             <h5 class="border-bottom pb-1 mt-3">Access Control</h5>
                                             <div class="row">
@@ -2328,38 +2284,6 @@
                                                     <!-- Network Security Settings -->
                                                 </div>
                                             </div>
-                                            
-                                            <!-- QoS Section -->
-                                            <!-- <h5 class="border-bottom pb-1 mt-3">Quality of Service</h5>
-                                            <div class="row">
-                                                <div class="col-md-4">
-                                                    <div class="form-group">
-                                                        <div class="d-flex justify-content-between align-items-center mb-1">
-                                                            <label class="mb-0">Enable QoS</label>
-                                                            <div class="custom-control custom-switch custom-control-primary">
-                                                                <input type="checkbox" class="custom-control-input" id="secured-qos">
-                                                                <label class="custom-control-label" for="secured-qos"></label>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="form-group">
-                                                        <label for="secured-priority">Traffic Priority</label>
-                                                        <select class="form-control form-control-sm" id="secured-priority">
-                                                            <option value="high" selected>High Priority</option>
-                                                            <option value="medium">Medium Priority</option>
-                                                            <option value="low">Low Priority</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="form-group">
-                                                        <label for="secured-bandwidth">Reserved Bandwidth (%)</label>
-                                                        <input type="number" class="form-control form-control-sm" id="secured-bandwidth" value="70">
-                                                    </div>
-                                                </div>
-                                            </div> -->
                                         </div>
                                     </div>
                                 </div>
@@ -2743,16 +2667,17 @@ document.addEventListener('DOMContentLoaded', function() {
        });
    }
 });</textarea>
-                                          </div>
-                         <div class="tab-pane" id="preview" role="tabpanel" aria-labelledby="preview-pill">
-                             <div style="border: 1px solid #ddd; border-radius: 4px; padding: 1rem; background-color: #f9f9f9; height: 400px; overflow: auto;">
-                                 <h5 class="text-center">Preview will be rendered here</h5>
-                                 <p class="text-center text-muted">This is a placeholder for the live preview of your portal page.</p>
-                                 <!-- Preview content will be rendered here -->
-                                     </div>
-                                 </div>
-                             </div>
-                         </div>
+                                           </div>
+                          <div class="tab-pane" id="preview" role="tabpanel" aria-labelledby="preview-pill">
+                              <div style="border: 1px solid #ddd; border-radius: 4px; padding: 1rem; background-color: #f9f9f9; height: 400px; overflow: auto;">
+                                  <h5 class="text-center">Preview will be rendered here</h5>
+                                  <p class="text-center text-muted">This is a placeholder for the live preview of your portal page.</p>
+                                  <!-- Preview content will be rendered here -->
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
                     <button type="button" class="btn btn-primary">Save Changes</button>
@@ -3308,8 +3233,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     <div class="form-group">
                         <label for="mac-address-input">MAC Address</label>
-                        <input type="text" class="form-control" id="mac-address-input" placeholder="XX:XX:XX:XX:XX:XX" maxlength="17">
-                        <small class="text-muted">Enter the MAC address in format XX:XX:XX:XX:XX:XX</small>
+                        <input type="text" class="form-control" id="mac-address-input" placeholder="XX-XX-XX-XX-XX-XX" maxlength="17">
+                        <small class="text-muted">Enter the MAC address in format XX-XX-XX-XX-XX-XX</small>
                     </div>
                     
                     <div class="form-group">
@@ -3442,8 +3367,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
             }
 
-            // API call to get firmware by model
-            function getFirmwareByModel(model) {
+            // API call to get firmware by model (make it globally accessible)
+            window.getFirmwareByModel = function(model) {
 
                 console.log('Getting firmware by model:', model);
                 return new Promise(function(resolve, reject) {
@@ -3513,7 +3438,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     });
                 });
-            }
+            };
 
             // Handle firmware version selection
             $('#firmware-version-select').on('change', function() {
@@ -4038,6 +3963,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             // Update MAC address if it exists
                             if (device.mac_address) {
                                 console.log('Setting MAC address to:', device.mac_address);
+                                // Use hyphens as delimiter (no conversion needed)
                                 $('.router_mac_address').text(device.mac_address);
                                 $('.router_mac_address_header').text(device.mac_address);
                             } else {
@@ -4278,8 +4204,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
 
-            // Function to load latest firmware for a specific model when current firmware is not set
-            function loadLatestFirmwareForModel(model) {
+            // Function to load latest firmware for a specific model when current firmware is not set (make it globally accessible)
+            window.loadLatestFirmwareForModel = function(model) {
                 console.log('Loading latest firmware for model:', model);
                 
                 getFirmwareByModel(model)
@@ -4300,7 +4226,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         console.error('Error loading latest firmware for model:', error);
                         $('.router_firmware').text('Error Loading Firmware');
                     });
-            }
+            };
 
             // Save location information including router model
             $('#save-location-info').on('click', function() {
@@ -5892,9 +5818,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
             
-            // Function to toggle VLAN fields based on VLAN enabled checkbox
-            function toggleVlanFields() {
-                const vlanEnabled = $('#vlan-enabled').is(':checked');
+            // Function to toggle VLAN fields based on VLAN enabled checkbox (make it globally accessible)
+            window.toggleVlanFields = function(vlanEnabledParam) {
+                const vlanEnabled = vlanEnabledParam !== undefined ? vlanEnabledParam : $('#vlan-enabled').is(':checked');
                 console.log('Toggling VLAN fields, enabled:', vlanEnabled);
                 
                 // Specific VLAN field IDs to target (including modal fields)
@@ -5963,7 +5889,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                 });
                 console.log('=== End VLAN Debug ===');
-            }
+            };
             
             // Event handler for VLAN enabled checkbox
             $('#vlan-enabled').on('change', function() {
@@ -6648,19 +6574,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // MAC Address validation and formatting
             $('#mac-address-input').on('input', function() {
-                let value = $(this).val().replace(/[^0-9A-Fa-f]/g, '');
+                let value = $(this).val().replace(/[^0-9A-Fa-f:-]/g, '');
                 
-                // Format with colons
-                if (value.length > 2) {
-                    value = value.match(/.{1,2}/g).join(':');
+                // Remove existing delimiters and clean up
+                let cleanValue = value.replace(/[:-]/g, '');
+                
+                // Format with hyphens
+                if (cleanValue.length > 2) {
+                    cleanValue = cleanValue.match(/.{1,2}/g).join('-');
                 }
                 
-                // Limit to 17 characters (XX:XX:XX:XX:XX:XX)
-                if (value.length > 17) {
-                    value = value.substring(0, 17);
+                // Limit to 17 characters (XX-XX-XX-XX-XX-XX)
+                if (cleanValue.length > 17) {
+                    cleanValue = cleanValue.substring(0, 17);
                 }
                 
-                $(this).val(value.toUpperCase());
+                $(this).val(cleanValue.toUpperCase());
             });
 
             // Save MAC Address
@@ -6674,7 +6603,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 if (!isValidMacAddress(newMacAddress)) {
-                    toastr.error('Please enter a valid MAC address in format XX:XX:XX:XX:XX:XX');
+                    toastr.error('Please enter a valid MAC address in format XX-XX-XX-XX-XX-XX');
                     return;
                 }
                 
@@ -6703,13 +6632,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     success: function(response) {
                         console.log('MAC address updated successfully:', response);
                         
-                        // Update all MAC address displays
+                        // Update all MAC address displays with colon format for display
                         $('.router_mac_address_header').text(newMacAddress);
                         $('.router_mac_address').text(newMacAddress);
                         
-                        // Update device data
-                        if (window.currentDeviceData) {
-                            window.currentDeviceData.mac_address = newMacAddress;
+                        // Update device data with the actual stored format (hyphens)
+                        if (window.currentDeviceData && response.data && response.data.device) {
+                            window.currentDeviceData.mac_address = response.data.device.mac_address;
                         }
                         
                         // Close modal
@@ -6735,8 +6664,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // MAC Address validation function
             function isValidMacAddress(mac) {
-                const macRegex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
+                const macRegex = /^([0-9A-Fa-f]{2}[-]){5}([0-9A-Fa-f]{2})$/;
                 return macRegex.test(mac);
+            }
+
+            // Helper function to convert MAC address format for display (hyphens to colons)
+            function formatMacAddressForDisplay(mac) {
+                if (!mac || mac === 'Not Available') {
+                    return mac;
+                }
+                return mac.replace(/-/g, ':');
             }
 
             // Reset modal when closed
