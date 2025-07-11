@@ -2794,20 +2794,20 @@ document.addEventListener('DOMContentLoaded', function() {
                         <input type="text" class="form-control" placeholder="1.1.1.1" value="1.1.1.1">
                     </div>
                     
-                    <div class="form-group vlan-setting" style="display: none;">
+                    <div class="form-group vlan-setting">
                         <label>VLAN ID (Optional)</label>
-                        <input type="number" class="form-control" placeholder="20" id="captive-portal-vlan" value="" min="1" max="4094">
-                        <small class="text-muted">Specify VLAN ID for captive portal network segmentation (1-4094). Leave empty for default.</small>
+                        <input type="number" class="form-control" placeholder="20" id="captive-portal-vlan" value="" min="1" max="4094" disabled>
+                        <small class="text-muted">Specify VLAN ID for captive portal network segmentation (1-4094). Enable VLAN support in Router Settings to use this feature.</small>
                     </div>
                     
-                    <div class="form-group vlan-setting" style="display: none;">
+                    <div class="form-group vlan-setting">
                         <label>VLAN Tagging</label>
-                        <select class="form-control" id="captive-portal-vlan-tagging">
+                        <select class="form-control" id="captive-portal-vlan-tagging" disabled>
                             <option value="disabled">Disabled</option>
                             <option value="tagged">Tagged</option>
                             <option value="untagged">Untagged</option>
                         </select>
-                        <small class="text-muted">Configure VLAN tagging mode for captive portal network.</small>
+                        <small class="text-muted">Configure VLAN tagging mode for captive portal network. Enable VLAN support in Router Settings to use this feature.</small>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -2864,20 +2864,20 @@ document.addEventListener('DOMContentLoaded', function() {
                             <input type="text" class="form-control" placeholder="1.1.1.1" id="password-secondary-dns" value="">
                         </div>
                         
-                        <div class="form-group vlan-setting" style="display: none;">
+                        <div class="form-group vlan-setting">
                             <label>VLAN ID (Optional)</label>
-                            <input type="number" class="form-control" placeholder="10" id="password-wifi-vlan" value="" min="1" max="4094">
-                            <small class="text-muted">Specify VLAN ID for network segmentation (1-4094). Leave empty for default.</small>
+                            <input type="number" class="form-control" placeholder="10" id="password-wifi-vlan" value="" min="1" max="4094" disabled>
+                            <small class="text-muted">Specify VLAN ID for network segmentation (1-4094). Enable VLAN support in Router Settings to use this feature.</small>
                         </div>
                         
-                        <div class="form-group vlan-setting" style="display: none;">
+                        <div class="form-group vlan-setting">
                             <label>VLAN Tagging</label>
-                            <select class="form-control" id="password-wifi-vlan-tagging">
+                            <select class="form-control" id="password-wifi-vlan-tagging" disabled>
                                 <option value="disabled">Disabled</option>
                                 <option value="tagged">Tagged</option>
                                 <option value="untagged">Untagged</option>
                             </select>
-                            <small class="text-muted">Configure VLAN tagging mode for password WiFi network.</small>
+                            <small class="text-muted">Configure VLAN tagging mode for password WiFi network. Enable VLAN support in Router Settings to use this feature.</small>
                         </div>
 
                         <div class="form-group mt-3 pt-2 border-top">
@@ -3063,20 +3063,20 @@ document.addEventListener('DOMContentLoaded', function() {
                         <input type="text" class="form-control" id="captive-portal-gateway" placeholder="192.168.2.1">
                     </div>
                     
-                    <div class="form-group vlan-setting" style="display: none;">
+                    <div class="form-group vlan-setting">
                         <label for="captive-portal-vlan">VLAN ID (Optional)</label>
-                        <input type="number" class="form-control" id="captive-portal-vlan" placeholder="20" min="1" max="4094">
-                        <small class="text-muted">Specify VLAN ID for captive portal network segmentation (1-4094). Leave empty for default.</small>
+                        <input type="number" class="form-control" id="captive-portal-vlan" placeholder="20" min="1" max="4094" disabled>
+                        <small class="text-muted">Specify VLAN ID for captive portal network segmentation (1-4094). Enable VLAN support in Router Settings to use this feature.</small>
                     </div>
                     
-                    <div class="form-group vlan-setting" style="display: none;">
+                    <div class="form-group vlan-setting">
                         <label for="captive-portal-vlan-tagging">VLAN Tagging</label>
-                        <select class="form-control" id="captive-portal-vlan-tagging">
+                        <select class="form-control" id="captive-portal-vlan-tagging" disabled>
                             <option value="disabled">Disabled</option>
                             <option value="tagged">Tagged</option>
                             <option value="untagged">Untagged</option>
                         </select>
-                        <small class="text-muted">Configure VLAN tagging mode for captive portal network.</small>
+                        <small class="text-muted">Configure VLAN tagging mode for captive portal network. Enable VLAN support in Router Settings to use this feature.</small>
                     </div>
                 </div>
                 <div class="modal-footer">

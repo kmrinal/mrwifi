@@ -369,12 +369,8 @@ function populateLocationDetails(location, captive_portal_designs) {
         // Global VLAN settings
         $('#vlan-enabled').prop('checked', settings.vlan_enabled || false);
         
-        // Show/hide VLAN settings based on initial value
-        if (settings.vlan_enabled) {
-            $('.vlan-setting').show();
-        } else {
-            $('.vlan-setting').hide();
-        }
+        // Enable/disable VLAN settings based on initial value
+        toggleVlanFields(settings.vlan_enabled || false);
         
         // Determine authentication method based on settings
         if (settings.captive_portal_enabled) {
@@ -859,16 +855,12 @@ $(document).ready(function() {
         $("#password-wifi-password").attr('type', 'text');
     });
 
-    // Save VLAN global settings and toggle VLAN field visibility
+    // Save VLAN global settings and toggle VLAN field enabled state
     $("#vlan-enabled").on('change', function() {
         const vlan_enabled = $(this).is(':checked');
         
-        // Show/hide VLAN settings based on toggle
-        if (vlan_enabled) {
-            $('.vlan-setting').show();
-        } else {
-            $('.vlan-setting').hide();
-        }
+        // Enable/disable VLAN settings based on toggle
+        toggleVlanFields(vlan_enabled);
         
         const settings = {
             vlan_enabled: vlan_enabled
@@ -894,15 +886,39 @@ $(document).ready(function() {
                 showNotification('error', 'Failed to save VLAN global setting');
                 // Revert the toggle on error
                 $("#vlan-enabled").prop('checked', !vlan_enabled);
-                // Revert visibility as well
-                if (!vlan_enabled) {
-                    $('.vlan-setting').show();
-                } else {
-                    $('.vlan-setting').hide();
-                }
+                // Revert field states as well
+                toggleVlanFields(!vlan_enabled);
             }
         });
     });
+    
+    // Function to toggle VLAN field enabled/disabled state
+    function toggleVlanFields(enabled) {
+        const vlanInputs = $('#captive-portal-vlan, #password-wifi-vlan');
+        const vlanSelects = $('#captive-portal-vlan-tagging, #password-wifi-vlan-tagging');
+        
+        if (enabled) {
+            // Enable VLAN fields
+            vlanInputs.prop('disabled', false);
+            vlanSelects.prop('disabled', false);
+            
+            // Update help text to show normal usage
+            $('#captive-portal-vlan').siblings('.text-muted').text('Specify VLAN ID for captive portal network segmentation (1-4094). Leave empty for default.');
+            $('#captive-portal-vlan-tagging').siblings('.text-muted').text('Configure VLAN tagging mode for captive portal network.');
+            $('#password-wifi-vlan').siblings('.text-muted').text('Specify VLAN ID for network segmentation (1-4094). Leave empty for default.');
+            $('#password-wifi-vlan-tagging').siblings('.text-muted').text('Configure VLAN tagging mode for password WiFi network.');
+        } else {
+            // Disable VLAN fields
+            vlanInputs.prop('disabled', true);
+            vlanSelects.prop('disabled', true);
+            
+            // Update help text to indicate VLAN support needs to be enabled
+            $('#captive-portal-vlan').siblings('.text-muted').text('Specify VLAN ID for captive portal network segmentation (1-4094). Enable VLAN support in Router Settings to use this feature.');
+            $('#captive-portal-vlan-tagging').siblings('.text-muted').text('Configure VLAN tagging mode for captive portal network. Enable VLAN support in Router Settings to use this feature.');
+            $('#password-wifi-vlan').siblings('.text-muted').text('Specify VLAN ID for network segmentation (1-4094). Enable VLAN support in Router Settings to use this feature.');
+            $('#password-wifi-vlan-tagging').siblings('.text-muted').text('Configure VLAN tagging mode for password WiFi network. Enable VLAN support in Router Settings to use this feature.');
+        }
+    }
 
     $('#toggle-captive-password').on('click', function() {
         const passwordInput = $('#captive_portal_password');
