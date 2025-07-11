@@ -1693,4 +1693,91 @@ class LocationController extends Controller
             ], 400);
         }
     }
+
+    /**
+     * Update MAC address for the device associated with this location
+     *
+     * @param Request $request
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateMacAddress(Request $request, $id)
+    {
+        try {
+            Log::info('Updating MAC address for location: ' . $id);
+            
+            // Validate request
+            $request->validate([
+                'mac_address' => 'required|string|regex:/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/',
+            ]);
+
+            // Find the location
+            $location = Location::find($id);
+            if (!$location) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Location not found'
+                ], 404);
+            }
+
+            // Find the device associated with this location
+            $device = $location->device;
+            if (!$device) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No device associated with this location'
+                ], 404);
+            }
+
+            $newMacAddress = $request->mac_address;
+            
+            // Check if MAC address is already in use by another device
+            $existingDevice = Device::where('mac_address', $newMacAddress)
+                                  ->where('id', '!=', $device->id)
+                                  ->first();
+            
+            if ($existingDevice) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'MAC address is already in use by another device'
+                ], 409);
+            }
+
+            // Update the MAC address
+            $oldMacAddress = $device->mac_address;
+            $device->mac_address = $newMacAddress;
+            $device->save();
+
+            Log::info('MAC address updated successfully', [
+                'location_id' => $id,
+                'device_id' => $device->id,
+                'old_mac_address' => $oldMacAddress,
+                'new_mac_address' => $newMacAddress
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'MAC address updated successfully',
+                'data' => [
+                    'device' => $device,
+                    'old_mac_address' => $oldMacAddress,
+                    'new_mac_address' => $newMacAddress
+                ]
+            ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid MAC address format. Please use format XX:XX:XX:XX:XX:XX',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('Error updating MAC address: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating MAC address: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

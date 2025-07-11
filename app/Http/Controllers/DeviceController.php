@@ -229,10 +229,10 @@ class DeviceController extends Controller
         if ($firmware_version && $firmware_version > 0) {
             $firmware_info = Firmware::where('id', $firmware_version)->first();
         }
-        
+
         Log::info('Firmware info: ');
         Log::info($firmware_info);
-        
+
         if (!$firmware_info) {
             $firmware_version = 0;
         }
@@ -241,7 +241,7 @@ class DeviceController extends Controller
         $file_name = null;
         $firmware_url = null;
         $firmware_hash = null;
-        
+
         if ($firmware_info) {
             $file_name = $firmware_info->file_path;
             // remove the first part of the file_path after the last /

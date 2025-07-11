@@ -1293,6 +1293,12 @@
                             <div>
                                 <h4 class="text-gradient mb-1"><span class="location_name"></span></h4>
                                 <p class="text-muted mb-0"><span class="location_address"></span></p>
+                                <div class="d-flex align-items-center mt-1">
+                                    <small class="text-muted mr-2">MAC: <span class="router_mac_address_header font-weight-bold">Loading...</span></small>
+                                    <button class="btn btn-sm btn-outline-secondary p-1" id="edit-mac-btn" style="font-size: 0.7rem; line-height: 1;">
+                                        <i data-feather="edit" class="mr-1" style="width: 12px; height: 12px;"></i>Edit
+                                    </button>
+                                </div>
                             </div>
                             <span class="status-badge status-offline">Offline</span>
                         </div>
@@ -1302,6 +1308,10 @@
                                 <div class="interface-detail">
                                     <span class="interface-label">Router Model</span>
                                     <span class="interface-value router_model_updated"></span>
+                                </div>
+                                <div class="interface-detail">
+                                    <span class="interface-label">MAC Address</span>
+                                    <span class="interface-value router_mac_address"></span>
                                 </div>
                                 <div class="interface-detail">
                                     <span class="interface-label">Firmware</span>
@@ -3114,6 +3124,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <h6 class="mb-0">Device Information</h6>
                             <p class="card-text text-muted mb-0">Location: <span class="location_name font-weight-bold"></span></p>
                             <p class="card-text text-muted mb-0">Model: <span class="router_model font-weight-bold"></span></p>
+                            <p class="card-text text-muted mb-0">MAC Address: <span class="router_mac_address font-weight-bold"></span></p>
                         </div>
                     </div>
                     
@@ -3169,6 +3180,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <h6 class="mb-0">Current Device Information</h6>
                             <p class="card-text text-muted mb-0">Model: <span class="router_model font-weight-bold"></span></p>
                             <p class="card-text text-muted mb-0">Current Firmware: <span class="router_firmware font-weight-bold"></span></p>
+                            <p class="card-text text-muted mb-0">MAC Address: <span class="router_mac_address font-weight-bold"></span></p>
                         </div>
                     </div>
                     
@@ -3269,6 +3281,50 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- MAC Address Edit Modal -->
+    <div class="modal fade" id="mac-address-edit-modal" tabindex="-1" role="dialog" aria-labelledby="mac-address-edit-modal-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="mac-address-edit-modal-title">
+                        <i data-feather="edit" class="mr-2"></i>Edit MAC Address
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info mb-3">
+                        <div class="alert-body">
+                            <i data-feather="info" class="mr-2"></i>
+                            <strong>Note:</strong> This will update the MAC address for the device associated with this location.
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="mac-address-input">MAC Address</label>
+                        <input type="text" class="form-control" id="mac-address-input" placeholder="XX:XX:XX:XX:XX:XX" maxlength="17">
+                        <small class="text-muted">Enter the MAC address in format XX:XX:XX:XX:XX:XX</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Current MAC Address</label>
+                        <div class="form-control-plaintext bg-light p-2 rounded">
+                            <span id="current-mac-display">-</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="save-mac-address-btn">
+                        <i data-feather="save" class="mr-1"></i>
+                        <span>Save Changes</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -3979,6 +4035,17 @@ document.addEventListener('DOMContentLoaded', function() {
                                 $('#router-model-select').val('');
                             }
 
+                            // Update MAC address if it exists
+                            if (device.mac_address) {
+                                console.log('Setting MAC address to:', device.mac_address);
+                                $('.router_mac_address').text(device.mac_address);
+                                $('.router_mac_address_header').text(device.mac_address);
+                            } else {
+                                console.log('No MAC address found, leaving blank');
+                                $('.router_mac_address').text('Not Available');
+                                $('.router_mac_address_header').text('Not Available');
+                            }
+
                             // Update firmware version if it exists
                             if (device.firmware_version && device.firmware_version.trim() !== '') {
                                 console.log('Setting firmware version to:', device.firmware_version);
@@ -4032,6 +4099,8 @@ document.addEventListener('DOMContentLoaded', function() {
                             window.currentDeviceData = null;
                             $('.router_model_updated').text('');
                             $('.router_firmware').text('Unknown');
+                            $('.router_mac_address').text('Not Available');
+                            $('.router_mac_address_header').text('Not Available');
                             $('.uptime').text('');
                         }
                     },
@@ -6568,6 +6637,113 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 console.log('=== END DEBUGGING ===');
             }
+
+            // MAC Address Edit Modal functionality
+            $('#edit-mac-btn').on('click', function() {
+                const currentMac = $('.router_mac_address_header').text();
+                $('#current-mac-display').text(currentMac);
+                $('#mac-address-input').val(currentMac !== 'Not Available' ? currentMac : '');
+                $('#mac-address-edit-modal').modal('show');
+            });
+
+            // MAC Address validation and formatting
+            $('#mac-address-input').on('input', function() {
+                let value = $(this).val().replace(/[^0-9A-Fa-f]/g, '');
+                
+                // Format with colons
+                if (value.length > 2) {
+                    value = value.match(/.{1,2}/g).join(':');
+                }
+                
+                // Limit to 17 characters (XX:XX:XX:XX:XX:XX)
+                if (value.length > 17) {
+                    value = value.substring(0, 17);
+                }
+                
+                $(this).val(value.toUpperCase());
+            });
+
+            // Save MAC Address
+            $('#save-mac-address-btn').on('click', function() {
+                const newMacAddress = $('#mac-address-input').val().trim();
+                const locationId = getLocationId();
+                
+                if (!newMacAddress) {
+                    toastr.error('Please enter a MAC address');
+                    return;
+                }
+                
+                if (!isValidMacAddress(newMacAddress)) {
+                    toastr.error('Please enter a valid MAC address in format XX:XX:XX:XX:XX:XX');
+                    return;
+                }
+                
+                if (!locationId) {
+                    toastr.error('Location ID not found');
+                    return;
+                }
+                
+                // Disable button and show loading state
+                const $btn = $(this);
+                const originalText = $btn.html();
+                $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>Saving...');
+                
+                // Make API call to update MAC address
+                $.ajax({
+                    url: '/api/locations/' + locationId + '/update-mac-address',
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + UserManager.getToken(),
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    data: JSON.stringify({
+                        mac_address: newMacAddress
+                    }),
+                    success: function(response) {
+                        console.log('MAC address updated successfully:', response);
+                        
+                        // Update all MAC address displays
+                        $('.router_mac_address_header').text(newMacAddress);
+                        $('.router_mac_address').text(newMacAddress);
+                        
+                        // Update device data
+                        if (window.currentDeviceData) {
+                            window.currentDeviceData.mac_address = newMacAddress;
+                        }
+                        
+                        // Close modal
+                        $('#mac-address-edit-modal').modal('hide');
+                        
+                        toastr.success('MAC address updated successfully');
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error updating MAC address:', xhr.responseText);
+                        handleApiError(xhr, status, error, 'updating MAC address');
+                    },
+                    complete: function() {
+                        // Re-enable button and restore original text
+                        $btn.prop('disabled', false).html(originalText);
+                        
+                        // Re-render icons
+                        if (typeof feather !== 'undefined') {
+                            feather.replace();
+                        }
+                    }
+                });
+            });
+
+            // MAC Address validation function
+            function isValidMacAddress(mac) {
+                const macRegex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
+                return macRegex.test(mac);
+            }
+
+            // Reset modal when closed
+            $('#mac-address-edit-modal').on('hidden.bs.modal', function() {
+                $('#mac-address-input').val('');
+                $('#current-mac-display').text('-');
+            });
         });
     </script>
     </body>
