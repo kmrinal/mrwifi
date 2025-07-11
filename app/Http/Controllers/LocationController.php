@@ -1454,6 +1454,9 @@ class LocationController extends Controller
                 'channel_width_5g' => $settings->channel_width_5g,
                 'password_wifi_vlan' => $settings->password_wifi_vlan,
                 'captive_portal_vlan' => $settings->captive_portal_vlan,
+                'captive_portal_vlan_tagging' => $settings->captive_portal_vlan_tagging,
+                'password_wifi_vlan_tagging' => $settings->password_wifi_vlan_tagging,
+                'vlan_enabled' => $settings->vlan_enabled,
             ];
             
             // Update settings with provided data
@@ -1489,6 +1492,9 @@ class LocationController extends Controller
                 'password_wifi_vlan',
                 'captive_portal_vlan',
                 'captive_portal_redirect',
+                'captive_portal_vlan_tagging',
+                'password_wifi_vlan_tagging',
+                'vlan_enabled',
             ]);
             
             // Check for router setting changes that require config version increment
@@ -1551,6 +1557,26 @@ class LocationController extends Controller
                 $increment_version = 1;
                 $routerSettingsChanged = true;
                 Log::info('Captive portal VLAN updated from "' . $originalSettings['captive_portal_vlan'] . '" to "' . $settingsData['captive_portal_vlan'] . '"');
+            }
+            
+            // VLAN tagging changes
+            if (isset($settingsData['password_wifi_vlan_tagging']) && $settingsData['password_wifi_vlan_tagging'] !== $originalSettings['password_wifi_vlan_tagging']) {
+                $increment_version = 1;
+                $routerSettingsChanged = true;
+                Log::info('Password WiFi VLAN tagging updated from "' . $originalSettings['password_wifi_vlan_tagging'] . '" to "' . $settingsData['password_wifi_vlan_tagging'] . '"');
+            }
+            
+            if (isset($settingsData['captive_portal_vlan_tagging']) && $settingsData['captive_portal_vlan_tagging'] !== $originalSettings['captive_portal_vlan_tagging']) {
+                $increment_version = 1;
+                $routerSettingsChanged = true;
+                Log::info('Captive portal VLAN tagging updated from "' . $originalSettings['captive_portal_vlan_tagging'] . '" to "' . $settingsData['captive_portal_vlan_tagging'] . '"');
+            }
+            
+            // Global VLAN enable/disable changes
+            if (isset($settingsData['vlan_enabled']) && $settingsData['vlan_enabled'] !== $originalSettings['vlan_enabled']) {
+                $increment_version = 1;
+                $routerSettingsChanged = true;
+                Log::info('VLAN enabled updated from "' . ($originalSettings['vlan_enabled'] ? 'true' : 'false') . '" to "' . ($settingsData['vlan_enabled'] ? 'true' : 'false') . '"');
             }
             
             // Ensure web_filter_categories is properly handled as JSON

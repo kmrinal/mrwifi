@@ -116,6 +116,9 @@ class LocationSettings extends Model
         'password_wifi_vlan',
         'captive_portal_vlan',
         'captive_portal_redirect',
+        'captive_portal_vlan_tagging',
+        'password_wifi_vlan_tagging',
+        'vlan_enabled',
     ];
 
     /**
@@ -168,6 +171,7 @@ class LocationSettings extends Model
         // VLAN Settings casts
         'password_wifi_vlan' => 'integer',
         'captive_portal_vlan' => 'integer',
+        'vlan_enabled' => 'boolean',
     ];
 
     /**

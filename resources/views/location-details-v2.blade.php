@@ -2135,6 +2135,17 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <div class="form-group">
+                                                        <div class="custom-control custom-switch">
+                                                            <input type="checkbox" class="custom-control-input" id="vlan-enabled">
+                                                            <label class="custom-control-label" for="vlan-enabled">Enable VLAN Support</label>
+                                                        </div>
+                                                        <small class="text-muted">Master switch to enable/disable VLAN functionality for this location.</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
                                                         <button class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#captive-portal-modal">
                                                             <i data-feather="settings" class="mr-1"></i> Configure IP & VLAN Settings
                                                         </button>
@@ -2786,6 +2797,16 @@ document.addEventListener('DOMContentLoaded', function() {
                         <input type="number" class="form-control" placeholder="20" id="captive-portal-vlan" value="" min="1" max="4094">
                         <small class="text-muted">Specify VLAN ID for captive portal network segmentation (1-4094). Leave empty for default.</small>
                     </div>
+                    
+                    <div class="form-group">
+                        <label>VLAN Tagging</label>
+                        <select class="form-control" id="captive-portal-vlan-tagging">
+                            <option value="disabled">Disabled</option>
+                            <option value="tagged">Tagged</option>
+                            <option value="untagged">Untagged</option>
+                        </select>
+                        <small class="text-muted">Configure VLAN tagging mode for captive portal network.</small>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
@@ -2845,6 +2866,16 @@ document.addEventListener('DOMContentLoaded', function() {
                             <label>VLAN ID (Optional)</label>
                             <input type="number" class="form-control" placeholder="10" id="password-wifi-vlan" value="" min="1" max="4094">
                             <small class="text-muted">Specify VLAN ID for network segmentation (1-4094). Leave empty for default.</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>VLAN Tagging</label>
+                            <select class="form-control" id="password-wifi-vlan-tagging">
+                                <option value="disabled">Disabled</option>
+                                <option value="tagged">Tagged</option>
+                                <option value="untagged">Untagged</option>
+                            </select>
+                            <small class="text-muted">Configure VLAN tagging mode for password WiFi network.</small>
                         </div>
 
                         <div class="form-group mt-3 pt-2 border-top">
@@ -3034,6 +3065,16 @@ document.addEventListener('DOMContentLoaded', function() {
                         <label for="captive-portal-vlan">VLAN ID (Optional)</label>
                         <input type="number" class="form-control" id="captive-portal-vlan" placeholder="20" min="1" max="4094">
                         <small class="text-muted">Specify VLAN ID for captive portal network segmentation (1-4094). Leave empty for default.</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="captive-portal-vlan-tagging">VLAN Tagging</label>
+                        <select class="form-control" id="captive-portal-vlan-tagging">
+                            <option value="disabled">Disabled</option>
+                            <option value="tagged">Tagged</option>
+                            <option value="untagged">Untagged</option>
+                        </select>
+                        <small class="text-muted">Configure VLAN tagging mode for captive portal network.</small>
                     </div>
                 </div>
                 <div class="modal-footer">

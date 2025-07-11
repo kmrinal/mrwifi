@@ -244,7 +244,7 @@
 
             // Get referrer URL from localStorage if available
             const referrerUrl = localStorage.getItem('redirect_url') || 'https://citypassenger.com';
-            
+
             // Update the continue button href
             $('#continue-button').attr('href', referrerUrl);
 

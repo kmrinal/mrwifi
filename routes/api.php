@@ -115,7 +115,6 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'categories'], function ()
     Route::get('/{category}/stats', [CategoryController::class, 'stats'])->name('categories.stats');
 });
 
-
 // Additional Domain Blocking API routes
 Route::prefix('domain-blocking')->group(function () {
     Route::post('/bulk-delete', [DomainBlockingController::class, 'bulkDelete'])->name('domain-blocking.bulk-delete');

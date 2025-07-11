@@ -327,7 +327,7 @@ function populateLocationDetails(location, captive_portal_designs) {
         $('#location-contact-phone').val(location.contact_phone);
         $('#location-status').val(location.status);
         $('#location-description').val(location.description);
-        
+
         // Populate router settings
         $('#wifi-country').val(settings.country_code || 'US');
         $('#power-level-2g').val(settings.transmit_power_2g || '15');
@@ -358,12 +358,16 @@ function populateLocationDetails(location, captive_portal_designs) {
             $(".wan-pppoe-display_div").addClass('hidden');
             $(".wan-static-ip-display_div").addClass('hidden');
         }        
-        
+
         // Populate captive portal settings
         $('#captive-portal-ssid').val(settings.captive_portal_ssid || 'Guest WiFi');
         $('#captive-portal-visible').val(settings.captive_portal_visible ? 1 : 0);
         $('#captive-portal-vlan').val(settings.captive_portal_vlan || '');
         $('#captive-portal-redirect').val(settings.captive_portal_redirect || '');
+        $('#captive-portal-vlan-tagging').val(settings.captive_portal_vlan_tagging || 'disabled');
+        
+        // Global VLAN settings
+        $('#vlan-enabled').prop('checked', settings.vlan_enabled || false);
         
         // Determine authentication method based on settings
         if (settings.captive_portal_enabled) {
@@ -375,7 +379,6 @@ function populateLocationDetails(location, captive_portal_designs) {
         // Session settings
         $('#captive-session-timeout').val(settings.session_timeout || 60);
         $('#captive-idle-timeout').val(settings.idle_timeout || 15);
-        
         
         // Bandwidth limits
         $('#captive-download-limit').val(settings.download_limit || 10);
@@ -448,6 +451,7 @@ function populateLocationDetails(location, captive_portal_designs) {
         $("#password-wifi-ssid").val(settings.password_wifi_ssid);
         $("#password-wifi-password").val(settings.password_wifi_password);
         $("#password-wifi-vlan").val(settings.password_wifi_vlan || '');
+        $("#password-wifi-vlan-tagging").val(settings.password_wifi_vlan_tagging || 'disabled');
         
         // Web filtering
         $('#secured-web-filter, #guest-secured-web-filter').prop('checked', settings.web_filter_enabled);
@@ -648,6 +652,7 @@ $(document).ready(function() {
         const password_wifi_ssid = $("#password-wifi-ssid").val();
         const password_wifi_password = $("#password-wifi-password").val();
         const password_wifi_vlan = $("#password-wifi-vlan").val();
+        const password_wifi_vlan_tagging = $("#password-wifi-vlan-tagging").val();
         var settings = {
             password_wifi_ip: password_wifi_ip,
             password_wifi_netmask: password_wifi_netmask,
@@ -664,7 +669,8 @@ $(document).ready(function() {
             password_wifi_dhcp_end: password_wifi_dhcp_end,
             password_wifi_lease_time: password_wifi_lease_time,
             password_wifi_dhcp_enabled: password_wifi_dhcp_enabled,
-            password_wifi_vlan: password_wifi_vlan
+            password_wifi_vlan: password_wifi_vlan,
+            password_wifi_vlan_tagging: password_wifi_vlan_tagging
         };
         console.log("settings", settings);
         // make ajax request to save the values 
@@ -713,6 +719,7 @@ $(document).ready(function() {
         const captive_social_auth_method = $("#captive-social-auth-method").val();
         const captive_portal_vlan = $("#captive-portal-vlan").val();
         const captive_portal_redirect = $("#captive-portal-redirect").val();
+        const captive_portal_vlan_tagging = $("#captive-portal-vlan-tagging").val();
     
         settings = {
             captive_portal_ssid: captive_portal_ssid,
@@ -734,7 +741,8 @@ $(document).ready(function() {
             captive_portal_password: captive_portal_password,
             captive_social_auth_method: captive_social_auth_method,
             captive_portal_vlan: captive_portal_vlan,
-            captive_portal_redirect: captive_portal_redirect
+            captive_portal_redirect: captive_portal_redirect,
+            captive_portal_vlan_tagging: captive_portal_vlan_tagging
         }
 
         console.log("settings", settings);
@@ -842,6 +850,38 @@ $(document).ready(function() {
 
     $("#toggle-password").on('click', function() {
         $("#password-wifi-password").attr('type', 'text');
+    });
+
+    // Save VLAN global settings
+    $("#vlan-enabled").on('change', function() {
+        const vlan_enabled = $(this).is(':checked');
+        
+        const settings = {
+            vlan_enabled: vlan_enabled
+        };
+        
+        console.log("VLAN enabled setting:", settings);
+        
+        // Save immediately when the switch is toggled
+        $.ajax({
+            url: '/api/locations/' + location_id + '/settings',
+            type: 'PUT',
+            headers: {
+                'Authorization': 'Bearer ' + UserManager.getToken(),
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify(settings),
+            success: function(response) {
+                console.log("VLAN global setting saved:", response);
+                showNotification('success', 'VLAN support ' + (vlan_enabled ? 'enabled' : 'disabled') + ' successfully');
+            },
+            error: function(xhr, status, error) {
+                console.error("Error saving VLAN global setting:", error);
+                showNotification('error', 'Failed to save VLAN global setting');
+                // Revert the toggle on error
+                $("#vlan-enabled").prop('checked', !vlan_enabled);
+            }
+        });
     });
 
     $('#toggle-captive-password').on('click', function() {
