@@ -3061,8 +3061,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                     
                     <div class="form-group vlan-setting">
-                        <label for="captive-portal-vlan">VLAN ID (Optional)</label>
-                        <input type="number" class="form-control" id="captive-portal-vlan" placeholder="20" min="1" max="4094" disabled>
+                        <label for="captive-portal-vlan-modal">VLAN ID (Optional)</label>
+                        <input type="number" class="form-control" id="captive-portal-vlan-modal" placeholder="20" min="1" max="4094" disabled>
                         <small class="text-muted">Specify VLAN ID for captive portal network segmentation (1-4094). Enable VLAN support in Router Settings to use this feature.</small>
                     </div>
                     
@@ -4692,6 +4692,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 if (settings.captive_portal_vlan) {
                     $('#captive-portal-vlan').val(settings.captive_portal_vlan);
+                    $('#captive-portal-vlan-modal').val(settings.captive_portal_vlan);
                 }
                 if (settings.captive_portal_vlan_tagging) {
                     $('#captive-portal-vlan-tagging').val(settings.captive_portal_vlan_tagging);
@@ -5811,6 +5812,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     '#password-wifi-vlan',
                     '#password-wifi-vlan-tagging',
                     // Modal specific fields with unique IDs
+                    '#captive-portal-vlan-modal',
                     '#captive-portal-vlan-tagging-modal',
                     '#password-wifi-vlan-tagging-modal'
                 ];
@@ -6292,7 +6294,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     captive_portal_ip: $('#captive-portal-ip').val(),
                     captive_portal_netmask: $('#captive-portal-netmask').val(),
                     captive_portal_gateway: $('#captive-portal-gateway').val(),
-                    captive_portal_vlan: $('#captive-portal-vlan').val(),
+                    // Use the correct VLAN field based on context
+                    captive_portal_vlan: isModal && modalId === 'captive-portal-modal' 
+                        ? $('#captive-portal-vlan-modal').val() 
+                        : $('#captive-portal-vlan').val(),
                     // Use the correct VLAN tagging field based on context
                     captive_portal_vlan_tagging: isModal && modalId === 'captive-portal-modal' 
                         ? $('#captive-portal-vlan-tagging-modal').val() 
@@ -6300,6 +6305,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 };
                 
                 console.log('Saving captive portal data:', captivePortalData);
+                console.log('VLAN field values:', {
+                    mainFormVlan: $('#captive-portal-vlan').val(),
+                    modalVlan: $('#captive-portal-vlan-modal').val(),
+                    mainFormTagging: $('#captive-portal-vlan-tagging').val(),
+                    modalTagging: $('#captive-portal-vlan-tagging-modal').val(),
+                    usedVlan: captivePortalData.captive_portal_vlan,
+                    usedTagging: captivePortalData.captive_portal_vlan_tagging
+                });
                 
                 // Show loading state
                 const $button = $(this);
