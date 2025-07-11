@@ -369,6 +369,13 @@ function populateLocationDetails(location, captive_portal_designs) {
         // Global VLAN settings
         $('#vlan-enabled').prop('checked', settings.vlan_enabled || false);
         
+        // Show/hide VLAN settings based on initial value
+        if (settings.vlan_enabled) {
+            $('.vlan-setting').show();
+        } else {
+            $('.vlan-setting').hide();
+        }
+        
         // Determine authentication method based on settings
         if (settings.captive_portal_enabled) {
             $('#captive-auth-method').val(settings.captive_auth_method || 'click-through');
@@ -852,9 +859,16 @@ $(document).ready(function() {
         $("#password-wifi-password").attr('type', 'text');
     });
 
-    // Save VLAN global settings
+    // Save VLAN global settings and toggle VLAN field visibility
     $("#vlan-enabled").on('change', function() {
         const vlan_enabled = $(this).is(':checked');
+        
+        // Show/hide VLAN settings based on toggle
+        if (vlan_enabled) {
+            $('.vlan-setting').show();
+        } else {
+            $('.vlan-setting').hide();
+        }
         
         const settings = {
             vlan_enabled: vlan_enabled
@@ -880,6 +894,12 @@ $(document).ready(function() {
                 showNotification('error', 'Failed to save VLAN global setting');
                 // Revert the toggle on error
                 $("#vlan-enabled").prop('checked', !vlan_enabled);
+                // Revert visibility as well
+                if (!vlan_enabled) {
+                    $('.vlan-setting').show();
+                } else {
+                    $('.vlan-setting').hide();
+                }
             }
         });
     });

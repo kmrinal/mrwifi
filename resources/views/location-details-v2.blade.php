@@ -1599,11 +1599,24 @@
                                         </div>
                                     </div>
 
-                                    <!-- Network Interfaces Section -->
-                                    <div class="content-section">
-                                        <div class="section-header">
-                                            <h5 class="section-title">Local Network Interfaces</h5>
-                                        </div>
+                                                        <!-- Network Interfaces Section -->
+                    <div class="content-section">
+                        <div class="section-header">
+                            <h5 class="section-title">Local Network Interfaces</h5>
+                        </div>
+                        
+                        <!-- VLAN Global Settings -->
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="vlan-enabled">
+                                        <label class="custom-control-label" for="vlan-enabled">Enable VLAN Support</label>
+                                    </div>
+                                    <small class="text-muted">Master switch to enable/disable VLAN functionality for this location.</small>
+                                </div>
+                            </div>
+                        </div>
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="card">
@@ -2130,29 +2143,18 @@
                                                 </div>
                                             </div>
                                             
-                                            <!-- Network Settings Section -->
-                                            <h5 class="border-bottom pb-1 mt-3">Network Settings</h5>
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <div class="form-group">
-                                                        <div class="custom-control custom-switch">
-                                                            <input type="checkbox" class="custom-control-input" id="vlan-enabled">
-                                                            <label class="custom-control-label" for="vlan-enabled">Enable VLAN Support</label>
-                                                        </div>
-                                                        <small class="text-muted">Master switch to enable/disable VLAN functionality for this location.</small>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <div class="form-group">
-                                                        <button class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#captive-portal-modal">
-                                                            <i data-feather="settings" class="mr-1"></i> Configure IP & VLAN Settings
-                                                        </button>
-                                                        <small class="text-muted d-block mt-1">Configure IP address, gateway, and VLAN settings for the captive portal network.</small>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                                                        <!-- Network Settings Section -->
+                            <h5 class="border-bottom pb-1 mt-3">Network Settings</h5>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <button class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#captive-portal-modal">
+                                            <i data-feather="settings" class="mr-1"></i> Configure IP & VLAN Settings
+                                        </button>
+                                        <small class="text-muted d-block mt-1">Configure IP address, gateway, and VLAN settings for the captive portal network.</small>
+                                    </div>
+                                </div>
+                            </div>
                                             <!-- Access Control Section -->
                                             <h5 class="border-bottom pb-1 mt-3">Access Control</h5>
                                             <div class="row">
@@ -2250,7 +2252,7 @@
                                                             <div class="custom-control custom-radio custom-control-inline">
                                                                 <input type="radio" id="static-ip-radio" name="password-ip-assignment" class="custom-control-input" checked>
                                                                 <label class="custom-control-label" for="static-ip-radio">Static IP</label>
-                                                </div>
+                                                        </div>
                                                             <div class="custom-control custom-radio custom-control-inline">
                                                                 <input type="radio" id="dhcp-client-radio" name="password-ip-assignment" class="custom-control-input">
                                                                 <label class="custom-control-label" for="dhcp-client-radio">DHCP Client</label>
@@ -2792,13 +2794,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         <input type="text" class="form-control" placeholder="1.1.1.1" value="1.1.1.1">
                     </div>
                     
-                    <div class="form-group">
+                    <div class="form-group vlan-setting" style="display: none;">
                         <label>VLAN ID (Optional)</label>
                         <input type="number" class="form-control" placeholder="20" id="captive-portal-vlan" value="" min="1" max="4094">
                         <small class="text-muted">Specify VLAN ID for captive portal network segmentation (1-4094). Leave empty for default.</small>
                     </div>
                     
-                    <div class="form-group">
+                    <div class="form-group vlan-setting" style="display: none;">
                         <label>VLAN Tagging</label>
                         <select class="form-control" id="captive-portal-vlan-tagging">
                             <option value="disabled">Disabled</option>
@@ -2862,13 +2864,13 @@ document.addEventListener('DOMContentLoaded', function() {
                             <input type="text" class="form-control" placeholder="1.1.1.1" id="password-secondary-dns" value="">
                         </div>
                         
-                        <div class="form-group">
+                        <div class="form-group vlan-setting" style="display: none;">
                             <label>VLAN ID (Optional)</label>
                             <input type="number" class="form-control" placeholder="10" id="password-wifi-vlan" value="" min="1" max="4094">
                             <small class="text-muted">Specify VLAN ID for network segmentation (1-4094). Leave empty for default.</small>
                         </div>
                         
-                        <div class="form-group">
+                        <div class="form-group vlan-setting" style="display: none;">
                             <label>VLAN Tagging</label>
                             <select class="form-control" id="password-wifi-vlan-tagging">
                                 <option value="disabled">Disabled</option>
@@ -3061,13 +3063,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         <input type="text" class="form-control" id="captive-portal-gateway" placeholder="192.168.2.1">
                     </div>
                     
-                    <div class="form-group">
+                    <div class="form-group vlan-setting" style="display: none;">
                         <label for="captive-portal-vlan">VLAN ID (Optional)</label>
                         <input type="number" class="form-control" id="captive-portal-vlan" placeholder="20" min="1" max="4094">
                         <small class="text-muted">Specify VLAN ID for captive portal network segmentation (1-4094). Leave empty for default.</small>
                     </div>
                     
-                    <div class="form-group">
+                    <div class="form-group vlan-setting" style="display: none;">
                         <label for="captive-portal-vlan-tagging">VLAN Tagging</label>
                         <select class="form-control" id="captive-portal-vlan-tagging">
                             <option value="disabled">Disabled</option>
