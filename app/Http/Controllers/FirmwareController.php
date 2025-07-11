@@ -49,13 +49,15 @@ class FirmwareController extends Controller
      */
     public function store(Request $request)
     {
+        
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'model' => 'nullable|in:1,2,820AX,835AX',
             'version' => 'nullable|string|max:100',
             'description' => 'nullable|string|max:1000',
             'file' => 'required|file|mimes:gz,tar,tar.gz|max:102400', // Max 100MB
-            'is_enabled' => 'nullable|boolean'
+            'is_enabled' => 'nullable|boolean',
+            'default_model_firmware' => 'nullable|boolean'
         ]);
 
         if ($validator->fails()) {
@@ -112,7 +114,13 @@ class FirmwareController extends Controller
                 'is_enabled' => $request->boolean('is_enabled', true),
                 'description' => $request->description,
                 'version' => $request->version,
+                'default_model_firmware' => $request->boolean('default_model_firmware', false),
             ]);
+
+            // If this firmware is set as default, ensure it's the only default for this model
+            if ($firmware->default_model_firmware) {
+                $firmware->setAsDefault();
+            }
 
             return response()->json([
                 'status' => 'success',
@@ -138,7 +146,19 @@ class FirmwareController extends Controller
         ], 404);
        }
 
-       $firmware = Firmware::where('model', $device->model)->orderBy('created_at', 'desc')->first();
+       // Try to get the default firmware for the device model first
+       $firmware = Firmware::getDefaultForModel($device->model);
+       
+       // If no default firmware found, get the latest enabled firmware for the model
+       if (!$firmware) {
+           $firmware = Firmware::forModel($device->model)->enabled()->orderBy('created_at', 'desc')->first();
+       }
+       
+       // If still no firmware found, get the latest firmware for the model (even if disabled)
+       if (!$firmware) {
+           $firmware = Firmware::forModel($device->model)->orderBy('created_at', 'desc')->first();
+       }
+       
        if (!$firmware) {
         return response()->json([
             'status' => 'error',
@@ -188,7 +208,8 @@ class FirmwareController extends Controller
             'model' => 'nullable|in:1,2,820AX,835AX',
             'version' => 'nullable|string|max:100',
             'description' => 'nullable|string|max:1000',
-            'is_enabled' => 'nullable|boolean'
+            'is_enabled' => 'nullable|boolean',
+            'default_model_firmware' => 'nullable|boolean'
         ]);
 
         if ($validator->fails()) {
@@ -212,7 +233,13 @@ class FirmwareController extends Controller
                 'version' => $request->version,
                 'description' => $request->description,
                 'is_enabled' => $request->boolean('is_enabled', $firmware->is_enabled),
+                'default_model_firmware' => $request->boolean('default_model_firmware', $firmware->default_model_firmware),
             ]);
+
+            // If this firmware is set as default, ensure it's the only default for this model
+            if ($firmware->default_model_firmware) {
+                $firmware->setAsDefault();
+            }
 
             return response()->json([
                 'status' => 'success',
@@ -350,6 +377,32 @@ class FirmwareController extends Controller
     }
 
     /**
+     * Get default firmware for all models.
+     */
+    public function getDefaults()
+    {
+        try {
+            $models = Firmware::getAvailableModels();
+            $defaults = [];
+            
+            foreach ($models as $id => $modelName) {
+                $defaultFirmware = Firmware::getDefaultForModel($modelName);
+                $defaults[$modelName] = $defaultFirmware;
+            }
+            
+            return response()->json([
+                'status' => 'success',
+                'data' => $defaults
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to get default firmware: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Verify firmware file integrity.
      */
     public function verify(Firmware $firmware)
@@ -379,6 +432,26 @@ class FirmwareController extends Controller
                 'status' => 'error',
                 'message' => 'Failed to verify file: ' . $e->getMessage(),
                 'integrity' => false
+            ], 500);
+        }
+    }
+
+    /**
+     * Set the specified firmware as the default for its model.
+     */
+    public function setDefault(Firmware $firmware)
+    {
+        try {
+            $firmware->setAsDefault();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Firmware set as default successfully',
+                'data' => $firmware->fresh()
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to set firmware as default: ' . $e->getMessage()
             ], 500);
         }
     }

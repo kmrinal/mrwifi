@@ -97,12 +97,14 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'firmware'], function () {
     Route::post('/', [FirmwareController::class, 'store']);
     Route::get('/enabled', [FirmwareController::class, 'enabled']);
     Route::get('/models', [FirmwareController::class, 'models']);
+    Route::get('/defaults', [FirmwareController::class, 'getDefaults']);
     Route::get('/model/{model}', [FirmwareController::class, 'byModel']);
     Route::get('/{firmware}', [FirmwareController::class, 'show']);
     Route::put('/{firmware}', [FirmwareController::class, 'update']);
     Route::delete('/{firmware}', [FirmwareController::class, 'destroy']);
     Route::get('/{firmware}/download', [FirmwareController::class, 'download']);
     Route::post('/{firmware}/toggle-status', [FirmwareController::class, 'toggleStatus']);
+    Route::post('/{firmware}/set-default', [FirmwareController::class, 'setDefault']);
     Route::post('/{firmware}/verify', [FirmwareController::class, 'verify']);
 });
 

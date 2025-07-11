@@ -342,6 +342,7 @@
                                                     <th>Name</th>
                                                     <th>Status</th>
                                                     <th>Device Model</th>
+                                                    <th>Default</th>
                                                     <th>Size</th>
                                                     <th>Actions</th>
                                                 </tr>
@@ -397,6 +398,15 @@
                                                     <option value="1">820AX</option>
                                                     <option value="2">835AX</option>
                                                 </select>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="default-firmware">
+                                        <label class="custom-control-label" for="default-firmware">Set as default firmware for this model</label>
+                                    </div>
+                                    <small class="text-muted">When enabled, this firmware will be automatically assigned to new devices of this model.</small>
                                 </div>
                             </div>
                             <div class="col-12">
@@ -462,6 +472,15 @@
                                                     <option value="1" selected>820AX</option>
                                                     <option value="2">835AX</option>
                                                 </select>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="edit-default-firmware">
+                                        <label class="custom-control-label" for="edit-default-firmware">Set as default firmware for this model</label>
+                                    </div>
+                                    <small class="text-muted">When enabled, this firmware will be automatically assigned to new devices of this model.</small>
                                 </div>
                             </div>
                             <div class="col-12">
@@ -557,7 +576,7 @@
                 responsive: true,
                 columnDefs: [
                     {
-                        targets: [4],
+                        targets: [5],
                         orderable: false
                     }
                 ],
@@ -694,6 +713,10 @@
                     ? '<span class="badge badge-pill badge-light-success">Enable</span>'
                     : '<span class="badge badge-pill badge-light-secondary">Disable</span>';
                 
+                const defaultBadge = firmware.default_model_firmware 
+                    ? '<span class="badge badge-pill badge-light-primary">Default</span>'
+                    : '<span class="badge badge-pill badge-light-secondary">-</span>';
+                
                 const modelName = getModelName(firmware.model);
                 const fileSize = formatFileSize(firmware.file_size);
 
@@ -711,6 +734,7 @@
                     </div>`,
                     statusBadge,
                     modelName,
+                    defaultBadge,
                     fileSize,
                     `<div class="dropdown">
                         <button type="button" class="btn btn-sm dropdown-toggle hide-arrow" data-toggle="dropdown">
@@ -725,6 +749,11 @@
                                 <i data-feather="download" class="mr-50"></i>
                                 <span>Download</span>
                             </a>
+                            ${!firmware.default_model_firmware ? `
+                            <a class="dropdown-item" href="javascript:void(0);" onclick="setAsDefault(${firmware.id})">
+                                <i data-feather="star" class="mr-50"></i>
+                                <span>Set as Default</span>
+                            </a>` : ''}
                             <a class="dropdown-item" href="javascript:void(0);" onclick="deleteFirmware(${firmware.id})">
                                 <i data-feather="trash" class="mr-50"></i>
                                 <span>Delete</span>
@@ -764,6 +793,7 @@
             formData.append('model', $('#model').val());
             formData.append('description', $('#description').val());
             formData.append('is_enabled', $('#status').val());
+            formData.append('default_model_firmware', $('#default-firmware').is(':checked') ? 1 : 0);
             formData.append('file', fileInput.files[0]);
 
             $.ajax({
@@ -817,6 +847,9 @@
                 $('#edit-status').val(statusValue).trigger('change.select2');
                 $('#edit-model').val(modelValue).trigger('change.select2');
                 
+                // Set default firmware checkbox
+                $('#edit-default-firmware').prop('checked', firmware.default_model_firmware || false);
+                
                 // Clear file input
                 $('#edit-firmware-file').val('');
                 $('.custom-file-label').text('Choose firmware file');
@@ -831,6 +864,7 @@
             formData.append('model', $('#edit-model').val());
             formData.append('description', $('#edit-description').val());
             formData.append('is_enabled', $('#edit-status').val());
+            formData.append('default_model_firmware', $('#edit-default-firmware').is(':checked') ? 1 : 0);
             formData.append('_method', 'PUT');
 
             const fileInput = document.getElementById('edit-firmware-file');
@@ -899,6 +933,34 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+        }
+
+        function setAsDefault(id) {
+            const firmware = firmwareData.find(f => f.id === id);
+            if (!firmware) return;
+
+            const modelName = getModelName(firmware.model);
+            if (!confirm(`Are you sure you want to set "${firmware.name}" as the default firmware for ${modelName} devices?`)) return;
+
+            $.ajax({
+                url: `/api/firmware/${id}/set-default`,
+                method: 'POST',
+                headers: getAuthHeaders(),
+                success: function(response) {
+                    if (response.status === 'success') {
+                        showToast('Firmware set as default successfully', 'success');
+                        loadFirmwareData();
+                    }
+                },
+                error: function(xhr) {
+                    console.error('Error setting firmware as default:', xhr);
+                    let message = 'Error setting firmware as default';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        message = xhr.responseJSON.message;
+                    }
+                    showToast(message, 'error');
+                }
+            });
         }
 
         // Helper functions

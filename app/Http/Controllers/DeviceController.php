@@ -73,6 +73,25 @@ class DeviceController extends Controller
         
         $device->save();
 
+        // Try to get the default firmware for the device model
+        $firmware = Firmware::getDefaultForModel($device->model);
+        
+        // If no default firmware found, get the latest firmware for the model
+        if (!$firmware) {
+            $firmware = Firmware::forModel($device->model)->enabled()->orderBy('created_at', 'desc')->first();
+        }
+        
+        // If still no firmware found, just get the latest firmware for the model (even if disabled)
+        if (!$firmware) {
+            $firmware = Firmware::forModel($device->model)->orderBy('created_at', 'desc')->first();
+        }
+        
+        // Set firmware_id if firmware is found
+        if ($firmware) {
+            $device->firmware_id = $firmware->id;
+            $device->save();
+        }
+
         return redirect()->route('devices.index')
             ->with('success', 'Device created successfully.');
     }
@@ -269,12 +288,20 @@ class DeviceController extends Controller
         
         $device->save();
 
-        $firmware = Firmware::where('model', $device->model)->orderBy('created_at', 'desc')->first();
+        // Try to get the default firmware for the device model first
+        $firmware = Firmware::getDefaultForModel($device->model);
+        
+        // If no default firmware found, get the latest enabled firmware for the model
         if (!$firmware) {
-            $firmware_version = 0;
-        } else {
-            $firmware_version = $firmware->id;
+            $firmware = Firmware::forModel($device->model)->enabled()->orderBy('created_at', 'desc')->first();
         }
+        
+        // If still no firmware found, get the latest firmware for the model (even if disabled)
+        if (!$firmware) {
+            $firmware = Firmware::forModel($device->model)->orderBy('created_at', 'desc')->first();
+        }
+        
+        $firmware_version = $firmware ? $firmware->id : 0;
 
         $location = Location::where('device_id', $device->id)->first();
         if (!$location) {

@@ -37,6 +37,7 @@ class Firmware extends Model
         'is_enabled',
         'description',
         'version',
+        'default_model_firmware',
     ];
 
     /**
@@ -47,6 +48,7 @@ class Firmware extends Model
     protected $casts = [
         'is_enabled' => 'boolean',
         'file_size' => 'integer',
+        'default_model_firmware' => 'boolean',
     ];
 
     /**
@@ -128,6 +130,57 @@ class Firmware extends Model
     public function scopeForModel($query, $model)
     {
         return $query->where('model', $model);
+    }
+
+    /**
+     * Scope to get only default firmware
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeDefault($query)
+    {
+        return $query->where('default_model_firmware', true);
+    }
+
+    /**
+     * Scope to get default firmware for a specific model
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param string $model
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeDefaultForModel($query, $model)
+    {
+        return $query->where('model', $model)->where('default_model_firmware', true);
+    }
+
+    /**
+     * Get the default firmware for a specific model
+     *
+     * @param string $model
+     * @return \App\Models\Firmware|null
+     */
+    public static function getDefaultForModel($model)
+    {
+        return static::defaultForModel($model)->first();
+    }
+
+    /**
+     * Set this firmware as default for its model
+     * This will unset any other default firmware for the same model
+     *
+     * @return bool
+     */
+    public function setAsDefault()
+    {
+        // First, unset any existing default firmware for this model
+        static::where('model', $this->model)
+            ->where('default_model_firmware', true)
+            ->update(['default_model_firmware' => false]);
+
+        // Then set this firmware as default
+        return $this->update(['default_model_firmware' => true]);
     }
 
     /**
